@@ -2,7 +2,6 @@ package test.laba.client.mainClasses;
 
 
 import test.laba.client.console.Console;
-import test.laba.client.exception.exucuteError;
 
 public class Location {
     private Long x;
@@ -10,7 +9,7 @@ public class Location {
     private String name; //Строка не может быть пустой, Поле не может быть null
     public Console console;
 
-    public Location(Long x, Integer y, String s,Console console) throws exucuteError {
+    public Location(Long x, Integer y, String s,Console console) {
         if (x!= null )this.x=x;
         if(y!=null) this.y=y;
         if(s==null || s.isEmpty() ){

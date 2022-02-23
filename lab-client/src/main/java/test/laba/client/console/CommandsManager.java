@@ -65,25 +65,25 @@ public class CommandsManager {
     }
 
 
-    public void help(String arg,Console console) throws CommandWithoutArguments, exucuteError {
+    public void help(String arg,Console console) throws CommandWithoutArguments {
         if(isArguments(arg)) {
             throw new CommandWithoutArguments("Данная команда не принимает аргументы", console);
         }
         help.help(commands, console);
     }
-    public void info(String arg, Root root, Console console) throws CommandWithoutArguments, exucuteError {
+    public void info(String arg, Root root, Console console) throws CommandWithoutArguments {
         if(isArguments(arg)) {
             throw new CommandWithoutArguments("Данная команда не принимает аргументы", console);
         }
         info.info(root, console);
     }
-    public void show(String arg, Root root,Console console) throws CommandWithoutArguments, exucuteError {
+    public void show(String arg, Root root,Console console) throws CommandWithoutArguments {
         if(isArguments(arg)) {
             throw new CommandWithoutArguments("Данная команда не принимает аргументы", console);
         }
         show.show(root, console);
     }
-    public void insertNull(String arg, Root root, Console console, ConsoleParsing parsingInterface) throws CommandWithArguments, exucuteError {
+    public void insertNull(String arg, Root root, Console console, ConsoleParsing parsingInterface) throws CommandWithArguments{
         if(!isArguments(arg)) {
             throw new CommandWithArguments("Данная команда должна принимать аргументы, а именно ключ нового элемента. Обратите внимание сначала идет команда, затем через пробел аргументы", console);
         }
@@ -139,7 +139,7 @@ public class CommandsManager {
         }
         save.save(root,fileManager,console,consoleParsing);
     }
-    */public  void executeScript(String arg, Root root, FileManager fileManager, Console console, ConsoleParsing parsingInterface) throws CommandWithArguments, CommandWithoutArguments, exucuteError {
+    */public  void executeScript(String arg, Root root, FileManager fileManager, Console console, ConsoleParsing parsingInterface) throws CommandWithArguments, CommandWithoutArguments{
         if(!isArguments(arg)) {
             throw new CommandWithArguments("Данная команда должна принимать аргументы", console);
         }
@@ -175,13 +175,13 @@ public class CommandsManager {
         }
         removeAnyByUnitOfMeasure.removeAnyByUnitOfMeasure(arg,root,console,parsingInterface);
     }
-    public  void averageOfManufactureCost(String arg, Root root,Console console) throws CommandWithoutArguments, exucuteError {
+    public  void averageOfManufactureCost(String arg, Root root,Console console) throws CommandWithoutArguments {
         if (isArguments(arg)) {
             throw new CommandWithoutArguments("Данная команда не принимает аргументы", console);
         }
         averageOfManufactureCost.averageOfManufactureCost(root,console);
     }
-    public  void groupCountingByPrice(String arg, Root root,Console console) throws CommandWithoutArguments, exucuteError {
+    public  void groupCountingByPrice(String arg, Root root,Console console) throws CommandWithoutArguments {
         if (isArguments(arg)) {
             throw new CommandWithoutArguments("Данная команда не принимает аргументы", console);
         }

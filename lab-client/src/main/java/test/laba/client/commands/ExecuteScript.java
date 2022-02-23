@@ -14,7 +14,7 @@ public class ExecuteScript extends AbstractCommand {
     public ExecuteScript(){
         super("ExecuteScript",": считать и исполнить скрипт из указанного файла. В скрипте содержатся команды в таком же виде, в котором их вводит пользователь в интерактивном режиме.");
     }
-    public void executeScript(String arg, Root root, CommandsManager commandsManager, FileManager fileManager, Console console, ConsoleParsing parsingInterface) throws CommandWithoutArguments, exucuteError {
+    public void executeScript(String arg, Root root, CommandsManager commandsManager, FileManager fileManager, Console console, ConsoleParsing parsingInterface) throws CommandWithoutArguments {
         fileManager.readScript(arg, root,commandsManager,fileManager,console,parsingInterface,this);
     }
 }

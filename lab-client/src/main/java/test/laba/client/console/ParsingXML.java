@@ -205,7 +205,7 @@ public class ParsingXML extends ConsoleParsing {
             }
             return product;
         }
-    public Location parsLocation(Node location,Console console) {
+    public Location parsLocation(Node location,Console console)  {
         String locationName = null;
         Location location1;
         Long x1 = null;

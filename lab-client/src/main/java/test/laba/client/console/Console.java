@@ -20,14 +20,14 @@ public class Console {
     public void print(Object object){
       System.out.println(object);
     }
-    public void  printError(Object object) throws exucuteError {
+    public void  printError(Object object) {
         System.out.println(ANSI_RED+object+ANSI_RESET);
     }
     public void  ask(Object object){
         System.out.println(object);
     }
 
-    public void interactivelyMode(Root root, CommandsManager commandsManager, FileManager fileManager, Console console, ConsoleParsing parsingInterface) throws CommandWithoutArguments, exucuteError {
+    public void interactivelyMode(Root root, CommandsManager commandsManager, FileManager fileManager, Console console, ConsoleParsing parsingInterface) throws CommandWithoutArguments {
         print("Программа в интерактивном режиме, для получения информации о возможностях, введите help ");
         String[] command;
         boolean flag=true;
@@ -45,7 +45,7 @@ public class Console {
         }
 
     }
-    public boolean command(String[] command, Root root, CommandsManager commandsManager, FileManager fileManager, Console console, ConsoleParsing consoleParsing) throws CommandWithoutArguments, exucuteError {
+    public boolean command(String[] command, Root root, CommandsManager commandsManager, FileManager fileManager, Console console, ConsoleParsing consoleParsing) throws CommandWithoutArguments  {
        try {
             switch (command[0].trim()) {
                 case "help" -> {
@@ -122,7 +122,7 @@ public class Console {
            return true;
        }
         }
-    public boolean askQuestion(String s) throws exucuteError {
+    public boolean askQuestion(String s) {
         String answer;
         print(s);
         answer= scanner().toLowerCase();

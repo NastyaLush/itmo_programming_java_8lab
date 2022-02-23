@@ -31,9 +31,9 @@ public class ScriptConsole extends Console{
     public void print(Object object){
         System.out.println(object);
     }
-    public void  printError(Object object) throws exucuteError {
+    public void  printError(Object object)  {
         System.out.println(ANSI_RED+object+ANSI_RESET);
-        throw new exucuteError("не фортануло",console);
+        System.exit(1);
 
     }
     public void ask(Object object){System.out.println(object);}

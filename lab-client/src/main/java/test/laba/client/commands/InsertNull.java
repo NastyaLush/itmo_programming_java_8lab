@@ -10,7 +10,7 @@ public class InsertNull extends AbstractCommand {
     public InsertNull(){
         super("InsertNull","добавить новый элемент с заданным ключом");
     }
-    public void insertnull(Root root, String arg, Console console, ConsoleParsing consoleParsing) throws exucuteError {
+    public void insertnull(Root root, String arg, Console console, ConsoleParsing consoleParsing) {
          consoleParsing.parsProductFromConsole(root,arg,console);
     }
 

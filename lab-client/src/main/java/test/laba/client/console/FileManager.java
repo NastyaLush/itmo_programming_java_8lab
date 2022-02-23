@@ -2,7 +2,6 @@ package test.laba.client.console;
 
 import test.laba.client.commands.ExecuteScript;
 import test.laba.client.exception.CommandWithoutArguments;
-import test.laba.client.exception.exucuteError;
 import test.laba.client.mainClasses.Root;
 
 import java.io.*;
@@ -13,7 +12,7 @@ import java.io.IOException;
 
 public class FileManager  {
     protected String envVarible = System.getenv("LABA");
-    public boolean read(Root root, Console console) throws exucuteError {
+    public boolean read(Root root, Console console)  {
         ParsingXML parsing = new ParsingXML();
         if (envVarible == null) {
             console.printError("XML file isn't found, please change file path" +
@@ -30,7 +29,7 @@ public class FileManager  {
     }
 
 
-    public void save(Root root,Console console, ConsoleParsing consoleParsing) throws exucuteError {
+    public void save(Root root,Console console, ConsoleParsing consoleParsing)  {
         try {
             FileWriter fileWriter = new FileWriter(envVarible);
             fileWriter.write(consoleParsing.save(root.getProducts()));
@@ -41,7 +40,7 @@ public class FileManager  {
         }
     }
 
-    public void readScript(String fileName, Root root, CommandsManager commandsManager, FileManager fileManager, Console console, ConsoleParsing parsingInterface, ExecuteScript executeScript) throws CommandWithoutArguments, exucuteError {
+    public void readScript(String fileName, Root root, CommandsManager commandsManager, FileManager fileManager, Console console, ConsoleParsing parsingInterface, ExecuteScript executeScript) throws CommandWithoutArguments {
         try {
             String[] command;
                 File file = new File(fileName);

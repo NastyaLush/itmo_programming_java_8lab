@@ -5,7 +5,6 @@ package test.laba.client.console;
 import test.laba.client.exception.CreateError;
 import test.laba.client.exception.IDError;
 import test.laba.client.exception.VariableException;
-import test.laba.client.exception.exucuteError;
 import test.laba.client.mainClasses.*;
 
 import java.time.ZonedDateTime;
@@ -28,7 +27,7 @@ public  class ConsoleParsing extends VariableParsing {
     protected  String envVariable = System.getenv("LABA");
 
 
-    public void parsProductFromConsole(Root root, String key, Console console) throws exucuteError {
+    public void parsProductFromConsole(Root root, String key, Console console) {
         String name ;
         Long price ;
         Coordinates coordinates;
@@ -91,7 +90,7 @@ public  class ConsoleParsing extends VariableParsing {
         root.setProduct(product.getId(), product);
 
     }
-    private  Location parsLocationFromConsole(Console console) throws exucuteError {
+    private  Location parsLocationFromConsole(Console console)  {
         Long x = null;
         Integer y = null;
         String name;
@@ -124,7 +123,7 @@ public  class ConsoleParsing extends VariableParsing {
         }
         return new Location(x, y, name,console);
     }
-    private  Person parsPersonFromConsole(Console console) throws exucuteError {
+    private  Person parsPersonFromConsole(Console console) {
         String name ;
         String birthday;
         ZonedDateTime newBirthday ;

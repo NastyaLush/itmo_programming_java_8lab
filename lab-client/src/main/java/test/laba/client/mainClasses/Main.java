@@ -3,11 +3,10 @@ package test.laba.client.mainClasses;
 
 import test.laba.client.console.*;
 import test.laba.client.exception.CommandWithoutArguments;
-import test.laba.client.exception.exucuteError;
 
 public class Main {
 
-    public static void main(String[] args) throws CommandWithoutArguments, exucuteError {
+    public static void main(String[] args) throws CommandWithoutArguments{
     Root root= new Root();
     Console console=new Console();
         ScriptConsole scriptConsole= new ScriptConsole();
