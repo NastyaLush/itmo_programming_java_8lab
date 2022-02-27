@@ -56,26 +56,26 @@
             private int manufactureCost;  
             private UnitOfMeasure unitOfMeasure; //Поле не может быть null  
             private Person owner; //Поле может быть null  
-}  
-public class Coordinates {  
-    private Integer x; //Значение поля должно быть больше -233, Поле не может быть null  
-    private Float y; //Поле не может быть null  
-}  
-public class Person {  
-    private String name; //Поле не может быть null, Строка не может быть пустой  
-    private java.time.ZonedDateTime birthday; //Поле не может быть null  
-    private int height; //Значение поля должно быть больше 0  
-    private Location location; //Поле не может быть null  
-}  
-public class Location {  
-    private long x;  
-    private int y;  
-    private String name; //Строка не может быть пустой, Поле не может быть null  
-}  
-public enum UnitOfMeasure {  
-    PCS,  
-    MILLILITERS,  
-    GRAMS;  
-} 
+        }  
+        public class Coordinates {  
+                private Integer x; //Значение поля должно быть больше -233, Поле не может быть null  
+                private Float y; //Поле не может быть null  
+                }  
+        public class Person {  
+                private String name; //Поле не может быть null, Строка не может быть пустой  
+                private java.time.ZonedDateTime birthday; //Поле не может быть null  
+                private int height; //Значение поля должно быть больше 0  
+                private Location location; //Поле не может быть null  
+        }  
+        public class Location {  
+                private long x;  
+                private int y;  
+                private String name; //Строка не может быть пустой, Поле не может быть null  
+        }  
+        public enum UnitOfMeasure {  
+                PCS,  
+                MILLILITERS,  
+                GRAMS;  
+        } 
 
 
