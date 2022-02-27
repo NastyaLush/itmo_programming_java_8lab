@@ -45,15 +45,17 @@
 Описание хранимых в коллекции классов:  
 
 ----
-public class Product {  
-    private long id; //Значение поля должно быть больше 0, Значение этого поля должно быть уникальным, Значение этого поля должно генерироваться автоматически  
-    private String name; //Поле не может быть null, Строка не может быть пустой  
-    private Coordinates coordinates; //Поле не может быть null  
-    private java.time.ZonedDateTime creationDate; //Поле не может быть null, Значение этого поля должно генерироваться автоматически  
-    private Long price; //Поле не может быть null, Значение поля должно быть больше 0  
-    private int manufactureCost;  
-    private UnitOfMeasure unitOfMeasure; //Поле не может быть null  
-    private Person owner; //Поле может быть null  
+
+
+        public class Product {  
+            private long id; //Значение поля должно быть больше 0, Значение этого поля должно быть уникальным, Значение этого поля должно генерироваться автоматически  
+            private String name; //Поле не может быть null, Строка не может быть пустой  
+            private Coordinates coordinates; //Поле не может быть null  
+            private java.time.ZonedDateTime creationDate; //Поле не может быть null, Значение этого поля должно генерироваться автоматически  
+            private Long price; //Поле не может быть null, Значение поля должно быть больше 0  
+            private int manufactureCost;  
+            private UnitOfMeasure unitOfMeasure; //Поле не может быть null  
+            private Person owner; //Поле может быть null  
 }  
 public class Coordinates {  
     private Integer x; //Значение поля должно быть больше -233, Поле не может быть null  
@@ -75,3 +77,5 @@ public enum UnitOfMeasure {
     MILLILITERS,  
     GRAMS;  
 } 
+
+
