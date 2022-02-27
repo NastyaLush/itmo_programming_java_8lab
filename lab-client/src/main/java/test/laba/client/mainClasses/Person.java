@@ -12,16 +12,14 @@ public class Person {
     private Integer height; //Значение поля должно быть больше 0
     private Location location; //Поле не может быть null
 
-    public Person(String name, ZonedDateTime birthday, Integer height, Location location,Console console) throws CreateError {
-        if(name==null || name.isEmpty()|| height<=0  || location==null ){
-            throw new CreateError("""
-                    ошибка при создании объекта Person: проверьте данные
-                    Поле name не может быть null или быть пустым
-                    Поле birthday не может быть null
-                    Значение поля height должно быть больше 0
-                    Поле Location не может быть null""",console);
-        }
-        else {
+    public Person(String name, ZonedDateTime birthday, Integer height, Location location, Console console) throws CreateError {
+        if (name == null || name.isEmpty() || height <= 0  || location == null) {
+            throw new CreateError(" ошибка при создании объекта Person: проверьте данные"
+                   + " \nПоле name не может быть null или быть пустым"
+                    + "\nПоле birthday не может быть null"
+                    + "\nЗначение поля height должно быть больше 0"
+                    + "\nПоле Location не может быть null", console);
+        } else {
             this.name = name;
             this.birthday = birthday;
             this.height = height;
@@ -33,10 +31,11 @@ public class Person {
         return name;
     }
     public String getBirthday() {
-    String s= (birthday.getDayOfMonth()<10)?"0"+birthday.getDayOfMonth():birthday.getDayOfMonth()+"-";
-    s+=(birthday.getMonthValue()<10)?"0"+birthday.getMonthValue():birthday.getMonthValue();
-    s+="-"+ birthday.getYear();
-    return s;
+        final int numberOfSingleDigit = 10;
+        String s = (birthday.getDayOfMonth() < numberOfSingleDigit) ? "0" + birthday.getDayOfMonth() : birthday.getDayOfMonth() + "-";
+        s += (birthday.getMonthValue() < numberOfSingleDigit) ? "0" + birthday.getMonthValue() : birthday.getMonthValue();
+        s += "-" + birthday.getYear();
+        return s;
     }
     public Integer getHeight() {
         return height;
@@ -60,11 +59,10 @@ public class Person {
 
     @Override
     public String toString() {
-        return "Person{" +
-                "name='" + name + '\'' +
-                ", birthday=" + birthday +
-                ", height=" + height +
-                ", location=" + location +
-                '}';
+        return "Person:"
+                + "name=" + name
+                + ", birthday=" + getBirthday()
+                + ", height=" + height
+                + ", location=" + location;
     }
 }

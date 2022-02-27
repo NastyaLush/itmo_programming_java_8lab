@@ -10,19 +10,20 @@ import java.util.HashMap;
 
 public final class AverageOfManufactureCost extends AbstractCommand {
 
-    public AverageOfManufactureCost(){
-        super("average_of_manufacture_cost ","вывести среднее значение поля manufactureCost для всех элементов коллекции");
+    public AverageOfManufactureCost() {
+        super("Average_of_manufacture_cost ", "вывести среднее значение поля manufactureCost для всех элементов коллекции");
     }
 
-    public void averageOfManufactureCost(Root root, Console console) {
-        Integer answer=0;
+    public void execute(Root root, Console console) {
+        Integer answer = 0;
         try {
             for (HashMap.Entry<Long, Product> prod : root.getProducts().entrySet()) {
                 answer += prod.getValue().getManufactureCost();
-            }
         }
-        catch (NullPointerException ignored){}
-        console.print(answer/(root.getProducts().size()));
+        } catch (NullPointerException e) {
+            answer += 0;
+        }
+        console.print("Average of manufacture cost: " + answer / (root.getProducts().size()));
     }
 
 }

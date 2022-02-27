@@ -7,17 +7,21 @@ public class Location {
     private Long x;
     private Integer y;
     private String name; //Строка не может быть пустой, Поле не может быть null
-    public Console console;
+    private Console console;
 
-    public Location(Long x, Integer y, String s,Console console) {
-        if (x!= null )this.x=x;
-        if(y!=null) this.y=y;
-        if(s==null || s.isEmpty() ){
-            console.printError("Строка не может быть пустой, Поле не может быть null\n"+
-                    "ваше значение: "+s);
+    public Location(Long x, Integer y, String s, Console console) {
+        if (x != null) {
+            this.x = x;
         }
-        name=s;
-        this.console=console;
+        if (y != null) {
+            this.y = y;
+        }
+        if (s == null || s.isEmpty()) {
+            console.printError("Строка не может быть пустой, Поле не может быть null\n"
+                    + "ваше значение: " + s);
+        }
+        name = s;
+        this.console = console;
     }
 
     public Long getX() {
@@ -46,10 +50,9 @@ public class Location {
 
     @Override
     public String toString() {
-        return "Location{" +
-                "x=" + x +
-                ", y=" + y +
-                ", name='" + name + '\'' +
-                '}';
+        return "Location"
+                + "x=" + x
+                + ", y=" + y
+                + ", name=" + name;
     }
 }

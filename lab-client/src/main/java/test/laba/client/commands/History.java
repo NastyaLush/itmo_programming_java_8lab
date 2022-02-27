@@ -10,15 +10,16 @@ import java.util.Queue;
 
 public class History extends AbstractCommand {
     private Deque<String> history = new ArrayDeque<>();
-    private Integer i=0;
-    public History(){
-        super("History","вывести последние 10 команд (без их аргументов)");
+    private Integer i = 0;
+    private final int numberOfProducts = 10;
+    public History() {
+        super("History", "вывести последние 10 команд (без их аргументов)");
     }
 
-    public  void addToHistory(String s){
+    public  void addToHistory(String s) {
         history.add(s);
         i++;
-        if(i>10){
+        if (i > numberOfProducts) {
             history.pollFirst();
         }
     }
@@ -26,7 +27,7 @@ public class History extends AbstractCommand {
     public Queue<String> getHistory() {
         return history;
     }
-    public  void  history(Console console){
-        console.print("History: "+history);
+    public  void execute(Console console) {
+        console.print("History: " + history);
     }
 }

@@ -5,10 +5,10 @@ import test.laba.client.mainClasses.Root;
 
 public class Clear extends AbstractCommand {
 
-    public Clear(){
-        super("Clear","очистить коллекцию");
+    public Clear() {
+        super("Clear", "очистить коллекцию");
     }
-    public void clear(Root root){
+    public void execute(Root root) {
         root.getProducts().clear();
     }
 }

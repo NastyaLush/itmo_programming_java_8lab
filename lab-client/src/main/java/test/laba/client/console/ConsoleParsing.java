@@ -3,166 +3,71 @@ package test.laba.client.console;
 
 
 import test.laba.client.exception.CreateError;
-import test.laba.client.exception.IDError;
 import test.laba.client.exception.VariableException;
-import test.laba.client.mainClasses.*;
+import test.laba.client.mainClasses.Location;
+import test.laba.client.mainClasses.UnitOfMeasure;
+import test.laba.client.mainClasses.Coordinates;
+import test.laba.client.mainClasses.Person;
+import test.laba.client.mainClasses.Product;
+import test.laba.client.mainClasses.Root;
 
 import java.time.ZonedDateTime;
-import java.util.HashMap;
+
 
 public  class ConsoleParsing extends VariableParsing {
-    protected final String TAG_NAME = "name";
-    protected final String TAG_X = "x";
-    protected final String TAG_Y = "y";
-    protected final String TAG_COORDINATES = "coordinates";
-    protected final String TAG_BIRTHDAY = "birthday";
-    protected final String TAG_OWNER = "owner";
-    protected final String TAG_PRICE = "price";
-    protected final String TAG_MANUFACTURE_COST = "manufactureCost";
-    protected final String TAG_UNIT_OF_MEASURE = "unitOfMeasure";
-    protected final String TAG_LOCATION = "location";
-    protected final String TAG_HEIGHT = "height";
-    protected final String TAG_PRODUCT = "product";
+    protected final String tagName = "name";
+    protected final String tagX = "x";
+    protected final String tagY = "y";
+    protected final String tagCoordinates = "coordinates";
+    protected final String tagBirthday = "birthday";
+    protected final String tagOwner = "owner";
+    protected final String tagPrice = "price";
+    protected final String tagManufactureCost = "manufactureCost";
+    protected final String tagUnitOfMeasure = "unitOfMeasure";
+    protected final String tagLocation = "location";
+    protected final String tagHeight = "height";
+    protected final String tagProduct = "product";
 
-    protected  String envVariable = System.getenv("LABA");
+    private   String envVariable = System.getenv("LABA");
 
 
-    public void parsProductFromConsole(Root root, String key, Console console) {
-        String name ;
-        Long price ;
-        Coordinates coordinates;
-        Integer manufactureCost;
-        Person owner;
+    public Product parsProductFromConsole(Root root, String key, Console console) {
+        Long newKey;
+        String name = parsProductName(console);
+        Long price = parsProductPrise(console);
+        Coordinates coordinates = parsCoordinatesFromConsole(console);
+        Integer manufactureCost = parsManufactureCost(console);
+        Person owner = parsPersonFromConsole(console);
         Product product = null;
-        UnitOfMeasure unitOfMeasure;
-        while (true) {
-            console.print("Введите название продукта: ");
-            name = console.scanner();
-            try {
-                toRightName(name,console);
-                break;
-            }
-            catch (VariableException e) {
-            }
+        UnitOfMeasure unitOfMeasure = parsUnitOfMeasure(console);
+
+        try {
+            newKey = createKey(console, key);
+            product = new Product(name, coordinates, price, manufactureCost, unitOfMeasure, owner, root);
+            root.setProduct(newKey, product);
+        } catch (CreateError e) {
+            console.printError(e);
+            parsProductFromConsole(root, key, console);
         }
-        coordinates = parsCoordinatesFromConsole(console);
-        while (true) {
-            console.print("Введите цену продукта, price: ");
-            try {
-                price = toRightPrice(console.scanner(),console);
-                break;
-            } catch (VariableException e) {
-            }
-        }
-        while (true) {
-            console.print("Введите поле manufactureCost: ");
-            try {
-                manufactureCost= toRightNumber(console.scanner(),console);
-                break;
-            } catch (VariableException e) {
-            }
-        }
-        while (true) {
-            console.print("Введите unitOfMeasure, возможные варианты:PCS, MILLILITERS, GRAMS, UN_INIT");
-            try {
-                unitOfMeasure = toRightUnitOfMeasure(console.scanner(),console);
-                break;
-            }
-            catch (VariableException e) {
-            }
-        }
-        owner = parsPersonFromConsole(console);
-        while (true) {
-            try {
-                product = new Product(key, name, coordinates, price, manufactureCost, unitOfMeasure, owner, root,console);
-                break;
-            } catch (CreateError e) {
-                console.printError(e);
-                parsProductFromConsole(root, key,console);
-                break;
-            } catch (IDError e) {
-                console.printError("Данный ID существует, повторите попытку");
-                console.print("Введите ID:");
-                key = console.scanner();
-            }
-        }
-        assert product != null;
-        root.setProduct(product.getId(), product);
+
+        return product;
 
     }
-    private  Location parsLocationFromConsole(Console console)  {
-        Long x = null;
-        Integer y = null;
-        String name;
-        while (true) {
-            console.print("Введите координату X локации: ");
-            try {
-                x= toRightNumberLong(console.scanner(),console);
-                break;
-            } catch (VariableException e) {
-            }
-        }
-        while (true) {
-            console.print("Введите координату Y локации: ");
-            try {
-                y = toRightNumber(console.scanner(),console);
-                break;
-            } catch (VariableException e) {
-                console.printError("Не правильный тип данных");
-            }
-        }
-        while (true){
-            console.print("Введите название локации: ");
-            name = console.scanner();
-            try {
-                toRightName(name,console);
-                break;
-            }
-            catch (VariableException e) {
-            }
-        }
-        return new Location(x, y, name,console);
+    private Location parsLocationFromConsole(Console console) {
+        Long x = parsLocationX(console);
+        Integer y = parsLocationY(console);
+        String name = parsLocationName(console);
+
+        return new Location(x, y, name, console);
     }
     private  Person parsPersonFromConsole(Console console) {
-        String name ;
-        String birthday;
-        ZonedDateTime newBirthday ;
-        Integer height ;
-        Location location;
+        String name = parsPersonName(console);
+        ZonedDateTime newBirthday = parsPersonBirthday(console);
+        Integer height = parsPersonHeight(console);
+        Location location = parsLocationFromConsole(console);
         Person person;
-        while (true) {
-            console.print("Введите имя владельца: ");
-            name = console.scanner();
-
-            try {
-                toRightName(name,console);
-                break;
-            }
-            catch (VariableException e){
-
-            }
-        }
-        while (true) {
-            console.print("Введите дату рождения владельца: ");
-            birthday = console.scanner();
-            try {
-                newBirthday= toRightBirthday(birthday,console);
-                break;
-            }
-            catch (VariableException ignored) {
-            }
-        }
-        while (true) {
-            console.print("Введите рост владельца: ");
-            try {
-                height = toRightHeight(console.scanner(),console);
-                break;
-            } catch (VariableException ignored) {
-            }
-        }
-        location = parsLocationFromConsole(console);
         try {
-            person = new Person(name, newBirthday, height, location,console);
+            person = new Person(name, newBirthday, height, location, console);
             return person;
         } catch (CreateError e) {
             return parsPersonFromConsole(console);
@@ -170,84 +75,211 @@ public  class ConsoleParsing extends VariableParsing {
     }
     private  Coordinates parsCoordinatesFromConsole(Console console) {
         Coordinates coordinates;
-        Integer x ;
-        Float y ;
-        while (true) {
+        Integer x = parsCoordinatesX(console);
+        Float y = parsCoordinatesY(console);
+
+        return new Coordinates(x, y, console);
+
+
+    }
+
+    private String parsProductName(Console console) {
+        String name = null;
+        boolean flag = true;
+        while (flag) {
+            console.print("Введите название продукта: ");
+            name = console.scanner();
+            try {
+                toRightName(name, console);
+                flag = false;
+            } catch (VariableException ignored) {
+                console.printError("Не правильный тип данных");
+            }
+        }
+        return  name;
+
+    }
+    private Long parsProductPrise(Console console) {
+        boolean flag = true;
+        Long price = null;
+        while (flag) {
+            console.print("Введите цену продукта, price: ");
+            try {
+                price = toRightPrice(console.scanner(), console);
+                flag = false;
+            } catch (VariableException ignored) {
+                console.printError("Не правильный тип данных");
+            }
+        }
+        return price;
+    }
+    private Integer parsManufactureCost(Console console) {
+        Integer manufactureCost = null;
+        boolean flag = true;
+        while (flag) {
+            console.print("Введите поле manufactureCost: ");
+            try {
+                manufactureCost = toRightNumber(console.scanner(), console);
+                flag = false;
+            } catch (VariableException ignored) {
+                console.printError("Не правильный тип данных");
+            }
+        }
+        return manufactureCost;
+    }
+    private UnitOfMeasure parsUnitOfMeasure(Console console) {
+        UnitOfMeasure unitOfMeasure = null;
+        boolean flag = true;
+        while (flag) {
+            console.print("Введите unitOfMeasure, возможные варианты:PCS, MILLILITERS, GRAMS, UN_INIT");
+            try {
+                unitOfMeasure = toRightUnitOfMeasure(console.scanner(), console);
+                flag = false;
+            } catch (VariableException ignored) {
+                console.printError("Не правильный тип данных");
+            }
+        }
+        return unitOfMeasure;
+    }
+
+    private Long parsLocationX(Console console) {
+        Long x = null;
+        boolean flag = true;
+        while (flag) {
+            console.print("Введите координату X локации: ");
+            try {
+                x = toRightNumberLong(console.scanner(), console);
+                flag = false;
+            } catch (VariableException ignored) {
+                console.printError("Не правильный тип данных");
+            }
+        }
+        return x;
+    }
+    private Integer parsLocationY(Console console) {
+        Integer y = null;
+        boolean flag = true;
+        while (flag) {
+            console.print("Введите координату Y локации: ");
+            try {
+                y = toRightNumber(console.scanner(), console);
+                flag = false;
+            } catch (VariableException e) {
+                console.printError("Не правильный тип данных");
+            }
+        }
+        return y;
+    }
+    private String parsLocationName(Console console) {
+        String name = null;
+        boolean flag = true;
+            while (flag) {
+                console.print("Введите название локации: ");
+                name = console.scanner();
+                try {
+                    toRightName(name, console);
+                    flag = false;
+                } catch (VariableException e) {
+                    flag = true;
+                }
+            }
+        return name;
+    }
+
+    private Integer parsCoordinatesX(Console console) {
+        Integer x = null;
+        boolean flag = true;
+        while (flag) {
             console.print("Введите координату х: ");
             try {
-                x = toRightX(console.scanner(),console);
-                break;
+                x = toRightX(console.scanner(), console);
+                flag = false;
             } catch (VariableException ignored) {
+                flag = true;
             }
         }
-        while (true) {
+        return x;
+    }
+    private Float parsCoordinatesY(Console console) {
+        Float y = null;
+        boolean flag  = true;
+        while (flag) {
             console.print("Введите координату y: ");
             try {
-                y = toRightY(console.scanner(),console);
-                break;
+                y = toRightY(console.scanner(), console);
+                flag = false;
             } catch (VariableException ignored) {
+                console.printError("Не правильный тип данных");
             }
         }
-        try {
-            coordinates = new Coordinates(x, y,console);
-            return coordinates;
-        } catch (CreateError e) {
-            return parsCoordinatesFromConsole(console);
+        return y;
+    }
+
+    private String parsPersonName(Console console) {
+        String name = null;
+        boolean flag = true;
+        while (flag) {
+            console.print("Введите имя владельца: ");
+            name = console.scanner();
+            try {
+                toRightName(name, console);
+                flag = false;
+            } catch (VariableException ignored) {
+                console.printError("Не правильный тип данных");
+            }
         }
-
+        return name;
     }
-
-
-    public String save(HashMap<Long, Product> productHashMap) {
-        StringBuilder s = new StringBuilder("<root>" + '\n' + '\t');
-
-        for (Product product : productHashMap.values()) {
-            s.append(saveProduct(product));
+    private ZonedDateTime parsPersonBirthday(Console console) {
+        String birthday;
+        ZonedDateTime newBirthday = null;
+        boolean flag = true;
+        while (flag) {
+            console.print("Введите дату рождения владельца: ");
+            birthday = console.scanner();
+            try {
+                newBirthday = toRightBirthday(birthday, console);
+                flag = false;
+            } catch (VariableException ignored) {
+                console.printError("Не правильный тип данных");
+            }
         }
-        return s.toString() + '\n' + "</root>";
+        return newBirthday;
     }
-    private String saveLocation(Location location) {
-        String s ="<location>\n\t\t\t\t";
-        if(location.getX()!=null) s+="<x>" + location.getX() + "</x>"+'\n';
-        if (location.getY()!=null)s+= "\t\t\t\t" + "<y>" + location.getY() + "</y>" + '\n';
-        s+="\t\t\t\t" + "<name>" + location.getName() + "</name>" + '\n' + "\t\t\t</location>";
-        return s;
+    private Integer parsPersonHeight(Console console) {
+        Integer height = null;
+        boolean flag = true;
+        while (flag) {
+            console.print("Введите рост владельца: ");
+            try {
+                height = toRightHeight(console.scanner(), console);
+                flag = false;
+            } catch (VariableException ignored) {
+                console.printError("Не правильный тип данных");
+            }
+        }
+        return height;
     }
-    private String saveCoordinates(Coordinates coordinates) {
-        return "<coordinates>\n" +
-                "\t\t\t<x>" + coordinates.getX() + "</x>\n" +
-                "\t\t\t<y>" + coordinates.getY() + "</y>\n" +
-                "\t\t</coordinates>";
-    }
-    private String saveUnitOfMeasure(UnitOfMeasure unitOfMeasure) {
-
-        return "<unitOfMeasure>" + unitOfMeasure + "</unitOfMeasure>";
-    }
-    private String savePerson(Person person) {
-        String s;
-        s="<owner>" + "\n\t" +
-                "\t\t" + "<name>" + person.getName() + "</name>" + '\n' +
-                "\t\t\t" + "<birthday>" + person.getBirthday() + "</birthday>" + '\n';
-        if(person.getHeight()!=null) s+="\t\t\t" + "<height>" + person.getHeight() + "</height>" + '\n';
-        s+= "\t\t\t" + saveLocation(person.getLocation()) + '\n' + '\t' + '\t' + "</owner>";
-        return s;
-    }
-    private String saveProduct(Product product) {
-        String s="<product>" + '\n' +
-                "\t\t" + "<name>" + product.getName() + "</name>" + '\n' +
-                "\t\t" + saveCoordinates(product.getCoordinates()) + '\n' +
-                "\t\t" + "<price>" + product.getPrice() + "</price>" + '\n';
-        if(product.getManufactureCost()!=null)s+="\t\t" + "<manufactureCost>" + product.getManufactureCost() + "</manufactureCost>" + '\n';
-        if(product.getUnitOfMeasure()!=null)
-        s+="\t\t" + saveUnitOfMeasure(product.getUnitOfMeasure()) + '\n';
-                s+="\t\t" + savePerson(product.getOwner()) + '\n' + '\t' +
-                "</product>";
-        return s;
-
+    private Long createKey(Console console, String id) {
+        String newID = id;
+        Long cid = null;
+        boolean flag = true;
+        while (flag) {
+            try {
+                cid = Long.valueOf(newID);
+                flag = false;
+            } catch (NumberFormatException e) {
+                console.printError("Неправильный формат ввода key, повторите попытку" + e);
+                console.print("Введите key:");
+                newID = console.scanner();
+            }
+        }
+        return cid;
     }
 
-
-
+    public String getEnvVariable() {
+        return envVariable;
+    }
 }
 
 

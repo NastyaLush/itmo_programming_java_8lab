@@ -1,13 +1,14 @@
 package test.laba.client.mainClasses;
 
-import test.laba.client.console.Console;
-import test.laba.client.exception.CreateError;
-import test.laba.client.exception.IDError;
 
+import test.laba.client.exception.CreateError;
+
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
+import java.util.Comparator;
 import java.util.Objects;
 
-public class Product {
+public class  Product {
     private long id; //Значение поля должно быть больше 0, Значение этого поля должно быть уникальным, Значение этого поля должно генерироваться автоматически
     private String name; //Поле не может быть null, Строка не может быть пустой
     private Coordinates coordinates; //Поле не может быть null
@@ -17,76 +18,45 @@ public class Product {
     private UnitOfMeasure unitOfMeasure; //Поле не может быть null
     private Person owner; //Поле может быть null
 
-    public Product( String name, Coordinates coordinates, Long price, Integer manufactureCost, UnitOfMeasure unitOfMeasure, Person owner,Root root,Console console) throws CreateError {
-        if(name==null || name.isEmpty()|| coordinates==null || price==null || price<=0 || unitOfMeasure==null ||owner== null){
-            throw new CreateError("Ошибка при создании объекта Product, обратите внимание:\n" +
-                    "    Поле name может быть null и не может быть пустым\n" +
-                    "    Поле coordinates не может быть null\n" +
-                    "    Поле price не может быть null и значение поля должно быть больше 0\n" +
-                    "    Поле unitOfMeasure не может быть null\n" +
-                    "    Поле owner может быть null\n",console);
-        }
-        else {
+    public Product(String name, Coordinates coordinates, Long price, Integer manufactureCost, UnitOfMeasure unitOfMeasure, Person owner, Root root) throws CreateError {
+        if (name == null || name.isEmpty() || coordinates == null || price == null || price <= 0  || unitOfMeasure == null || owner == null) {
+            throw new CreateError("Ошибка при создании объекта Product, обратите внимание:\n"
+                    + "    Поле name может быть null и не может быть пустым\n"
+                    + "    Поле coordinates не может быть null\n"
+                    + "    Поле price не может быть null и значение поля должно быть больше 0\n"
+                    + "    Поле unitOfMeasure не может быть null\n"
+                    + "    Поле owner может быть null\n");
+        } else {
             createID(root);
             this.name = name;
             this.coordinates = coordinates;
             this.price = price;
-            this.creationDate= ZonedDateTime.now();
-            if (manufactureCost!=null) this.manufactureCost = manufactureCost;
-            if (unitOfMeasure!=UnitOfMeasure.UN_INIT) this.unitOfMeasure = unitOfMeasure;
-            this.owner = owner;
-        }
-    }
-    public Product(String id, String name, Coordinates coordinates, Long price, Integer manufactureCost, UnitOfMeasure unitOfMeasure, Person owner, Root root, Console console) throws CreateError, IDError {
-        if(name==null || name.isEmpty()|| coordinates==null || price==null || price<=0 || unitOfMeasure==null ||owner== null){
-            throw new CreateError("""
-                    Ошибка при создании объекта Product, обратите внимание:
-                        Поле name может быть null и не может быть пустым
-                        Поле coordinates не может быть null
-                        Поле price не может быть null и значение поля должно быть больше 0
-                        Поле unitOfMeasure не может быть null
-                        Поле owner может быть null
-                    """,console);
-        }
-        else {
-            Long cid=null;
-            boolean flag=true;
-            while (flag) {
-                try {
-                    cid = Long.valueOf(id);
-                    flag = false;
-                } catch (NumberFormatException e) {
-                    console.printError("Неправильный формат ввода ID, повторите попытку"+e);
-                    console.print("Введите ID:");
-                    id = console.scanner();
-
-                }
+            this.creationDate = ZonedDateTime.now();
+            if (manufactureCost != null) {
+                this.manufactureCost = manufactureCost;
             }
-            if (!root.getProducts().containsKey(cid)) {
-                this.id=cid;
-                }
-            else throw new IDError("Данный ID существует, повторите попытку",console);
-            this.name = name;
-            this.coordinates = coordinates;
-            this.price = price;
-            this.creationDate= ZonedDateTime.now();
-            if (manufactureCost!=null) this.manufactureCost = manufactureCost;
-            if (unitOfMeasure!=UnitOfMeasure.UN_INIT) this.unitOfMeasure = unitOfMeasure;
+            if (unitOfMeasure != UnitOfMeasure.UN_INIT) {
+                this.unitOfMeasure = unitOfMeasure;
+            }
             this.owner = owner;
         }
     }
+    //sorted to string
     @Override
     public String toString() {
-        return "Product{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", coordinates=" + coordinates +
-                ", creationDate=" + creationDate +
-                ", price=" + price +
-                ", manufactureCost=" + manufactureCost +
-                ", unitOfMeasure=" + unitOfMeasure +
-                ", owner=" + owner +
-                '}'+'\n';
+        return "Product:"
+                + "id=" + id
+                + ", name=" + name
+                + ", coordinates=" + coordinates
+                + ", creationDate=" + getCreationDate()
+                + ", price=" + price
+                + ", manufactureCost=" + manufactureCost
+                + ", unitOfMeasure=" + unitOfMeasure
+                + ", owner=" + owner + '\n';
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public void setPrice(Long price) {
@@ -125,8 +95,8 @@ public class Product {
         return coordinates;
     }
 
-    public ZonedDateTime getCreationDate() {
-        return creationDate;
+    public LocalDate getCreationDate() {
+        return creationDate.toLocalDate();
     }
 
     public Long getPrice() {
@@ -134,8 +104,9 @@ public class Product {
     }
 
     public Integer getManufactureCost() {
-        if (manufactureCost!=null)
+        if (manufactureCost != null) {
             return manufactureCost;
+        }
         return null;
     }
 
@@ -146,22 +117,31 @@ public class Product {
     public Person getOwner() {
         return owner;
     }
-    public void createID(Root root){
-        long id;
-        boolean flag=true;
-        while (flag){
-            id = (long) (Math.random() * 9*Math.pow(10,18));
-            if (!root.getProducts().containsKey(id)) {
-                this.id = id;
-                flag=false;
+    public void createID(Root root) {
+        long rightID;
+        final int constant = 9;
+        final int numberWithDegree = 10;
+        final int maxDegreeNumberOfLong = 18;
+        boolean flag = true;
+        while (flag) {
+            rightID = (long) (Math.random() * constant * Math.pow(numberWithDegree, maxDegreeNumberOfLong));
+            if (!root.getProducts().containsKey(rightID)) {
+                this.id = rightID;
+                flag = false;
             }
         }
     }
 
+
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Product product)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Product)) {
+            return false;
+        }
+        Product product = (Product) o;
         return getId() == product.getId() && getName().equals(product.getName()) && getCoordinates().equals(product.getCoordinates()) && getCreationDate().equals(product.getCreationDate()) && getPrice().equals(product.getPrice()) && getManufactureCost().equals(product.getManufactureCost()) && getUnitOfMeasure() == product.getUnitOfMeasure() && getOwner().equals(product.getOwner());
     }
 
@@ -169,4 +149,9 @@ public class Product {
     public int hashCode() {
         return Objects.hash(getId(), getName(), getCoordinates(), getCreationDate(), getPrice(), getManufactureCost(), getUnitOfMeasure(), getOwner());
     }
+
+    public int compareTo(Product o) {
+        return Comparator.comparing(Product::getId).compare(this, o);
+    }
 }
+

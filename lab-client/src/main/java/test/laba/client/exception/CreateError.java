@@ -2,8 +2,11 @@ package test.laba.client.exception;
 
 import test.laba.client.console.Console;
 
-public class CreateError extends Exception{
-    public CreateError(String message, Console console){
+public class CreateError extends Exception {
+    public CreateError(String message, Console console) {
         console.printError(message);
+    }
+    public CreateError(String message) {
+        System.out.println(message);
     }
 }

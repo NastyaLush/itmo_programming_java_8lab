@@ -3,51 +3,51 @@ package test.laba.client.console;
 
 
 import test.laba.client.exception.VariableException;
-import test.laba.client.exception.exucuteError;
 import test.laba.client.mainClasses.UnitOfMeasure;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 public  class VariableParsing {
+    private final int falseX = -233;
 
     public  void toRightName(String s, Console console) throws VariableException {
         if (s == null || s.isEmpty()) {
-            throw new VariableException("Данное поле не может быть пустым",console);
+            throw new VariableException("Данное поле не может быть пустым", console);
         }
     }
     public  Integer toRightX(String x, Console console) throws VariableException {
-        int X;
+        int rightX;
         try {
-            X = Integer.parseInt(x);
+            rightX = Integer.parseInt(x);
         } catch (NumberFormatException e) {
-            throw new VariableException("Должно быть введено целое число",console);
+            throw new VariableException("Должно быть введено целое число", console);
         }
-        if (X < -233) {
-            throw new VariableException("Число должно быть больше -233",console);
+        if (rightX < falseX) {
+            throw new VariableException("Число должно быть больше -233", console);
         }
-        return X;
+        return rightX;
     }
     public Float toRightY(String y, Console console) throws VariableException {
-        float Y;
+        float rightY;
         try {
-            Y = Float.parseFloat(y);
+            rightY = Float.parseFloat(y);
         } catch (NumberFormatException e) {
-            throw new VariableException("Должно быть введено число",console);
+            throw new VariableException("Должно быть введено число", console);
         }
-        return Y;
+        return rightY;
     }
     public  Long toRightPrice(String price, Console console) throws VariableException {
-        long Price;
+        long rightPrice;
         try {
-            Price = Long.parseLong(price);
+            rightPrice = Long.parseLong(price);
         } catch (NumberFormatException e) {
-            throw new VariableException("Должно быть введено целое число",console);
+            throw new VariableException("Должно быть введено целое число", console);
         }
-        if (Price <= 0) {
-            throw new VariableException("Число должно быть больше 0",console);
+        if (rightPrice <= 0) {
+            throw new VariableException("Число должно быть больше 0", console);
         }
-        return Price;
+        return rightPrice;
     }
     public  Integer toRightNumber(String man, Console console) throws VariableException {
         Integer manufactureCost = null;
@@ -58,7 +58,7 @@ public  class VariableParsing {
             try {
                 manufactureCost = Integer.valueOf(man);
             } catch (NumberFormatException e) {
-                throw new VariableException("Неправильный тип переменной, ожидалось целое число",console);
+                throw new VariableException("Неправильный тип переменной, ожидалось целое число", console);
 
             }
         }
@@ -74,7 +74,7 @@ public  class VariableParsing {
             try {
                 x = Long.valueOf(man);
             } catch (NumberFormatException e) {
-                throw new VariableException("Неправильный тип переменной, ожидалось целое число",console);
+                throw new VariableException("Неправильный тип переменной, ожидалось целое число", console);
 
             }
         }
@@ -83,60 +83,65 @@ public  class VariableParsing {
     }
     public UnitOfMeasure toRightUnitOfMeasure(String unit, Console console) throws VariableException {
         switch (unit) {
-            case "PCS" -> {
+            case "PCS" :
                 return UnitOfMeasure.PCS;
-            }
-            case "MILLILITERS" -> {
+
+            case "MILLILITERS" :
                 return UnitOfMeasure.MILLILITERS;
-            }
-            case "GRAMS" -> {
+
+            case "GRAMS" :
                 return UnitOfMeasure.GRAMS;
-            }
-            case "" -> {
+
+            case "" :
                 return UnitOfMeasure.UN_INIT;
-            }
-            default -> throw new VariableException("Неправильный тип данных, должно быть PCS, MILLILITERS, GRAMS",console);
+
+            default : throw new VariableException("Неправильный тип данных, должно быть PCS, MILLILITERS, GRAMS", console);
         }
     }
     public Integer toRightHeight(String height, Console console) throws VariableException {
-        Integer Height=null;
-        if (height != null){
+        Integer rightHeight = null;
+        if (height != null) {
             try {
-                Height = Integer.valueOf(height);
+                rightHeight = Integer.valueOf(height);
             } catch (NumberFormatException e) {
-                throw new VariableException("Должно быть введено целое число",console);
+                throw new VariableException("Должно быть введено целое число", console);
             }
-            if (Height <= 0) {
-                throw new VariableException("Число должно быть больше 0",console);
+            if (rightHeight <= 0) {
+                throw new VariableException("Число должно быть больше 0", console);
             }
         }
-        return Height;
+        return rightHeight;
     }
     public ZonedDateTime toRightBirthday(String birthday, Console console) throws VariableException {
         ZonedDateTime birth;
+        final int x3 = 3;
+        final int x5 = 5;
+        final int x6 = 6;
+        final int x10 = 10;
+        final int x0 = 0;
+        final int x2 = 2;
         try {
-            int date = Integer.parseInt(birthday.substring(0, 2));
-            int month = Integer.parseInt(birthday.substring(3, 5));
-            int year = Integer.parseInt(birthday.substring(6,10));
+            int date = Integer.parseInt(birthday.substring(x0, x2));
+            int month = Integer.parseInt(birthday.substring(x3, x5));
+            int year = Integer.parseInt(birthday.substring(x6, x10));
             int hour = 0;
             int min = 0;
             int sec = 0;
             int nsec = 0;
-            birth= ZonedDateTime.of(year,month,date,hour,min,sec,nsec, ZoneId.of("Europe/Moscow"));
-        }
-        catch (Exception e){
-            throw new VariableException("Неправильный формат даты, проверьте. Формат должен соответствовать:ДД-ММ-ГГГГ.",console);
+            birth = ZonedDateTime.of(year, month, date, hour, min, sec, nsec, ZoneId.of("Europe/Moscow"));
+        } catch (Exception e) {
+            throw new VariableException("Неправильный формат даты, проверьте. Формат должен соответствовать:ДД-ММ-ГГГГ.", console);
         }
         return birth;
     }
-    public  Long toLongNumber(String x,Console console) throws exucuteError {
+    public  Long toLongNumber(String x, Console console)  {
+        String rightX = x;
         try {
-            return Long.valueOf(x);
-        }
-        catch (NumberFormatException e){
-            console.printError("Неправильный формат данных\n Введите новый key");
-            x= console.scanner();
-            return toLongNumber(x,console);
+            return Long.valueOf(rightX);
+        } catch (NumberFormatException e) {
+            console.printError("Неправильный формат данных\nВведите новый key");
+            rightX = console.scanner();
+            return toLongNumber(rightX, console);
         }
     }
 }

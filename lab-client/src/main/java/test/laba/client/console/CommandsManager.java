@@ -1,14 +1,31 @@
 package test.laba.client.console;
 
 
-
-import test.laba.client.commands.*;
+import test.laba.client.commands.AbstractCommand;
+import test.laba.client.commands.AverageOfManufactureCost;
+import test.laba.client.commands.Clear;
+import test.laba.client.commands.ExecuteScript;
+import test.laba.client.commands.Exit;
+import test.laba.client.commands.GroupCountingByPrice;
+import test.laba.client.commands.Help;
+import test.laba.client.commands.History;
+import test.laba.client.commands.Info;
+import test.laba.client.commands.InsertNull;
+import test.laba.client.commands.RemoveAnyByUnitOfMeasure;
+import test.laba.client.commands.RemoveKey;
+import test.laba.client.commands.RemoveLower;
+import test.laba.client.commands.RemoveLowerKey;
+import test.laba.client.commands.Save;
+import test.laba.client.commands.Show;
+import test.laba.client.commands.UpdateID;
 import test.laba.client.exception.CommandWithArguments;
 import test.laba.client.exception.CommandWithoutArguments;
-import test.laba.client.exception.exucuteError;
+import test.laba.client.mainClasses.Product;
 import test.laba.client.mainClasses.Root;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class CommandsManager {
     private final List<AbstractCommand> commands = new ArrayList<>();
@@ -29,168 +46,165 @@ public class CommandsManager {
     private final Show show;
     private final UpdateID updateID;
 
-    public CommandsManager(){
-        this.executeScript= new ExecuteScript();
+    public CommandsManager(SaveCollection saveCollection) {
+        this.executeScript = new ExecuteScript();
         commands.add(executeScript);
-        this.info= new Info();
+        this.info = new Info();
         commands.add(info);
-        this.averageOfManufactureCost= new AverageOfManufactureCost();
+        this.averageOfManufactureCost = new AverageOfManufactureCost();
         commands.add(averageOfManufactureCost);
-        this.clear= new Clear();
+        this.clear = new Clear();
         commands.add(clear);
-        this.exit= new Exit();
+        this.exit = new Exit();
         commands.add(exit);
-        this.groupCountingByPrice= new GroupCountingByPrice();
+        this.groupCountingByPrice = new GroupCountingByPrice();
         commands.add(groupCountingByPrice);
-        this.help= new Help();
+        this.help = new Help();
         commands.add(help);
-        this.history= new History();
+        this.history = new History();
         commands.add(history);
-        this.insertNull= new InsertNull();
+        this.insertNull = new InsertNull();
         commands.add(insertNull);
-        this.removeAnyByUnitOfMeasure= new RemoveAnyByUnitOfMeasure();
+        this.removeAnyByUnitOfMeasure = new RemoveAnyByUnitOfMeasure();
         commands.add(removeAnyByUnitOfMeasure);
-        this.removeKey= new  RemoveKey();
+        this.removeKey = new  RemoveKey();
         commands.add(removeKey);
-        this.removeLower= new  RemoveLower();
+        this.removeLower = new  RemoveLower();
         commands.add(removeLower);
-        this.removeLowerKey= new RemoveLowerKey();
+        this.removeLowerKey = new RemoveLowerKey();
         commands.add(removeLowerKey);
-        this.save= new Save();
+        this.save = new Save(saveCollection);
         commands.add(save);
-        this.show= new Show();
+        this.show = new Show();
         commands.add(show);
-        this.updateID= new UpdateID();
+        this.updateID = new UpdateID();
         commands.add(updateID);
     }
 
 
-    public void help(String arg,Console console) throws CommandWithoutArguments {
-        if(isArguments(arg)) {
+    public void help(String arg, Console console) throws CommandWithoutArguments {
+        if (isArguments(arg)) {
             throw new CommandWithoutArguments("Данная команда не принимает аргументы", console);
         }
-        help.help(commands, console);
+        help.execute(commands, console);
     }
     public void info(String arg, Root root, Console console) throws CommandWithoutArguments {
-        if(isArguments(arg)) {
+        if (isArguments(arg)) {
             throw new CommandWithoutArguments("Данная команда не принимает аргументы", console);
         }
-        info.info(root, console);
+        info.execute(root, console);
     }
-    public void show(String arg, Root root,Console console) throws CommandWithoutArguments {
-        if(isArguments(arg)) {
+    public void show(String arg, Root root, Console console) throws CommandWithoutArguments {
+        if (isArguments(arg)) {
             throw new CommandWithoutArguments("Данная команда не принимает аргументы", console);
         }
-        show.show(root, console);
+        show.execute(root, console);
     }
-    public void insertNull(String arg, Root root, Console console, ConsoleParsing parsingInterface) throws CommandWithArguments{
-        if(!isArguments(arg)) {
+    public void insertNull(String arg, Root root, Console console, ConsoleParsing parsingInterface) throws CommandWithArguments {
+        if (!isArguments(arg)) {
             throw new CommandWithArguments("Данная команда должна принимать аргументы, а именно ключ нового элемента. Обратите внимание сначала идет команда, затем через пробел аргументы", console);
         }
-        insertNull.insertnull(root, arg, console, parsingInterface);
+        insertNull.execute(root, arg, console, parsingInterface);
     }
-   /* public  boolean updateID(String arg, Root root, Console console, ConsoleParsing parsingInterface) throws CommandWithArguments{
-        if(!isArguments(arg)) {
+    public  void updateID(String arg, Root root, Console console, ConsoleParsing consoleParsing) throws CommandWithArguments {
+        if (!isArguments(arg)) {
             throw new CommandWithArguments("Данная команда должна принимать аргументы, а именно ключ нового элемента. Обратите внимание сначала идет команда, затем через пробел аргументы", console);
         }
-        if(console.isFlag())  {
-            long id = 0;
-            boolean flag = true;
+        String argument = arg;
+        long id = 0;
+        boolean flag = true;
+        Product product;
             //проверка соответствия формата ID
             while (flag) {
                 try {
-                    id = Long.parseLong(arg);
+                    id = Long.parseLong(argument);
                     flag = false;
                 } catch (NumberFormatException e) {
                     console.printError("Неправильный формат ввода, ожидалось число, повторите попытку");
-                    if(!console.isFlag()) return false;
                     console.print("Введите ID");
+                    argument = console.scanner();
                 }
             }
 
             //проверка существования ID
-            if (!root.getProducts().containsKey(id)) {
+            if (!root.containsID(id)) {
                 console.print("Данного ID не существует, идет создание нового объекта");
-               return insertNull(arg, root, console, parsingInterface);
-            }
-
-            //работа программы, если id существует
-            else {
-                return updateID.updateID(root, id, console, parsingInterface);
+               product = consoleParsing.parsProductFromConsole(root, arg, console);
+               product.setId(id);
+            } else {
+               updateID.execute(root, id, console, consoleParsing);
             }
         }
-    }
-    public  boolean removeKey(String arg, Root root,Console console, ConsoleParsing parsingInterface) throws CommandWithArguments {
-        if(!isArguments(arg)) {
+    public  void removeKey(String arg, Root root, Console console, ConsoleParsing parsingInterface) throws CommandWithArguments {
+        if (!isArguments(arg)) {
             throw new CommandWithArguments("Данная команда должна принимать аргументы, а именно ключ элемента, который надо удалить. Обратите внимание сначала идет команда, затем через пробел аргументы", console);
-            return
         }
-        removeKey.removeKey(arg,root,console,parsingInterface);
+        removeKey.execute(arg, root, console, parsingInterface);
     }
-    public  void clear(String arg, Root root,Console console) throws CommandWithoutArguments {
+    public  void clear(String arg, Root root, Console console) throws CommandWithoutArguments {
         if (isArguments(arg)) {
             throw new CommandWithoutArguments("Данная команда не принимает аргументы", console);
         }
-        clear.clear(root);
+        clear.execute(root);
     }
-    public  void save(String arg, Root root, FileManager fileManager,Console console,ConsoleParsing consoleParsing) throws CommandWithoutArguments {
+    public  void save(String arg, Root root, FileManager fileManager, Console console, ConsoleParsing consoleParsing) throws CommandWithoutArguments {
         if (isArguments(arg)) {
             throw new CommandWithoutArguments("Данная команда не принимает аргументы", console);
         }
-        save.save(root,fileManager,console,consoleParsing);
+        save.execute(root, fileManager, console);
     }
-    */public  void executeScript(String arg, Root root, FileManager fileManager, Console console, ConsoleParsing parsingInterface) throws CommandWithArguments, CommandWithoutArguments{
-        if(!isArguments(arg)) {
+    public  void executeScript(String arg, Root root, FileManager fileManager, Console console, ConsoleParsing parsingInterface) throws CommandWithArguments, CommandWithoutArguments {
+        if (!isArguments(arg)) {
             throw new CommandWithArguments("Данная команда должна принимать аргументы", console);
         }
-         executeScript.executeScript(arg, root,this,fileManager,console,parsingInterface);
-    }/*
+         executeScript.execute(arg, root, this, fileManager, console, parsingInterface);
+    }
     public  void exit(String arg, Console console) throws CommandWithoutArguments {
-        if(isArguments(arg)) {
-            throw new CommandWithoutArguments("Данная команда не принимает аргументы", console);
-        }
-        exit.exit(console);
-    }
-    public  boolean removeLower(String arg, Root root, Console console, ConsoleParsing parsingInterface)throws CommandWithoutArguments{
         if (isArguments(arg)) {
             throw new CommandWithoutArguments("Данная команда не принимает аргументы", console);
         }
-        return removeLower.removeLower(arg,root,console,parsingInterface);
+        exit.execute(console);
     }
-    public  void history(String arg, Console console) throws CommandWithoutArguments{
-        if(isArguments(arg)) {
+    public  void removeLower(String arg, Root root, Console console, ConsoleParsing parsingInterface)throws CommandWithoutArguments {
+        if (!isArguments(arg)) {
+            throw new CommandWithArguments("Данная команда принимает аргументы", console);
+        }
+        removeLower.execute(arg, root, console, parsingInterface);
+    }
+    public  void history(String arg, Console console) throws CommandWithoutArguments {
+        if (isArguments(arg)) {
             throw new CommandWithoutArguments("Данная команда не принимает аргументы", console);
         }
-        history.history(console);
+        history.execute(console);
     }
-    public  boolean removeLowerKey(String arg, Root root, Console console, ConsoleParsing parsingInterface)throws CommandWithArguments{
+    public  void removeLowerKey(String arg, Root root, Console console, ConsoleParsing parsingInterface)throws CommandWithArguments {
         if (!isArguments(arg)) {
             throw new CommandWithArguments("Данная команда должна принимать аргументы", console);
         }
-        return removeLowerKey.removeLowerKey(arg,root,console,parsingInterface);
-    }*/
-    public  void removeAnyByUnitOfMeasure(String arg, Root root, Console console, ConsoleParsing parsingInterface) throws CommandWithArguments, exucuteError {
+        removeLowerKey.execute(arg, root, console, parsingInterface);
+    }
+    public  void removeAnyByUnitOfMeasure(String arg, Root root, Console console, ConsoleParsing parsingInterface) throws CommandWithArguments {
         if (!isArguments(arg)) {
             throw new CommandWithArguments("Данная команда должна принимать аргументы", console);
         }
-        removeAnyByUnitOfMeasure.removeAnyByUnitOfMeasure(arg,root,console,parsingInterface);
+        removeAnyByUnitOfMeasure.execute(arg, root, console, parsingInterface);
     }
-    public  void averageOfManufactureCost(String arg, Root root,Console console) throws CommandWithoutArguments {
+    public  void averageOfManufactureCost(String arg, Root root, Console console) throws CommandWithoutArguments {
         if (isArguments(arg)) {
             throw new CommandWithoutArguments("Данная команда не принимает аргументы", console);
         }
-        averageOfManufactureCost.averageOfManufactureCost(root,console);
+        averageOfManufactureCost.execute(root, console);
     }
-    public  void groupCountingByPrice(String arg, Root root,Console console) throws CommandWithoutArguments {
+    public  void groupCountingByPrice(String arg, Root root, Console console) throws CommandWithoutArguments {
         if (isArguments(arg)) {
             throw new CommandWithoutArguments("Данная команда не принимает аргументы", console);
         }
-        groupCountingByPrice.groupCountingByPrice(root);
+        groupCountingByPrice.execute(root, console);
     }
 
 
-    private  boolean isArguments(String arg){
-        return !arg.equals("");
+    private  boolean isArguments(String arg) {
+        return !"".equals(arg);
     }
 
     public History getHistory() {
