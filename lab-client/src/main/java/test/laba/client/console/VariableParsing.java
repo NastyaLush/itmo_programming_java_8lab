@@ -23,7 +23,7 @@ public  class VariableParsing {
         } catch (NumberFormatException e) {
             throw new VariableException("Должно быть введено целое число", console);
         }
-        if (rightX < falseX) {
+        if (rightX <= falseX) {
             throw new VariableException("Число должно быть больше -233", console);
         }
         return rightX;
@@ -82,7 +82,7 @@ public  class VariableParsing {
 
     }
     public UnitOfMeasure toRightUnitOfMeasure(String unit, Console console) throws VariableException {
-        switch (unit) {
+        switch (unit.toUpperCase()) {
             case "PCS" :
                 return UnitOfMeasure.PCS;
 

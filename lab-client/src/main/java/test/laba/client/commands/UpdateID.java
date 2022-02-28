@@ -187,7 +187,7 @@ public class UpdateID extends AbstractCommand {
     }
     private void changeHeight(Console console, Root root, ConsoleParsing consoleParsing, Long  key) {
         boolean flag = true;
-        String answer ;
+        String answer;
         Integer height = null;
         if (console.askQuestion("Хотите изменить рост владельца?")) {
             console.ask("Height: " + root.getProducts().get(key).getOwner().getHeight());

@@ -6,7 +6,7 @@ import test.laba.client.console.Console;
 import test.laba.client.mainClasses.Product;
 import test.laba.client.mainClasses.Root;
 
-import java.util.Comparator;
+
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -35,6 +35,6 @@ public class GroupCountingByPrice extends AbstractCommand {
         st.sorted(Map.Entry.comparingByValue())
                 .forEach(e -> result.put(e.getKey(), root.getProducts().get(e.getKey())));
         root.setProducts(result);
-        console.print(answer);
+        console.print("price=count\n" + answer);
     }
 }
