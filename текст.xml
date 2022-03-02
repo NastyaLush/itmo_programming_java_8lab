@@ -2,18 +2,18 @@
 	<product>
 		<name>hj</name>
 		<coordinates>
-			<x>56</x>
-			<y>9</y>
+			<x>67</x>
+			<y>67.0</y>
 		</coordinates>
-		<price>789</price>
-		<manufactureCost>9</manufactureCost>
+		<price>2</price>
+		<manufactureCost>626762062</manufactureCost>
 		<unitOfMeasure>GRAMS</unitOfMeasure>
 		<owner>
 			<name>Pavel</name>
-			<birthday>12-03-2342</birthday>
-			<height>9</height>
+			<birthday>1212-12-12</birthday>
+			<height>6</height>
 			<location>
-				<x>9</x>
+				<x>9</x> 
 				<y>0</y>
 				<name>hjk</name>
 			</location>
@@ -29,105 +29,31 @@
 		<unitOfMeasure>PCS</unitOfMeasure>
 		<owner>
 			<name>5</name>
-			<birthday>12-03-2452</birthday>
+			<birthday>1212-12-12</birthday>
 			<height>2</height>
 			<location>
-				<x>2</x>
+				<x>2</x> 
 				<y>2</y>
 				<name>2</name>
 			</location>
 		</owner>
 	</product><product>
-		<name>hj</name>
+		<name>milka</name>
 		<coordinates>
-			<x>0</x>
-			<y>0.0</y>
+			<x>23</x>
+			<y>32.0</y>
 		</coordinates>
-		<price>5</price>
-		<manufactureCost>9</manufactureCost>
+		<price>1</price>
+		<manufactureCost>456</manufactureCost>
 		<unitOfMeasure>GRAMS</unitOfMeasure>
 		<owner>
-			<name>Pavel</name>
-			<birthday>12-03-2009</birthday>
-			<height>9</height>
+			<name>daria</name>
+			<birthday>1212-12-12</birthday>
+			<height>158</height>
 			<location>
-				<x>9</x>
-				<y>0</y>
-				<name>hjk</name>
-			</location>
-		</owner>
-	</product><product>
-		<name>tyui</name>
-		<coordinates>
-			<x>0</x>
-			<y>0.0</y>
-		</coordinates>
-		<price>5</price>
-		<manufactureCost>9</manufactureCost>
-		<unitOfMeasure>GRAMS</unitOfMeasure>
-		<owner>
-			<name>Pavel</name>
-			<birthday>12-03-2342</birthday>
-			<height>9</height>
-			<location>
-				<x>9</x>
-				<y>0</y>
-				<name>hjk</name>
-			</location>
-		</owner>
-	</product><product>
-		<name>ghjkl</name>
-		<coordinates>
-			<x>0</x>
-			<y>0.0</y>
-		</coordinates>
-		<price>5</price>
-		<manufactureCost>4</manufactureCost>
-		<owner>
-			<name>4</name>
-			<birthday>12-03-2342</birthday>
-			<height>45</height>
-			<location>
-				<x>4</x>
-				<y>5</y>
-				<name>4</name>
-			</location>
-		</owner>
-	</product><product>
-		<name>hjertyuio</name>
-		<coordinates>
-			<x>0</x>
-			<y>0.0</y>
-		</coordinates>
-		<price>789</price>
-		<unitOfMeasure>GRAMS</unitOfMeasure>
-		<owner>
-			<name>Pavel</name>
-			<birthday>12-03-2345</birthday>
-			<height>9</height>
-			<location>
-				<x>9</x>
-				<y>0</y>
-				<name>hjk</name>
-			</location>
-		</owner>
-	</product><product>
-		<name>hjgh</name>
-		<coordinates>
-			<x>0</x>
-			<y>0.0</y>
-		</coordinates>
-		<price>7897</price>
-		<manufactureCost>9</manufactureCost>
-		<unitOfMeasure>GRAMS</unitOfMeasure>
-		<owner>
-			<name>Pavel</name>
-			<birthday>12-03-2422</birthday>
-			<height>9</height>
-			<location>
-				<x>9</x>
-				<y>0</y>
-				<name>hjk</name>
+				<x>32</x> 
+				<y>23</y>
+				<name>23</name>
 			</location>
 		</owner>
 	</product>

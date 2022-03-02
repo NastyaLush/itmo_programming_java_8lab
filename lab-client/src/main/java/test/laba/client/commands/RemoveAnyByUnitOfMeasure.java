@@ -19,19 +19,14 @@ public class RemoveAnyByUnitOfMeasure extends AbstractCommand {
             UnitOfMeasure unitOfMeasure;
             while (true) {
                 try {
-                    unitOfMeasure = parsingInterface.toRightUnitOfMeasure(argument, console);
+                    unitOfMeasure = parsingInterface.toRightUnitOfMeasure(argument);
                     break;
-                } catch (VariableException e) {
-                    console.print("Введите unitOfMeasure, возможные варианты:PCS, MILLILITERS, GRAMS, UN_INIT. Вы ввели: " + argument);
+                } catch (VariableException | IllegalArgumentException e) {
+                    console.print("Введите unitOfMeasure, возможные варианты:PCS, MILLILITERS, GRAMS. Вы ввели: " + argument);
                     argument = console.scanner().trim().toUpperCase();
                 }
             }
-            for (HashMap.Entry<Long, Product> prod: root.getProducts().entrySet()) {
-                if (unitOfMeasure == prod.getValue().getUnitOfMeasure()) {
-                    root.getProducts().remove(prod.getKey());
-                    break;
-                }
-            }
+            root.removeAnyByUnitOfMeasure(unitOfMeasure);
 
     }
 }

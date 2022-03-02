@@ -9,6 +9,6 @@ public class Clear extends AbstractCommand {
         super("Clear", "очистить коллекцию");
     }
     public void execute(Root root) {
-        root.getProducts().clear();
+        root.clear();
     }
 }

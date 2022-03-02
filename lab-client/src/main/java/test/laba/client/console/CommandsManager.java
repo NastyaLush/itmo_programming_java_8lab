@@ -46,7 +46,7 @@ public class CommandsManager {
     private final Show show;
     private final UpdateID updateID;
 
-    public CommandsManager(SaveCollection saveCollection) {
+    public CommandsManager(SaveCollection saveCollection, Console console) {
         this.executeScript = new ExecuteScript();
         commands.add(executeScript);
         this.info = new Info();
@@ -59,7 +59,7 @@ public class CommandsManager {
         commands.add(exit);
         this.groupCountingByPrice = new GroupCountingByPrice();
         commands.add(groupCountingByPrice);
-        this.help = new Help();
+        this.help = new Help(commands);
         commands.add(help);
         this.history = new History();
         commands.add(history);
@@ -86,19 +86,19 @@ public class CommandsManager {
         if (isArguments(arg)) {
             throw new CommandWithoutArguments("Данная команда не принимает аргументы", console);
         }
-        help.execute(commands, console);
+        console.print(help.execute());
     }
     public void info(String arg, Root root, Console console) throws CommandWithoutArguments {
         if (isArguments(arg)) {
             throw new CommandWithoutArguments("Данная команда не принимает аргументы", console);
         }
-        info.execute(root, console);
+        console.print(info.execute(root));
     }
     public void show(String arg, Root root, Console console) throws CommandWithoutArguments {
         if (isArguments(arg)) {
             throw new CommandWithoutArguments("Данная команда не принимает аргументы", console);
         }
-        show.execute(root, console);
+        console.print(show.execute(root));
     }
     public void insertNull(String arg, Root root, Console console, ConsoleParsing parsingInterface) throws CommandWithArguments {
         if (!isArguments(arg)) {
@@ -157,7 +157,7 @@ public class CommandsManager {
         if (!isArguments(arg)) {
             throw new CommandWithArguments("Данная команда должна принимать аргументы", console);
         }
-         executeScript.execute(arg, root, this, fileManager, console, parsingInterface);
+         executeScript.execute(arg, root, fileManager, console, parsingInterface);
     }
     public  void exit(String arg, Console console) throws CommandWithoutArguments {
         if (isArguments(arg)) {
@@ -165,11 +165,14 @@ public class CommandsManager {
         }
         exit.execute(console);
     }
-    public  void removeLower(String arg, Root root, Console console, ConsoleParsing parsingInterface)throws CommandWithoutArguments {
-        if (!isArguments(arg)) {
-            throw new CommandWithArguments("Данная команда принимает аргументы", console);
+    public  void removeLower(String arg, Root root, Console console, ConsoleParsing consoleParsing)throws CommandWithoutArguments {
+        if (isArguments(arg)) {
+            throw new CommandWithoutArguments("Данная команда ну принимает аргументы", console);
         }
-        removeLower.execute(arg, root, console, parsingInterface);
+        console.print("Введите ключ: ");
+        String key = console.scanner();
+        Product product = consoleParsing.parsProductFromConsole(root, key, console);
+        removeLower.execute(product, root);
     }
     public  void history(String arg, Console console) throws CommandWithoutArguments {
         if (isArguments(arg)) {

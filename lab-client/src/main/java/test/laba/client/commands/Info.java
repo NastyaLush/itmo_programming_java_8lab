@@ -10,9 +10,7 @@ public class Info extends AbstractCommand {
         super("Info", "вывести в стандартный поток вывода информацию о коллекции (тип, дата инициализации, количество элементов и т.д.)");
     }
 
-    public void execute(Root root, Console console) throws CommandWithoutArguments {
-        console.print("Class of collection: " + root.getProducts().getClass()
-                + "\nDate of initialization: " + root.getDateOfLastModification()
-                + "\nNumber of elements: " + root.getProducts().size());
+    public String execute(Root root) throws CommandWithoutArguments {
+        return root.infoAboutCollection();
     }
 }

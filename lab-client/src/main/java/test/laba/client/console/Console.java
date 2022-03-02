@@ -66,8 +66,8 @@ public class Console {
                     flag = true;
                     break;
 
-                case "insert" :
-                    commandsManager.insertNull(command[2].trim(), root, console, consoleParsing);
+                case "insert_null" :
+                    commandsManager.insertNull(command[1].trim(), root, console, consoleParsing);
                     return true;
 
                 case "update_id" :

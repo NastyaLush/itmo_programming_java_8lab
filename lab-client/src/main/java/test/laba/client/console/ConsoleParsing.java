@@ -14,7 +14,9 @@ import test.laba.client.mainClasses.Root;
 import java.time.ZonedDateTime;
 
 
-public  class ConsoleParsing extends VariableParsing {
+public  class ConsoleParsing extends VariableParsing implements Variable {
+    private Console console;
+
     protected final String tagName = "name";
     protected final String tagX = "x";
     protected final String tagY = "y";
@@ -28,14 +30,15 @@ public  class ConsoleParsing extends VariableParsing {
     protected final String tagHeight = "height";
     protected final String tagProduct = "product";
 
-    private   String envVariable = System.getenv("LABA");
 
-
-    public Product parsProductFromConsole(Root root, String key, Console console) {
+    public ConsoleParsing(Console console){
+        this.console=console;
+    }
+    public Product parsProductFromConsole(Root root, String key) {
         Long newKey;
-        String name = parsProductName(console);
-        Long price = parsProductPrise(console);
-        Coordinates coordinates = parsCoordinatesFromConsole(console);
+        String name = parsProductName();
+        Long price = parsProductPrise();
+        Coordinates coordinates = parsCoordinatesFromConsole();
         Integer manufactureCost = parsManufactureCost(console);
         Person owner = parsPersonFromConsole(console);
         Product product = null;
@@ -44,10 +47,9 @@ public  class ConsoleParsing extends VariableParsing {
         try {
             newKey = createKey(console, key);
             product = new Product(name, coordinates, price, manufactureCost, unitOfMeasure, owner, root);
-            root.setProduct(newKey, product);
         } catch (CreateError e) {
             console.printError(e);
-            parsProductFromConsole(root, key, console);
+            parsProductFromConsole(root,key, console);
         }
 
         return product;
@@ -119,7 +121,7 @@ public  class ConsoleParsing extends VariableParsing {
         while (flag) {
             console.print("Введите поле manufactureCost: ");
             try {
-                manufactureCost = toRightNumber(console.scanner(), console);
+                manufactureCost = toRightNumberInt(console.scanner(), console);
                 flag = false;
             } catch (VariableException ignored) {
                 console.printError("Не правильный тип данных");
@@ -131,11 +133,11 @@ public  class ConsoleParsing extends VariableParsing {
         UnitOfMeasure unitOfMeasure = null;
         boolean flag = true;
         while (flag) {
-            console.print("Введите unitOfMeasure, возможные варианты:PCS, MILLILITERS, GRAMS, UN_INIT");
+            console.print("Введите unitOfMeasure, возможные варианты:PCS, MILLILITERS, GRAMS");
             try {
-                unitOfMeasure = toRightUnitOfMeasure(console.scanner(), console);
+                unitOfMeasure = toRightUnitOfMeasure(console.scanner());
                 flag = false;
-            } catch (VariableException ignored) {
+            } catch (VariableException | IllegalArgumentException e) {
                 console.printError("Не правильный тип данных");
             }
         }
@@ -162,7 +164,7 @@ public  class ConsoleParsing extends VariableParsing {
         while (flag) {
             console.print("Введите координату Y локации: ");
             try {
-                y = toRightNumber(console.scanner(), console);
+                y = toRightNumberInt(console.scanner(), console);
                 flag = false;
             } catch (VariableException e) {
                 console.printError("Не правильный тип данных");
@@ -278,7 +280,7 @@ public  class ConsoleParsing extends VariableParsing {
     }
 
     public String getEnvVariable() {
-        return envVariable;
+        return Variable.envVarible;
     }
 }
 

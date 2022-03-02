@@ -4,5 +4,4 @@ public enum UnitOfMeasure {
     PCS,
     MILLILITERS,
     GRAMS,
-    UN_INIT
 }

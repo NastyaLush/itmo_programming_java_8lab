@@ -5,7 +5,10 @@ import test.laba.client.console.Console;
 import test.laba.client.console.ConsoleParsing;
 import test.laba.client.console.SaveCollection;
 import test.laba.client.console.FileManager;
+import test.laba.client.mainClasses.Product;
 import test.laba.client.mainClasses.Root;
+
+import java.util.Hashtable;
 
 public final class Client {
     private Client() {
@@ -13,15 +16,16 @@ public final class Client {
     }
 
     public static void main(String[] args) {
-        Root root = new Root();
+        Root root=new Root();
         Console console = new Console();
         SaveCollection saveCollection = new SaveCollection();
         ConsoleParsing parsingInterface = new ConsoleParsing();
-        CommandsManager commandsManager = new CommandsManager(saveCollection);
+        CommandsManager commandsManager = new CommandsManager(saveCollection,console);
 
         FileManager fileManager = new FileManager();
-        if (fileManager.read(root, console)) {
-            console.interactivelyMode(root, commandsManager, fileManager, console, parsingInterface);
+        root= fileManager.read(console);
+        if(root!=null){
+            console.interactivelyMode(root,commandsManager,fileManager, console, parsingInterface);
         }
 
     }

@@ -7,4 +7,7 @@ public class VariableException extends RuntimeException {
     public VariableException(String message, Console console) {
         console.printError(message);
     }
+    public VariableException(String message){
+        System.out.println(message);
+    }
 }

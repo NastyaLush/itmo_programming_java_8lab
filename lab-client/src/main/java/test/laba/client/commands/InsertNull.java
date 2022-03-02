@@ -7,9 +7,9 @@ import test.laba.client.mainClasses.Root;
 
 public class InsertNull extends AbstractCommand {
     public InsertNull() {
-        super("InsertNull", "добавить новый элемент с заданным ключом");
+        super("Insert_Null", "добавить новый элемент с заданным ключом");
     }
     public void execute(Root root, String arg, Console console, ConsoleParsing consoleParsing) {
-         consoleParsing.parsProductFromConsole(root, arg, console);
+         root.setProduct(consoleParsing.parsProductFromConsole(root, arg, console));
     }
 }

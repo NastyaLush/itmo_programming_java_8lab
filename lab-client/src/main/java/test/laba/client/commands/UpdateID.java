@@ -5,6 +5,7 @@ package test.laba.client.commands;
 import test.laba.client.console.Console;
 import test.laba.client.console.ConsoleParsing;
 import test.laba.client.exception.VariableException;
+import test.laba.client.mainClasses.Product;
 import test.laba.client.mainClasses.Root;
 import test.laba.client.mainClasses.UnitOfMeasure;
 
@@ -20,22 +21,23 @@ public class UpdateID extends AbstractCommand {
         // запрашиваем необходимо ли изменение и изменяем
         if (root.containsID(id)) {
             key = root.getKeyOnID(id);
-            changeNameProduct(console, root, consoleParsing,  key);
-            changeCoordinates(console, root, consoleParsing,  key);
-            changePrice(console, root, consoleParsing,  key);
-            changeManufactureCost(console, root, consoleParsing,  key);
-            changeUnitOfMeasure(console, root, consoleParsing,  key);
-            changePerson(console, root, consoleParsing,  key);
+            Product product=root.getProductByKey(key);
+            changeNameProduct(console, product, consoleParsing);
+            changeCoordinates(console, product, consoleParsing);
+            changePrice(console, product, consoleParsing);
+            changeManufactureCost(console, product, consoleParsing);
+            changeUnitOfMeasure(console, product, consoleParsing);
+            changePerson(console, product, consoleParsing);
         }
 
 
     }
 
-    private void changeNameProduct(Console console, Root root, ConsoleParsing consoleParsing, Long  key) {
+    private void changeNameProduct(Console console, Product product, ConsoleParsing consoleParsing) {
         boolean flag = true;
         String answer = null;
         if (console.askQuestion("Хотите изменить название продукта?")) {
-            console.ask("Имя продукта: " + root.getProducts().get(key).getName());
+            console.ask("Имя продукта: " + product.getName());
             while (flag) {
                 answer = console.askFullQuestion("Введите измененное имя:");
                 try {
@@ -45,17 +47,17 @@ public class UpdateID extends AbstractCommand {
                     console.printError("Повторите ввод");
                 }
             }
-            root.getProducts().get(key).setName(answer);
+            product.setName(answer);
         }
     }
-    private void changeCoordinates(Console console, Root root, ConsoleParsing consoleParsing, Long  key) {
+    private void changeCoordinates(Console console, Product product, ConsoleParsing consoleParsing) {
         boolean flag = true;
         String answer;
         Integer x = null;
         Float y = null;
         if (console.askQuestion("Хотите изменить координаты?")) {
             if (console.askQuestion("Хотите изменить координату X?")) {
-                console.ask("Координата X: " + root.getProducts().get(key).getCoordinates().getX());
+                console.ask("Координата X: " + product.getCoordinates().getX());
                 while (flag) {
                     answer = console.askFullQuestion("Введите координату х:");
                     try {
@@ -65,9 +67,9 @@ public class UpdateID extends AbstractCommand {
                         console.printError("Повторите ввод");
                     }
                 }
-                root.getProducts().get(key).getCoordinates().setX(x);
+                product.getCoordinates().setX(x);
             } else {
-                console.ask("Координата Y: " + root.getProducts().get(key).getCoordinates().getY());
+                console.ask("Координата Y: " + product.getCoordinates().getY());
                 while (flag) {
                     answer = console.askFullQuestion("Введите координату y:");
                     flag = false;
@@ -77,16 +79,16 @@ public class UpdateID extends AbstractCommand {
                         console.printError("Повторите ввод");
                     }
                 }
-                root.getProducts().get(key).getCoordinates().setY(y);
+                product.getCoordinates().setY(y);
             }
         }
     }
-    private void changePrice(Console console, Root root, ConsoleParsing consoleParsing, Long  key) {
+    private void changePrice(Console console, Product product, ConsoleParsing consoleParsing) {
         boolean flag = true;
         Long price = null;
         String answer;
         if (console.askQuestion("Хотите изменить price?")) {
-            console.ask("Price: " + root.getProducts().get(key).getPrice());
+            console.ask("Price: " + product.getPrice());
             while (flag) {
                 answer = console.askFullQuestion("Введите price:");
                 try {
@@ -96,64 +98,64 @@ public class UpdateID extends AbstractCommand {
                     console.printError("Повторите ввод");
                 }
             }
-            root.getProducts().get(key).setPrice(price);
+            product.setPrice(price);
 
         }
     }
-    private void changeManufactureCost(Console console, Root root, ConsoleParsing consoleParsing, Long  key) {
+    private void changeManufactureCost(Console console, Product product, ConsoleParsing consoleParsing) {
         boolean flag = true;
         String answer;
         Integer manufactureCost = null;
         if (console.askQuestion("Хотите изменить manufactureCost?")) {
-            console.ask("ManufactureCost: " + root.getProducts().get(key).getManufactureCost());
+            console.ask("ManufactureCost: " + product.getManufactureCost());
             while (flag) {
                 answer = console.askFullQuestion("Введите manufactureCost:");
                 try {
-                    manufactureCost = consoleParsing.toRightNumber(answer, console);
+                    manufactureCost = consoleParsing.toRightNumberInt(answer, console);
                     flag = false;
                 } catch (VariableException e) {
                     console.printError("Повторите ввод");
                 }
             }
-            root.getProducts().get(key).setManufactureCost(manufactureCost);
+            product.setManufactureCost(manufactureCost);
 
         }
     }
-    private void changeUnitOfMeasure(Console console, Root root, ConsoleParsing consoleParsing, Long  key) {
+    private void changeUnitOfMeasure(Console console, Product product, ConsoleParsing consoleParsing) {
         boolean flag = true;
         String answer;
         UnitOfMeasure unitOfMeasure = null;
 
         if (console.askQuestion("Хотите изменить unitOfMeasure?")) {
-            console.ask("UnitOfMeasure: " + root.getProducts().get(key).getUnitOfMeasure());
+            console.ask("UnitOfMeasure: " + product.getUnitOfMeasure());
             while (flag) {
                 answer = console.askFullQuestion(" Введите unitOfMeasure, возможные варианты: PCS, MILLILITERS, GRAMS");
                 try {
-                    unitOfMeasure = consoleParsing.toRightUnitOfMeasure(answer, console);
+                    unitOfMeasure = consoleParsing.toRightUnitOfMeasure(answer);
                     flag = false;
-                } catch (VariableException e) {
+                } catch (VariableException | IllegalArgumentException e) {
                     console.printError("Повторите ввод");
                 }
             }
-            root.getProducts().get(key).setUnitOfMeasure(unitOfMeasure);
+            product.setUnitOfMeasure(unitOfMeasure);
 
         }
     }
-    private void changePerson(Console console, Root root, ConsoleParsing consoleParsing, Long  key) {
-        changeNamePerson(console, root, consoleParsing,  key);
-        changeBirthday(console, root, consoleParsing,  key);
-        changeHeight(console, root, consoleParsing,  key);
-        changeLocation(console, root, consoleParsing,  key);
+    private void changePerson(Console console, Product product, ConsoleParsing consoleParsing) {
+        changeNamePerson(console, product, consoleParsing);
+        changeBirthday(console, product, consoleParsing);
+        changeHeight(console, product, consoleParsing);
+        changeLocation(console, product, consoleParsing);
 
     }
 
-    private void changeNamePerson(Console console, Root root, ConsoleParsing consoleParsing, Long  key) {
+    private void changeNamePerson(Console console, Product product, ConsoleParsing consoleParsing) {
         boolean flag = true;
         String answer = null;
         if (console.askQuestion("Хотите изменить owner?")) {
-            console.ask("Owner: " + root.getProducts().get(key).getOwner());
+            console.ask("Owner: " + product.getOwner());
             if (console.askQuestion("Хотите изменить имя владельца?")) {
-                console.ask("UnitOfMeasure: " + root.getProducts().get(key).getOwner().getName());
+                console.ask("UnitOfMeasure: " + product.getOwner().getName());
                 while (flag) {
                     answer = console.askFullQuestion("Введите имя владельца");
                     try {
@@ -163,16 +165,16 @@ public class UpdateID extends AbstractCommand {
                         console.printError("Повторите ввод");
                     }
                 }
-                root.getProducts().get(key).getOwner().setName(answer);
+                product.getOwner().setName(answer);
             }
         }
     }
-    private void changeBirthday(Console console, Root root, ConsoleParsing consoleParsing, Long  key) {
+    private void changeBirthday(Console console, Product product, ConsoleParsing consoleParsing) {
         boolean flag = true;
         String answer;
         ZonedDateTime birthday = null;
         if (console.askQuestion("Хотите изменить дату рождения владельца?")) {
-            console.ask("Birthday: " + root.getProducts().get(key).getOwner().getBirthday());
+            console.ask("Birthday: " + product.getOwner().getBirthday());
             while (flag) {
                 answer = console.askFullQuestion("Введите новую дату рождения владельца:");
                 try {
@@ -182,15 +184,15 @@ public class UpdateID extends AbstractCommand {
                     console.printError("Повторите ввод");
                 }
             }
-            root.getProducts().get(key).getOwner().setBirthday(birthday);
+            product.getOwner().setBirthday(birthday);
         }
     }
-    private void changeHeight(Console console, Root root, ConsoleParsing consoleParsing, Long  key) {
+    private void changeHeight(Console console, Product product, ConsoleParsing consoleParsing) {
         boolean flag = true;
         String answer;
         Integer height = null;
         if (console.askQuestion("Хотите изменить рост владельца?")) {
-            console.ask("Height: " + root.getProducts().get(key).getOwner().getHeight());
+            console.ask("Height: " + product.getOwner().getHeight());
             while (flag) {
                 answer = console.askFullQuestion("Введите новый рост владельца:");
                 try {
@@ -200,25 +202,25 @@ public class UpdateID extends AbstractCommand {
                     console.printError("Повторите ввод");
                 }
             }
-            root.getProducts().get(key).getOwner().setHeight(height);
+            product.getOwner().setHeight(height);
         }
     }
-    private void changeLocation(Console console, Root root, ConsoleParsing consoleParsing, Long  key) {
+    private void changeLocation(Console console, Product product, ConsoleParsing consoleParsing) {
 
         if (console.askQuestion("Хотите изменить локацию владельца?")) {
-            console.ask("Location: " + root.getProducts().get(key).getOwner().getLocation());
-            changeLocationX(console, root, consoleParsing,  key);
-            changeLocationY(console, root, consoleParsing,  key);
-            changeLocationName(console, root, consoleParsing,  key);
+            console.ask("Location: " + product.getOwner().getLocation());
+            changeLocationX(console, product, consoleParsing);
+            changeLocationY(console, product, consoleParsing);
+            changeLocationName(console, product, consoleParsing);
         }
     }
 
-    private void changeLocationX(Console console, Root root, ConsoleParsing consoleParsing, Long  key) {
+    private void changeLocationX(Console console, Product product, ConsoleParsing consoleParsing) {
         String answer;
         boolean flag = true;
         Long price = null;
         if (console.askQuestion("Хотите изменить координату х локации?")) {
-            console.ask("Location x: " + root.getProducts().get(key).getOwner().getLocation().getX());
+            console.ask("Location x: " + product.getOwner().getLocation().getX());
             while (flag) {
                 answer = console.askFullQuestion("Введите новый координату х локации:");
                 try {
@@ -228,32 +230,32 @@ public class UpdateID extends AbstractCommand {
                     console.printError("Повторите ввод");
                 }
             }
-            root.getProducts().get(key).getOwner().getLocation().setX(price);
+            product.getOwner().getLocation().setX(price);
         }
     }
-    private void changeLocationY(Console console, Root root, ConsoleParsing consoleParsing, Long  key) {
+    private void changeLocationY(Console console, Product product, ConsoleParsing consoleParsing) {
         String answer;
         boolean flag = true;
         Integer height = null;
         if (console.askQuestion("Хотите изменить координату у локации?")) {
-            console.ask("Location y: " + root.getProducts().get(key).getOwner().getLocation().getY());
+            console.ask("Location y: " + product.getOwner().getLocation().getY());
             while (flag) {
                 answer = console.askFullQuestion("Введите новый координату y локации:");
                 try {
-                    height = consoleParsing.toRightNumber(answer, console);
+                    height = consoleParsing.toRightNumberInt(answer, console);
                     flag = false;
                 } catch (VariableException e) {
                     console.printError("Повторите ввод");
                 }
             }
-            root.getProducts().get(key).getOwner().getLocation().setY(height);
+            product.getOwner().getLocation().setY(height);
         }
     }
-    private void changeLocationName(Console console, Root root, ConsoleParsing consoleParsing, Long  key) {
+    private void changeLocationName(Console console, Product product, ConsoleParsing consoleParsing) {
         boolean flag = true;
         String answer = null;
         if (console.askQuestion("Хотите изменить название локации?")) {
-            console.ask("Location: " + root.getProducts().get(key).getOwner().getLocation().getName());
+            console.ask("Location: " + product.getOwner().getLocation().getName());
             while (flag) {
                 answer = console.askFullQuestion("Введите новое название локации:");
                 try {
@@ -263,7 +265,7 @@ public class UpdateID extends AbstractCommand {
                     console.printError("Повторите ввод");
                 }
             }
-            root.getProducts().get(key).getOwner().getLocation().setName(answer);
+            product.getOwner().getLocation().setName(answer);
         }
     }
 }
