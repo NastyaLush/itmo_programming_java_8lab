@@ -4,16 +4,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 
 public class ScriptConsole extends Console {
-    private boolean flag = true;
-    private Console console = null;
-    private BufferedReader reader = null;
-    private ScriptConsole scriptConsole;
-    public ScriptConsole() {
-    }
-    public ScriptConsole(BufferedReader reader, Console console) {
+    private final BufferedReader reader;
+
+    public ScriptConsole(BufferedReader reader) {
         this.reader = reader;
-        this.scriptConsole = new ScriptConsole();
-        this.console = console;
     }
     public String scanner()  {
         String command;
@@ -33,7 +27,7 @@ public class ScriptConsole extends Console {
         try {
             reader.close();
         } catch (IOException e) {
-            console.printError("Ошибка при выполнении скрипта");
+            super.printError("Ошибка при выполнении скрипта");
         }
 
     }
@@ -56,8 +50,5 @@ public class ScriptConsole extends Console {
         }
         printError("Ответ не распознан, пожалуйста введите да или нет");
         return askQuestion(s);
-    }
-    public boolean isFlag() {
-        return flag;
     }
 }

@@ -9,14 +9,12 @@ import java.util.Comparator;
 
 @XmlRootElement(name = "location")
 @XmlType(propOrder = { "x", "y", "name" })
-public class Location implements Comparable <Location> {
+public class Location implements Comparable<Location> {
     private Long x;
     private Integer y;
     private String name; //Строка не может быть пустой, Поле не может быть null
-    private Console console;
 
-    public Location(){
-
+    public Location() {
     }
     @SuppressWarnings("all")
     public Location(Long x, Integer y, String s, Console console) {
@@ -31,7 +29,6 @@ public class Location implements Comparable <Location> {
                     + "ваше значение: " + s);
         }
         name = s;
-        this.console = console;
     }
 
     public Long getX() {
@@ -65,8 +62,8 @@ public class Location implements Comparable <Location> {
                 + ", y=" + y
                 + ", name=" + name;
     }
-    public boolean isRightLocation(){
-        return name!=null && !"".equals(name);
+    public boolean isRightLocation() {
+        return name != null && !"".equals(name);
     }
 
     @Override

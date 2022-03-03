@@ -56,5 +56,23 @@
 				<name>23</name>
 			</location>
 		</owner>
+	</product><product>
+		<name>masha</name>
+		<coordinates>
+			<x>3</x>
+			<y>2.0</y>
+		</coordinates>
+		<price>4</price>
+		<unitOfMeasure>PCS</unitOfMeasure>
+		<owner>
+			<name>3</name>
+			<birthday>2020-10-10</birthday>
+			<height>34</height>
+			<location>
+				<x>1</x> 
+				<y>2</y>
+				<name>21</name>
+			</location>
+		</owner>
 	</product>
 </root>

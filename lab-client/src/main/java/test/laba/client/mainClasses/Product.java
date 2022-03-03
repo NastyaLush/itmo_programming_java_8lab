@@ -2,16 +2,12 @@ package test.laba.client.mainClasses;
 
 
 import test.laba.client.exception.CreateError;
-
-import javax.xml.bind.ValidationException;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -22,15 +18,14 @@ public class  Product implements Comparable<Product> {
     private long id; //Значение поля должно быть больше 0, Значение этого поля должно быть уникальным, Значение этого поля должно генерироваться автоматически
     private String name; //Поле не может быть null, Строка не может быть пустой
     private Coordinates coordinates; //Поле не может быть null
-    private java.time.ZonedDateTime creationDate = null; //Поле не может быть null, Значение этого поля должно генерироваться автоматически
+    private final java.time.ZonedDateTime creationDate; //Поле не может быть null, Значение этого поля должно генерироваться автоматически
     private Long price; //Поле не может быть null, Значение поля должно быть больше 0
-    @XmlElement
     private Integer manufactureCost;
     private UnitOfMeasure unitOfMeasure; //Поле не может быть null
     private Person owner; //Поле может быть null
 
     @SuppressWarnings("all")
-    public Product(){
+    public Product() {
         this.creationDate = ZonedDateTime.now();
     }
     public Product(String name, Coordinates coordinates, Long price, Integer manufactureCost, UnitOfMeasure unitOfMeasure, Person owner, Root root) throws CreateError {
@@ -50,47 +45,18 @@ public class  Product implements Comparable<Product> {
             if (manufactureCost != null) {
                 this.manufactureCost = manufactureCost;
             }
-            if (unitOfMeasure != null) {
-                this.unitOfMeasure = unitOfMeasure;
-            }
+            this.unitOfMeasure = unitOfMeasure;
             this.owner = owner;
         }
     }
 
-    public Product(Long id, String name, Coordinates coordinates, Long price, Integer manufactureCost, UnitOfMeasure unitOfMeasure, Person owner, Root root) throws CreateError, ValidationException {
-        if (name == null || name.isEmpty() || coordinates == null || price == null || price <= 0  || unitOfMeasure == null || owner == null) {
-            throw new CreateError("Ошибка при создании объекта Product, обратите внимание:\n"
-                    + "    Поле name может быть null и не может быть пустым\n"
-                    + "    Поле coordinates не может быть null\n"
-                    + "    Поле price не может быть null и значение поля должно быть больше 0\n"
-                    + "    Поле unitOfMeasure не может быть null\n"
-                    + "    Поле owner может быть null\n");
-        } else {
-            if(!isIdContainsInCollection(root,id)) {
-                this.id = id;
-            } else{
-                throw new ValidationException("Данный ID уже существует");
-            }
-            this.name = name;
-            this.coordinates = coordinates;
-            this.price = price;
-            this.creationDate = ZonedDateTime.now();
-            if (manufactureCost != null) {
-                this.manufactureCost = manufactureCost;
-            }
-            if (unitOfMeasure != null) {
-                this.unitOfMeasure = unitOfMeasure;
-            }
-            this.owner = owner;
-        }
-    }//sorted to string
     @Override
     public String toString() {
         return "Product:"
                 + "id=" + id
                 + ", name=" + name
                 + ", coordinates=" + coordinates
-                + ", creationDate=" + creationDate.getYear()+"-"+creationDate.getMonthValue()+"-"+creationDate.getDayOfMonth()
+                + ", creationDate=" + creationDate.getYear() + "-" + creationDate.getMonthValue() + "-" + creationDate.getDayOfMonth()
                 + ", price=" + price
                 + ", manufactureCost=" + manufactureCost
                 + ", unitOfMeasure=" + unitOfMeasure
@@ -106,8 +72,7 @@ public class  Product implements Comparable<Product> {
         this.price = price;
     }
 
-    public void setManufactureCost(int manufactureCost) {
-        System.out.println(manufactureCost);
+    public void setManufactureCost(Integer manufactureCost) {
         this.manufactureCost = manufactureCost;
     }
 
@@ -144,7 +109,7 @@ public class  Product implements Comparable<Product> {
     }
 
     public Long getPrice() {
-        return price.longValue();
+        return price;
     }
 
     public Integer getManufactureCost() {
@@ -175,9 +140,9 @@ public class  Product implements Comparable<Product> {
             }
         }
     }
-    public boolean isIdContainsInCollection(Root root, Long id){
-        for (Map.Entry<Long, Product> entry : root.getProducts().entrySet()){
-            if(entry.getValue().getId()==id) {
+    public boolean isIdContainsInCollection(Root root, Long newId) {
+        for (Map.Entry<Long, Product> entry : root.getProducts().entrySet()) {
+            if (entry.getValue().getId() == newId) {
                 return false;
             }
         }
@@ -212,9 +177,10 @@ public class  Product implements Comparable<Product> {
 
     }
 
-    public boolean isRightProduct(Root root){
+    public boolean isRightProduct(Root root) {
         createID(root);
-        return id > 0 && name!=null && !"".equals(name) && coordinates!=null && price!= null && price >0 &&unitOfMeasure!= null && owner!= null && owner.isRightPerson() && coordinates.isRightCoordinates();
+        return id > 0 && name != null && !"".equals(name) && coordinates != null && price != null && price > 0 && unitOfMeasure != null && owner != null && owner.isRightPerson() && coordinates.isRightCoordinates();
     }
+
 }
 

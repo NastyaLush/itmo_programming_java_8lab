@@ -5,18 +5,29 @@ package test.laba.client.console;
 import test.laba.client.exception.VariableException;
 import test.laba.client.mainClasses.UnitOfMeasure;
 
-import java.time.*;
+import java.time.DateTimeException;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
+
 public  class VariableParsing {
+    protected final Console console;
     private final int falseX = -233;
 
-    public  void toRightName(String s, Console console) throws VariableException {
+    public VariableParsing(Console console) {
+        this.console = console;
+    }
+
+    public  String toRightName(String s) throws VariableException {
         if (s == null || s.isEmpty()) {
             throw new VariableException("Данное поле не может быть пустым", console);
         }
+        return s;
     }
-    public  Integer toRightX(String x, Console console) throws VariableException {
+    public  Integer toRightX(String x) throws VariableException {
         int rightX;
         try {
             rightX = Integer.parseInt(x);
@@ -28,7 +39,7 @@ public  class VariableParsing {
         }
         return rightX;
     }
-    public Float toRightY(String y, Console console) throws VariableException {
+    public Float toRightY(String y) throws VariableException {
         float rightY;
         try {
             rightY = Float.parseFloat(y);
@@ -37,7 +48,7 @@ public  class VariableParsing {
         }
         return rightY;
     }
-    public  Long toRightPrice(String price, Console console) throws VariableException {
+    public  Long toRightPrice(String price) throws VariableException {
         long rightPrice;
         try {
             rightPrice = Long.parseLong(price);
@@ -49,7 +60,7 @@ public  class VariableParsing {
         }
         return rightPrice;
     }
-    public  Integer toRightNumberInt(String man, Console console) throws VariableException {
+    public  Integer toRightNumberInt(String man) throws VariableException {
         Integer manufactureCost = null;
         if (man == null || man.isEmpty()) {
             return manufactureCost;
@@ -63,14 +74,12 @@ public  class VariableParsing {
             }
         }
         return manufactureCost;
-
     }
-    public Long toRightNumberLong(String man, Console console) throws VariableException {
+    public Long toRightNumberLong(String man) throws VariableException {
         Long x = null;
         if (man == null || man.isEmpty()) {
             return x;
         } else {
-
             try {
                 x = Long.valueOf(man);
             } catch (NumberFormatException e) {
@@ -84,7 +93,7 @@ public  class VariableParsing {
     public UnitOfMeasure toRightUnitOfMeasure(String unit) throws VariableException {
            return UnitOfMeasure.valueOf(unit.toUpperCase());
     }
-    public Integer toRightHeight(String height, Console console) throws VariableException {
+    public Integer toRightHeight(String height) throws VariableException {
         Integer rightHeight = null;
         if (height != null) {
             try {
@@ -98,26 +107,41 @@ public  class VariableParsing {
         }
         return rightHeight;
     }
-    public ZonedDateTime toRightBirthday(String birthday, Console console) throws VariableException {
-        ZonedDateTime birth = null;
-        try{
+    public ZonedDateTime toRightBirthday(String birthday) throws VariableException {
+        ZonedDateTime birth;
+        try {
             LocalDate parsed = LocalDate.parse(birthday, DateTimeFormatter.ISO_LOCAL_DATE);
             birth = ZonedDateTime.of(parsed, LocalTime.MIDNIGHT, ZoneId.of("Europe/Berlin"));
-        }
-        catch (DateTimeException e){
-            throw new VariableException("Неправильный формат данных, повторите ввод в формате ГГГГ-ММ-ДД",console);
+        } catch (DateTimeException e) {
+            throw new VariableException("Неправильный формат данных, повторите ввод в формате ГГГГ-ММ-ДД", console);
         }
         return birth;
     }
-    public  Long toLongNumber(String x, Console console)  {
+    public  Long toLongNumber(String x)  {
         String rightX = x;
         try {
             return Long.valueOf(rightX);
         } catch (NumberFormatException e) {
             console.printError("Неправильный формат данных\nВведите новый key");
             rightX = console.scanner();
-            return toLongNumber(rightX, console);
+            return toLongNumber(rightX);
         }
+    }
+    public Long createKey(String id) {
+        String newID = id;
+        Long cid = null;
+        boolean flag = true;
+        while (flag) {
+            try {
+                cid = Long.valueOf(newID);
+                flag = false;
+            } catch (NumberFormatException e) {
+                console.printError("Неправильный формат ввода key, повторите попытку" + e);
+                console.print("Введите key:");
+                newID = console.scanner();
+            }
+        }
+        return cid;
     }
 }
 

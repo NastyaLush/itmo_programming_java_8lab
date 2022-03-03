@@ -1,7 +1,5 @@
 package test.laba.client.commands;
 
-
-import test.laba.client.console.Console;
 import test.laba.client.exception.CommandWithoutArguments;
 import test.laba.client.mainClasses.Root;
 

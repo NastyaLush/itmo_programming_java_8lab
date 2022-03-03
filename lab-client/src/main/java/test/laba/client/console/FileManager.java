@@ -13,7 +13,7 @@ import java.util.HashMap;
 
 
 public class FileManager implements Variable  {
-    public Root read( Console console)  {
+    public Root read(Console console)  {
         ParsingXML parsing = null;
         try {
             parsing = new ParsingXML(console);
@@ -22,23 +22,20 @@ public class FileManager implements Variable  {
         }
         Root root;
         try {
-           root= parsing.createJavaObjects();
-           for (HashMap.Entry<Long, Product> entry : root.getProducts().entrySet()){
-               if(!entry.getValue().isRightProduct(root)){
-                   throw new VariableException("Ошибка во входных данных файла",console);
+           root = parsing.createJavaObjects();
+           for (HashMap.Entry<Long, Product> entry : root.getProducts().entrySet()) {
+               if (!entry.getValue().isRightProduct(root)) {
+                   throw new VariableException("Ошибка во входных данных файла", console);
                }
            }
            return root;
-        } catch (JAXBException| IOException e) {
+        } catch (JAXBException | IOException e) {
             console.printError("Ошибка при парсинге");
-        }
-        catch (VariableException e){
+        } catch (VariableException e) {
             console.printError("");
-        }
-        catch (NullPointerException e){
-            console.printError("ошибка при обработке файла, проверьте переменную окружения LABA, вы ввели: "+Variable.envVarible +" и входные данные");
-        }
-        finally {
+        } catch (NullPointerException e) {
+            console.printError("ошибка при обработке файла, проверьте переменную окружения LABA, вы ввели: " + Variable.ENV_VARIBLE + " и входные данные");
+        } finally {
             try {
                 parsing.closeFileReader();
             } catch (IOException e) {
@@ -50,31 +47,21 @@ public class FileManager implements Variable  {
     }
 
 
-    public void save(Root root, Console console, SaveCollection saveCollection)  {
-        try {
-            FileWriter fileWriter = new FileWriter(Variable.envVarible);
+    public void save(Root root, SaveCollection saveCollection) throws IOException {
+        try (FileWriter fileWriter = new FileWriter(Variable.ENV_VARIBLE)) {
             fileWriter.write(saveCollection.save(root.getProducts()));
-            fileWriter.close();
-        } catch (IOException e) {
-            console.printError("ошибка при попытке записи: " + e);
         }
     }
 
-    public void readScript(BufferedReader reader, Root root, CommandsManager commandsManager, FileManager fileManager, Console console, ConsoleParsing parsingInterface, ScriptConsole scriptConsole) throws CommandWithoutArguments {
+    public void readScript(BufferedReader reader, Root root, CommandsManager commandsManager, FileManager fileManager, ConsoleParsing parsingInterface, ScriptConsole scriptConsole) throws CommandWithoutArguments, IOException {
             String[] command;
-
                 while (true) {
-                    try {
-                        command = (reader.readLine().trim() + " ").split(" ");
-                        command[1] = command[1].trim();
-                        commandsManager.getHistory().addToHistory(command[0]);
-                        console.command(command, root, commandsManager, fileManager, scriptConsole, parsingInterface);
-                    } catch (IOException e) {
-                        console.printError("ошибка при выполнении скрипта");
-                        break;
-                    }
-
+                    command = (reader.readLine().trim() + " ").split(" ");
+                    command[1] = command[1].trim();
+                    commandsManager.getHistory().addToHistory(command[0]);
+                    scriptConsole.command(command, root, commandsManager, fileManager, scriptConsole, parsingInterface);
                 }
+
 
         }
 

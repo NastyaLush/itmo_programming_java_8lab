@@ -11,7 +11,7 @@ import java.util.Scanner;
 public class Console {
     protected final String ansiReset = "\u001B[0m";
     protected final String ansiRed = "\u001B[31m";
-    private Scanner userScanner = new Scanner(System.in);
+    private final Scanner userScanner = new Scanner(System.in);
     public String scanner()  {
         return userScanner.nextLine();
     }
@@ -100,7 +100,7 @@ public class Console {
                 break;
 
             case "save" :
-                commandsManager.save(command[1], root, fileManager, console, consoleParsing);
+                commandsManager.save(command[1], root, fileManager, console);
                 flag = true;
                 break;
             case "remove_lower_key" :
@@ -126,39 +126,32 @@ public class Console {
         return flag;
     }
     public boolean commandHelper2(String[] command, Root root, CommandsManager commandsManager, FileManager fileManager, Console console, ConsoleParsing consoleParsing) throws CommandWithoutArguments {
-        boolean flag;
         switch (command[0].trim()) {
             case "execute_script":
                 commandsManager.executeScript(command[1], root, fileManager, console, consoleParsing);
-                flag = true;
                 break;
 
             case "average_of_manufacture_cost" :
                 commandsManager.averageOfManufactureCost(command[1], root, console);
-                flag = true;
                 break;
 
             case "group_counting_by_price" :
                 commandsManager.groupCountingByPrice(command[1], root, console);
-                flag = true;
                 break;
 
             case "remove_lower":
                 commandsManager.removeLower(command[1], root, console, consoleParsing);
-                flag = true;
                 break;
 
             case "history":
                 commandsManager.history(command[1], console);
-                flag = true;
                 break;
 
             default:
                 console.printError("Данной команды не существует, проверьте корректность данных или введите help для получения списка команд,вы ввели " + command[0].trim());
-                flag = true;
                 break;
         }
-        return flag;
+        return true;
     }
     public boolean askQuestion(String s) {
         String answer;

@@ -20,15 +20,20 @@ import test.laba.client.commands.Show;
 import test.laba.client.commands.UpdateID;
 import test.laba.client.exception.CommandWithArguments;
 import test.laba.client.exception.CommandWithoutArguments;
+import test.laba.client.exception.VariableException;
 import test.laba.client.mainClasses.Product;
 import test.laba.client.mainClasses.Root;
+import test.laba.client.mainClasses.UnitOfMeasure;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class CommandsManager {
-    private final List<AbstractCommand> commands = new ArrayList<>();
     private final AverageOfManufactureCost averageOfManufactureCost;
     private final Clear clear;
     private final ExecuteScript executeScript;
@@ -48,6 +53,7 @@ public class CommandsManager {
 
     public CommandsManager(SaveCollection saveCollection, Console console) {
         this.executeScript = new ExecuteScript();
+        List<AbstractCommand> commands = new ArrayList<>();
         commands.add(executeScript);
         this.info = new Info();
         commands.add(info);
@@ -77,7 +83,7 @@ public class CommandsManager {
         commands.add(save);
         this.show = new Show();
         commands.add(show);
-        this.updateID = new UpdateID();
+        this.updateID = new UpdateID(console);
         commands.add(updateID);
     }
 
@@ -104,7 +110,7 @@ public class CommandsManager {
         if (!isArguments(arg)) {
             throw new CommandWithArguments("Данная команда должна принимать аргументы, а именно ключ нового элемента. Обратите внимание сначала идет команда, затем через пробел аргументы", console);
         }
-        insertNull.execute(root, arg, console, parsingInterface);
+        insertNull.execute(root, arg, parsingInterface);
     }
     public  void updateID(String arg, Root root, Console console, ConsoleParsing consoleParsing) throws CommandWithArguments {
         if (!isArguments(arg)) {
@@ -129,17 +135,17 @@ public class CommandsManager {
             //проверка существования ID
             if (!root.containsID(id)) {
                 console.print("Данного ID не существует, идет создание нового объекта");
-               product = consoleParsing.parsProductFromConsole(root, arg, console);
+               product = consoleParsing.parsProductFromConsole(root);
                product.setId(id);
             } else {
-               updateID.execute(root, id, console, consoleParsing);
+               updateID.execute(root, id, consoleParsing);
             }
         }
     public  void removeKey(String arg, Root root, Console console, ConsoleParsing parsingInterface) throws CommandWithArguments {
         if (!isArguments(arg)) {
             throw new CommandWithArguments("Данная команда должна принимать аргументы, а именно ключ элемента, который надо удалить. Обратите внимание сначала идет команда, затем через пробел аргументы", console);
         }
-        removeKey.execute(arg, root, console, parsingInterface);
+        removeKey.execute(arg, root, parsingInterface);
     }
     public  void clear(String arg, Root root, Console console) throws CommandWithoutArguments {
         if (isArguments(arg)) {
@@ -147,62 +153,78 @@ public class CommandsManager {
         }
         clear.execute(root);
     }
-    public  void save(String arg, Root root, FileManager fileManager, Console console, ConsoleParsing consoleParsing) throws CommandWithoutArguments {
+    public  void save(String arg, Root root, FileManager fileManager, Console console) throws CommandWithoutArguments {
         if (isArguments(arg)) {
             throw new CommandWithoutArguments("Данная команда не принимает аргументы", console);
         }
-        save.execute(root, fileManager, console);
+        try {
+            save.execute(root, fileManager);
+        } catch (IOException e) {
+            console.printError("Не удалось сохранить коллекцию!");
+        }
     }
     public  void executeScript(String arg, Root root, FileManager fileManager, Console console, ConsoleParsing parsingInterface) throws CommandWithArguments, CommandWithoutArguments {
         if (!isArguments(arg)) {
             throw new CommandWithArguments("Данная команда должна принимать аргументы", console);
         }
-         executeScript.execute(arg, root, fileManager, console, parsingInterface);
+        try {
+            executeScript.execute(arg, root, fileManager, parsingInterface);
+        } catch (IOException | CommandWithoutArguments | CommandWithArguments e) {
+            console.printError("Ошибка при выполнении скрипта");
+        }
     }
     public  void exit(String arg, Console console) throws CommandWithoutArguments {
         if (isArguments(arg)) {
             throw new CommandWithoutArguments("Данная команда не принимает аргументы", console);
         }
-        exit.execute(console);
+        exit.execute();
     }
     public  void removeLower(String arg, Root root, Console console, ConsoleParsing consoleParsing)throws CommandWithoutArguments {
         if (isArguments(arg)) {
             throw new CommandWithoutArguments("Данная команда ну принимает аргументы", console);
         }
-        console.print("Введите ключ: ");
-        String key = console.scanner();
-        Product product = consoleParsing.parsProductFromConsole(root, key, console);
+        Product product = consoleParsing.parsProductFromConsole(root);
         removeLower.execute(product, root);
     }
     public  void history(String arg, Console console) throws CommandWithoutArguments {
         if (isArguments(arg)) {
             throw new CommandWithoutArguments("Данная команда не принимает аргументы", console);
         }
-        history.execute(console);
+        console.print(history.execute());
     }
     public  void removeLowerKey(String arg, Root root, Console console, ConsoleParsing parsingInterface)throws CommandWithArguments {
         if (!isArguments(arg)) {
             throw new CommandWithArguments("Данная команда должна принимать аргументы", console);
         }
-        removeLowerKey.execute(arg, root, console, parsingInterface);
+        removeLowerKey.execute(arg, root, parsingInterface);
     }
-    public  void removeAnyByUnitOfMeasure(String arg, Root root, Console console, ConsoleParsing parsingInterface) throws CommandWithArguments {
+    public  void removeAnyByUnitOfMeasure(String arg, Root root, Console console, ConsoleParsing consoleParsing) throws CommandWithArguments {
         if (!isArguments(arg)) {
             throw new CommandWithArguments("Данная команда должна принимать аргументы", console);
         }
-        removeAnyByUnitOfMeasure.execute(arg, root, console, parsingInterface);
+        try {
+            removeAnyByUnitOfMeasure.execute(arg, root, consoleParsing);
+        } catch (VariableException e) {
+            console.printError("Проверьте вводимый аргумент, поле может принимать только: " + Arrays.toString(UnitOfMeasure.values()));
+            removeAnyByUnitOfMeasure(console.scanner(), root, console, consoleParsing);
+        }
     }
     public  void averageOfManufactureCost(String arg, Root root, Console console) throws CommandWithoutArguments {
         if (isArguments(arg)) {
             throw new CommandWithoutArguments("Данная команда не принимает аргументы", console);
         }
-        averageOfManufactureCost.execute(root, console);
+        console.print("Average Of Manufacture Cost: " + averageOfManufactureCost.execute(root));
     }
     public  void groupCountingByPrice(String arg, Root root, Console console) throws CommandWithoutArguments {
         if (isArguments(arg)) {
             throw new CommandWithoutArguments("Данная команда не принимает аргументы", console);
         }
-        groupCountingByPrice.execute(root, console);
+
+        HashMap<Long, Long> countingByPrice = groupCountingByPrice.execute(root);
+        console.print("price = count\n");
+        for (Map.Entry<Long, Long> entry: countingByPrice.entrySet()) {
+            console.print(entry.getKey() + " =  " + entry.getValue());
+        }
     }
 
 

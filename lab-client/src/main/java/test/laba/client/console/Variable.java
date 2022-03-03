@@ -1,5 +1,8 @@
 package test.laba.client.console;
 
 public interface Variable {
-    String envVarible = System.getenv("LABA");
+    String ENV_VARIBLE = System.getenv("LABA");
+    default String getEnvVarible() {
+        return ENV_VARIBLE;
+    }
 }

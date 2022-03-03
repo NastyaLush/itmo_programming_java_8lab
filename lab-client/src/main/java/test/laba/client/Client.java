@@ -5,10 +5,8 @@ import test.laba.client.console.Console;
 import test.laba.client.console.ConsoleParsing;
 import test.laba.client.console.SaveCollection;
 import test.laba.client.console.FileManager;
-import test.laba.client.mainClasses.Product;
 import test.laba.client.mainClasses.Root;
 
-import java.util.Hashtable;
 
 public final class Client {
     private Client() {
@@ -16,16 +14,20 @@ public final class Client {
     }
 
     public static void main(String[] args) {
-        Root root=new Root();
+        Root root;
         Console console = new Console();
         SaveCollection saveCollection = new SaveCollection();
-        ConsoleParsing parsingInterface = new ConsoleParsing();
-        CommandsManager commandsManager = new CommandsManager(saveCollection,console);
+        ConsoleParsing parsingInterface = new ConsoleParsing(console);
+        CommandsManager commandsManager = new CommandsManager(saveCollection, console);
 
-        FileManager fileManager = new FileManager();
-        root= fileManager.read(console);
-        if(root!=null){
-            console.interactivelyMode(root,commandsManager,fileManager, console, parsingInterface);
+        try {
+            FileManager fileManager = new FileManager();
+            root = fileManager.read(console);
+            if (root != null) {
+                console.interactivelyMode(root, commandsManager, fileManager, console, parsingInterface);
+            }
+        } catch (NullPointerException e) {
+            console.printError("Не удалось прочитать файл, проверьте перменную окружения LABA");
         }
 
     }

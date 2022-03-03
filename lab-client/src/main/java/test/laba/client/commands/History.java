@@ -1,13 +1,7 @@
 package test.laba.client.commands;
 
-
-
-import test.laba.client.console.Console;
-
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.Queue;
-
 public class History extends AbstractCommand {
     private Deque<String> history = new ArrayDeque<>();
     private Integer i = 0;
@@ -24,10 +18,7 @@ public class History extends AbstractCommand {
         }
     }
 
-    public Queue<String> getHistory() {
-        return history;
-    }
-    public  void execute(Console console) {
-        console.print("History: " + history);
+    public  String execute() {
+        return "History: " + history;
     }
 }

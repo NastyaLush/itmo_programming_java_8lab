@@ -18,7 +18,7 @@ public class Coordinates implements Comparable<Coordinates> {
     private Console console;
     private final int minNumberOfX = -233;
 
-    public Coordinates(){
+    public Coordinates() {
     }
     @SuppressWarnings("all")
     public Coordinates(Integer x, Float y, Console console)  {
@@ -64,8 +64,8 @@ public class Coordinates implements Comparable<Coordinates> {
                 + ", y=" + y
                 + '}';
     }
-    public boolean isRightCoordinates(){
-        return  x>minNumberOfX && x!=null && y!=null;
+    public boolean isRightCoordinates() {
+        return x > minNumberOfX && y != null;
     }
 
     @Override

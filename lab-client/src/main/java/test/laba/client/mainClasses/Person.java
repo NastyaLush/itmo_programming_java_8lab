@@ -7,20 +7,23 @@ import test.laba.client.exception.VariableException;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
-import java.time.*;
+import java.time.DateTimeException;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 
 @XmlRootElement(name = "owner")
 //@XmlType(propOrder = { "name", "birthday", "height", "location"})
-public class Person implements Comparable <Person> {
+public class Person implements Comparable<Person> {
     private String name; //Поле не может быть null, Строка не может быть пустой
     private java.time.ZonedDateTime birthday; //Поле не может быть null
     private Integer height; //Значение поля должно быть больше 0
     private Location location; //Поле не может быть null
 
-    public  Person(){
+    public  Person() {
     }
 
     @SuppressWarnings("all")
@@ -63,13 +66,12 @@ public class Person implements Comparable <Person> {
         this.birthday = birthday;
     }
     @XmlElement
-    public void setBirthday(String birthday){
-        try{
+    public void setBirthday(String birthday) {
+        try {
             LocalDate parsed = LocalDate.parse(birthday, DateTimeFormatter.ISO_LOCAL_DATE);
             this.birthday  = ZonedDateTime.of(parsed, LocalTime.MIDNIGHT, ZoneId.of("Europe/Berlin"));
-        }
-        catch (DateTimeException e){
-            throw new VariableException("Неправильный формат данных, повторите ввод в формате ГГГГ-ММ-ДД"+e);
+        } catch (DateTimeException e) {
+            throw new VariableException("Неправильный формат данных, повторите ввод в формате ГГГГ-ММ-ДД" + e);
         }
     }
     public void setHeight(Integer height) {
@@ -79,9 +81,9 @@ public class Person implements Comparable <Person> {
         this.location = location;
     }
 
-    public boolean isRightPerson(){
+    public boolean isRightPerson() {
 
-        return name!=null && !"".equals(name) && birthday!=null && height>0 && location!= null && location.isRightLocation();
+        return name != null && !"".equals(name) && birthday != null && height > 0 && location !=  null && location.isRightLocation();
     }
 
     @Override
