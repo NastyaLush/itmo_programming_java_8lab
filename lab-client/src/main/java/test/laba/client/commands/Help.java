@@ -10,10 +10,10 @@ public class Help extends AbstractCommand {
         this.commands = commands;
     }
     public String execute() {
-        StringBuilder s = null;
+        String s = "";
         for (AbstractCommand command:commands) {
-            s = (s == null ? new StringBuilder("null") : s).append(command.getName()).append(": ").append(command.getDescription()).append('\n');
+            s += command.getName() + ": " + command.getDescription() + '\n';
         }
-        return s == null ? null : s.toString();
+        return s;
     }
 }

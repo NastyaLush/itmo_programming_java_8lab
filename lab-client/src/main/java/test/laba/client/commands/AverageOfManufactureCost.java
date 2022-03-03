@@ -7,8 +7,10 @@ public final class AverageOfManufactureCost extends AbstractCommand {
     }
 
     public Integer execute(Root root) {
-
-        return root.averageOfManufactureCost() / (root.getProducts().size());
+        if(root.getProducts().size()!=0) {
+            return root.averageOfManufactureCost() / (root.getProducts().size());
+        }
+        else return 0;
     }
 
 }

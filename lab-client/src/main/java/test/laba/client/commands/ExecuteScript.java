@@ -16,7 +16,7 @@ import java.io.IOException;
 
 public class ExecuteScript extends AbstractCommand {
     public ExecuteScript() {
-        super("ExecuteScript", "считать и исполнить скрипт из указанного файла. В скрипте содержатся команды в таком же виде, в котором их вводит пользователь в интерактивном режиме.");
+        super("Execute_script", "считать и исполнить скрипт из указанного файла. В скрипте содержатся команды в таком же виде, в котором их вводит пользователь в интерактивном режиме.");
     }
     public void execute(String fileName, Root root, FileManager fileManager, ConsoleParsing parsingInterface) throws CommandWithoutArguments, IOException {
         BufferedReader reader = null;
