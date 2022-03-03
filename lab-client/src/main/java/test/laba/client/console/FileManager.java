@@ -55,10 +55,17 @@ public class FileManager implements Variable  {
 
     public void readScript(BufferedReader reader, Root root, CommandsManager commandsManager, FileManager fileManager, ConsoleParsing parsingInterface, ScriptConsole scriptConsole) throws CommandWithoutArguments, IOException {
             String[] command;
+            int limit = 3;
+            int numberOfCommand = 0;
+            int numberOfArguments = 1;
+            int numberOfBeginTrim = 2;
                 while (true) {
-                    command = (reader.readLine().trim() + " ").split(" ");
-                    command[1] = command[1].trim();
-                    commandsManager.getHistory().addToHistory(command[0]);
+                    command = (reader.readLine().trim() + " ").split(" ",limit);
+                    for (int i = numberOfBeginTrim; i < command.length; i++) {
+                        command[numberOfArguments] += " " + command[i];
+                        command[i] = command[i].trim();
+                    }
+                    commandsManager.getHistory().addToHistory(command[numberOfCommand]);
                     scriptConsole.command(command, root, commandsManager, fileManager, scriptConsole, parsingInterface);
                 }
 

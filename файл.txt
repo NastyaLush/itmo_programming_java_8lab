@@ -1,4 +1,4 @@
-show нг
+show
 insert null 7
 1
 h

@@ -52,7 +52,7 @@ public class CommandsManager {
     private final UpdateID updateID;
 
     public CommandsManager(SaveCollection saveCollection, Console console) {
-        this.executeScript = new ExecuteScript();
+        this.executeScript = new ExecuteScript(console);
         List<AbstractCommand> commands = new ArrayList<>();
         commands.add(executeScript);
         this.info = new Info();
