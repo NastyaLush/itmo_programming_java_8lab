@@ -20,14 +20,10 @@ public final class Client {
         ConsoleParsing parsingInterface = new ConsoleParsing(console);
         CommandsManager commandsManager = new CommandsManager(saveCollection, console);
 
-        try {
-            FileManager fileManager = new FileManager();
-            root = fileManager.read(console);
-            if (root != null) {
-                console.interactivelyMode(root, commandsManager, fileManager, console, parsingInterface);
-            }
-        } catch (NullPointerException e) {
-            console.printError("Не удалось прочитать файл, проверьте перменную окружения LABA");
+        FileManager fileManager = new FileManager();
+        root = fileManager.read(console);
+        if (root != null) {
+            console.interactivelyMode(root, commandsManager, fileManager, console, parsingInterface);
         }
 
     }

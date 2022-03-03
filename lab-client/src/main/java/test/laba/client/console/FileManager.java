@@ -14,33 +14,32 @@ import java.util.HashMap;
 
 public class FileManager implements Variable  {
     public Root read(Console console)  {
-        ParsingXML parsing = null;
         try {
-            parsing = new ParsingXML(console);
+            ParsingXML parsingXML = new ParsingXML(console);
+            Root root;
+            try {
+                root = parsingXML.createJavaObjects();
+                for (HashMap.Entry<Long, Product> entry : root.getProducts().entrySet()) {
+                    if (!entry.getValue().isRightProduct(root)) {
+                        throw new VariableException("Ошибка во входных данных файла", console);
+                    }
+                }
+                return root;
+            } catch (JAXBException | IOException e) {
+                console.printError("Ошибка при попытке парсинга");
+            } catch (VariableException e) {
+                console.printError("");
+            } finally {
+                try {
+                    parsingXML.closeFileReader();
+                } catch (IOException e) {
+                    console.printError("Невозможно закрыть файл!");
+                }
+            }
         } catch (FileNotFoundException e) {
             console.printError("Файл не найден, проверьте путь");
-        }
-        Root root;
-        try {
-           root = parsing.createJavaObjects();
-           for (HashMap.Entry<Long, Product> entry : root.getProducts().entrySet()) {
-               if (!entry.getValue().isRightProduct(root)) {
-                   throw new VariableException("Ошибка во входных данных файла", console);
-               }
-           }
-           return root;
-        } catch (JAXBException | IOException e) {
-            console.printError("Ошибка при парсинге");
-        } catch (VariableException e) {
-            console.printError("");
         } catch (NullPointerException e) {
-            console.printError("ошибка при обработке файла, проверьте переменную окружения LABA, вы ввели: " + Variable.ENV_VARIBLE + " и входные данные");
-        } finally {
-            try {
-                parsing.closeFileReader();
-            } catch (IOException e) {
-                console.printError("Невозможно закрыть файл!");
-            }
+            console.printError("ошибка при обработке файла, проверьте переменную окружения LABA и входные данные, вы ввели: " + Variable.ENV_VARIBLE );
         }
 
         return null;

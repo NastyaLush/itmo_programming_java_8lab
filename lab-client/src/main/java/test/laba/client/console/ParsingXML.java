@@ -10,10 +10,11 @@ import java.io.FileReader;
 import java.io.IOException;
 
 public class ParsingXML extends ConsoleParsing {
-    private final FileReader fileReader = new FileReader(getEnvVariable());
+    private FileReader fileReader;
 
     public ParsingXML(Console console) throws FileNotFoundException {
         super(console);
+        fileReader = new FileReader(getEnvVariable());
     }
 
     public Root createJavaObjects() throws JAXBException, IOException {
@@ -22,7 +23,9 @@ public class ParsingXML extends ConsoleParsing {
         return (Root) unmarshaller.unmarshal(fileReader);
     }
     public void closeFileReader() throws IOException {
-        fileReader.close();
+        if(fileReader != null) {
+            fileReader.close();
+        }
     }
 
 }
