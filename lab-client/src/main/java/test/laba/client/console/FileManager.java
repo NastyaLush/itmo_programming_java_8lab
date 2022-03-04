@@ -59,17 +59,22 @@ public class FileManager implements Variable  {
             int numberOfCommand = 0;
             int numberOfArguments = 1;
             int numberOfBeginTrim = 2;
-                while (reader != null) {
-                    command = (reader.readLine().trim() + " ").split(" ", limitOfWords);
-                    for (int i = numberOfBeginTrim; i < command.length; i++) {
-                        command[numberOfArguments] += " " + command[i];
-                        command[i] = command[i].trim();
-                    }
-                    commandsManager.getHistory().addToHistory(command[numberOfCommand]);
-                    scriptConsole.command(command, root, commandsManager, fileManager, scriptConsole, consoleParsing);
+        try {
+            while (true) {
+                command = (reader.readLine().trim() + " ").split(" ", limitOfWords);
+                for (int i = numberOfBeginTrim; i < command.length; i++) {
+                    command[numberOfArguments] += " " + command[i];
+                    command[i] = command[i].trim();
                 }
-
-
+                commandsManager.getHistory().addToHistory(command[numberOfCommand]);
+               if (!scriptConsole.command(command, root, commandsManager, fileManager, scriptConsole, consoleParsing)) {
+                   reader.close();
+                   break;
+               }
+            }
+        } catch (NullPointerException e) {
+            reader.close();
+        }
         }
 
     }

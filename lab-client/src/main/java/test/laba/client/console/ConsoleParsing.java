@@ -20,12 +20,12 @@ public  class ConsoleParsing extends VariableParsing implements Variable {
     }
     public Product parsProductFromConsole(Root root) {
         String name = parsField("Введите название продукта: ", console, this::toRightName);
-        Long price = parsField("Введите цену продукта, price: ", console, this::toRightPrice);
         Coordinates coordinates = parsCoordinatesFromConsole();
+        Long price = parsField("Введите цену продукта, price: ", console, this::toRightPrice);
         Integer manufactureCost = parsField("Введите поле manufactureCost: ", console, this::toRightNumberInt);
+        UnitOfMeasure unitOfMeasure = parsField("Введите unitOfMeasure, возможные варианты:PCS, MILLILITERS, GRAMS", console, this::toRightUnitOfMeasure);
         Person owner = parsPersonFromConsole();
         Product product = null;
-        UnitOfMeasure unitOfMeasure = parsField("Введите unitOfMeasure, возможные варианты:PCS, MILLILITERS, GRAMS", console, this::toRightUnitOfMeasure);
 
         try {
             product = new Product(name, coordinates, price, manufactureCost, unitOfMeasure, owner, root);

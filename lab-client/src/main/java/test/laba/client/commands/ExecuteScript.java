@@ -37,12 +37,6 @@ public class ExecuteScript extends AbstractCommand {
         } catch (ScriptError e) {
             console.printError("ошибка при выполнении скрипта");
         }
-        /*finally {
-            if(reader != null) {
-                reader.close();
-                System.out.println("ghjk");
-            }
-        }*/
 
     }
 }

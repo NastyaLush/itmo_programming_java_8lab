@@ -87,32 +87,26 @@ public class Console {
         return flag;
     }
     private boolean commandHelper(String[] command, Root root, CommandsManager commandsManager, FileManager fileManager, Console console, ConsoleParsing consoleParsing) throws CommandWithoutArguments {
-        boolean flag;
+        boolean flag = true;
         switch (command[0].trim()) {
             case "remove_key" :
                 commandsManager.removeKey(command[1], root, console, consoleParsing);
-                flag = true;
                 break;
 
             case "clear" :
                 commandsManager.clear(command[1], root, console);
-                flag = true;
                 break;
 
             case "save" :
                 commandsManager.save(command[1], root, fileManager, console);
-                flag = true;
                 break;
             case "remove_lower_key" :
                 commandsManager.removeLowerKey(command[1], root, console, consoleParsing);
-                flag = true;
                 break;
 
             case "remove_any_by_unit_of_measure" :
                 commandsManager.removeAnyByUnitOfMeasure(command[1], root, console, consoleParsing);
-                flag = true;
                 break;
-
 
             case "exit" :
                 commandsManager.exit(command[1], console);

@@ -53,10 +53,10 @@ public  class VariableParsing {
         try {
             rightPrice = Long.parseLong(price);
         } catch (NumberFormatException e) {
-            throw new VariableException("Должно быть введено целое число типа long", console);
+            throw new VariableException("Должно быть введено целое число типа long, вы ввели: " + price, console);
         }
         if (rightPrice <= 0) {
-            throw new VariableException("Число должно быть больше 0", console);
+            throw new VariableException("Число должно быть больше 0, вы ввели: " + price, console);
         }
         return rightPrice;
     }
@@ -69,7 +69,7 @@ public  class VariableParsing {
             try {
                 manufactureCost = Integer.valueOf(man);
             } catch (NumberFormatException e) {
-                throw new VariableException("Неправильный тип переменной, ожидалось целое число типа int", console);
+                throw new VariableException("Неправильный тип переменной, ожидалось целое число типа int, вы ввели: " + man, console);
 
             }
         }
@@ -83,7 +83,7 @@ public  class VariableParsing {
             try {
                 x = Long.valueOf(man);
             } catch (NumberFormatException e) {
-                throw new VariableException("Неправильный тип переменной, ожидалось целое число типа long", console);
+                throw new VariableException("Неправильный тип переменной, ожидалось целое число типа long, вы ввели: " + man, console);
 
             }
         }
@@ -99,10 +99,10 @@ public  class VariableParsing {
             try {
                 rightHeight = Integer.valueOf(height);
             } catch (NumberFormatException e) {
-                throw new VariableException("Должно быть введено целое число", console);
+                throw new VariableException("Должно быть введено целое число, вы ввели: " + rightHeight, console);
             }
             if (rightHeight <= 0) {
-                throw new VariableException("Число должно быть больше 0", console);
+                throw new VariableException("Число должно быть больше 0, вы ввели: " + rightHeight, console);
             }
         }
         return rightHeight;
@@ -113,18 +113,18 @@ public  class VariableParsing {
             LocalDate parsed = LocalDate.parse(birthday, DateTimeFormatter.ISO_LOCAL_DATE);
             birth = ZonedDateTime.of(parsed, LocalTime.MIDNIGHT, ZoneId.of("Europe/Berlin"));
         } catch (DateTimeException e) {
-            throw new VariableException("Неправильный формат данных, повторите ввод в формате ГГГГ-ММ-ДД", console);
+            throw new VariableException("Неправильный формат данных, повторите ввод в формате ГГГГ-ММ-ДД, вы ввели: " + birthday, console);
         }
         return birth;
     }
     public  Long toLongNumber(String x)  {
-        String rightX = x;
+       String oldX = x;
         try {
-            return Long.valueOf(rightX);
+            return Long.valueOf(oldX.trim());
         } catch (NumberFormatException e) {
-            console.printError("Неправильный формат данных\nВведите новый key");
-            rightX = console.scanner();
-            return toLongNumber(rightX);
+            console.printError("Неправильный формат данных, вы ввели:" + oldX + ")\nВведите новый key");
+            oldX = console.scanner();
+            return toLongNumber(oldX);
         }
     }
     public Long createKey(String id) {
@@ -136,7 +136,7 @@ public  class VariableParsing {
                 cid = Long.valueOf(newID);
                 flag = false;
             } catch (NumberFormatException e) {
-                console.printError("Неправильный формат ввода key, повторите попытку" + e);
+                console.printError("Неправильный формат ввода key, повторите попытку, вы ввели: " + id + e);
                 console.print("Введите key:");
                 newID = console.scanner();
             }
