@@ -1,5 +1,5 @@
 show
-insert null 7
+insert_null 7
 1
 h
 3

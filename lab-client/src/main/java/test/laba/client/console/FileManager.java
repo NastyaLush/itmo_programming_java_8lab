@@ -30,42 +30,43 @@ public class FileManager implements Variable  {
             } catch (VariableException e) {
                 console.printError("");
             } finally {
-                try {
-                    parsingXML.closeFileReader();
-                } catch (IOException e) {
-                    console.printError("Невозможно закрыть файл!");
-                }
+                close(parsingXML, console);
             }
         } catch (FileNotFoundException e) {
             console.printError("Файл не найден, проверьте путь");
         } catch (NullPointerException e) {
-            console.printError("ошибка при обработке файла, проверьте переменную окружения LABA и входные данные, вы ввели: " + Variable.ENV_VARIBLE );
+            console.printError("ошибка при обработке файла, проверьте переменную окружения LABA и входные данные, вы ввели: " + Variable.ENV_VARIBLE);
         }
 
         return null;
     }
-
-
+    private void close(ParsingXML parsingXML, Console console) {
+        try {
+            parsingXML.closeFileReader();
+        } catch (IOException e) {
+            console.printError("Невозможно закрыть файл!");
+        }
+    }
     public void save(Root root, SaveCollection saveCollection) throws IOException {
         try (FileWriter fileWriter = new FileWriter(Variable.ENV_VARIBLE)) {
             fileWriter.write(saveCollection.save(root.getProducts()));
         }
     }
 
-    public void readScript(BufferedReader reader, Root root, CommandsManager commandsManager, FileManager fileManager, ConsoleParsing parsingInterface, ScriptConsole scriptConsole) throws CommandWithoutArguments, IOException {
+    public void readScript(BufferedReader reader, Root root, CommandsManager commandsManager, FileManager fileManager, ConsoleParsing consoleParsing, ScriptConsole scriptConsole) throws CommandWithoutArguments, IOException {
             String[] command;
-            int limit = 3;
+            final int limitOfWords = 3;
             int numberOfCommand = 0;
             int numberOfArguments = 1;
             int numberOfBeginTrim = 2;
-                while (true) {
-                    command = (reader.readLine().trim() + " ").split(" ",limit);
+                while (reader != null) {
+                    command = (reader.readLine().trim() + " ").split(" ", limitOfWords);
                     for (int i = numberOfBeginTrim; i < command.length; i++) {
                         command[numberOfArguments] += " " + command[i];
                         command[i] = command[i].trim();
                     }
                     commandsManager.getHistory().addToHistory(command[numberOfCommand]);
-                    scriptConsole.command(command, root, commandsManager, fileManager, scriptConsole, parsingInterface);
+                    scriptConsole.command(command, root, commandsManager, fileManager, scriptConsole, consoleParsing);
                 }
 
 

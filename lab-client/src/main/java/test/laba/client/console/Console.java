@@ -128,7 +128,7 @@ public class Console {
     public boolean commandHelper2(String[] command, Root root, CommandsManager commandsManager, FileManager fileManager, Console console, ConsoleParsing consoleParsing) throws CommandWithoutArguments {
         switch (command[0].trim()) {
             case "execute_script":
-                commandsManager.executeScript(command[1], root, fileManager, console, consoleParsing);
+                commandsManager.executeScript(command[1], root, fileManager, console);
                 break;
 
             case "average_of_manufacture_cost" :

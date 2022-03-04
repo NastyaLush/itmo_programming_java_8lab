@@ -163,13 +163,13 @@ public class CommandsManager {
             console.printError("Не удалось сохранить коллекцию!");
         }
     }
-    public  void executeScript(String arg, Root root, FileManager fileManager, Console console, ConsoleParsing parsingInterface) throws CommandWithArguments, CommandWithoutArguments {
+    public  void executeScript(String arg, Root root, FileManager fileManager, Console console) throws CommandWithArguments, CommandWithoutArguments {
         if (!isArguments(arg)) {
             throw new CommandWithArguments("Данная команда должна принимать аргументы", console);
         }
         try {
-            executeScript.execute(arg, root, fileManager, parsingInterface);
-        } catch (IOException | CommandWithoutArguments | CommandWithArguments e) {
+            executeScript.execute(arg, root, fileManager);
+        } catch (java.io.IOException | CommandWithoutArguments | CommandWithArguments e) {
             console.printError("Ошибка при выполнении скрипта");
         }
     }

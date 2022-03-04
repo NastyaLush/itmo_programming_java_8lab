@@ -23,7 +23,7 @@ public class ParsingXML extends ConsoleParsing {
         return (Root) unmarshaller.unmarshal(fileReader);
     }
     public void closeFileReader() throws IOException {
-        if(fileReader != null) {
+        if (fileReader != null) {
             fileReader.close();
         }
     }

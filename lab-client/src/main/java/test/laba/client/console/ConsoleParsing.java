@@ -10,7 +10,6 @@ import test.laba.client.mainClasses.Coordinates;
 import test.laba.client.mainClasses.Person;
 import test.laba.client.mainClasses.Product;
 import test.laba.client.mainClasses.Root;
-
 import java.time.ZonedDateTime;
 
 
@@ -68,9 +67,9 @@ public  class ConsoleParsing extends VariableParsing implements Variable {
     private <T> T parsField(String question, Console console, IFunction pars) {
     T value;
         while (true) {
-            console.print(question);
-            String simpleField = console.scanner();
             try {
+                console.ask(question);
+                String simpleField = console.scanner();
                 value = (T) pars.function(simpleField);
                 break;
             } catch (VariableException | NumberFormatException e) {
