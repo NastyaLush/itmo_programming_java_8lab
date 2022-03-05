@@ -204,7 +204,7 @@ public class CommandsManager {
         }
         try {
             removeAnyByUnitOfMeasure.execute(arg, root, consoleParsing);
-        } catch (VariableException e) {
+        } catch (VariableException | IllegalArgumentException e) {
             console.printError("Проверьте вводимый аргумент, поле может принимать только: " + Arrays.toString(UnitOfMeasure.values()));
             removeAnyByUnitOfMeasure(console.scanner(), root, console, consoleParsing);
         }

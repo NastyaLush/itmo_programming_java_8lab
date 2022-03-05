@@ -71,7 +71,7 @@ public class Person implements Comparable<Person> {
             LocalDate parsed = LocalDate.parse(birthday, DateTimeFormatter.ISO_LOCAL_DATE);
             this.birthday  = ZonedDateTime.of(parsed, LocalTime.MIDNIGHT, ZoneId.of("Europe/Berlin"));
         } catch (DateTimeException e) {
-            throw new VariableException("Неправильный формат данных, повторите ввод в формате ГГГГ-ММ-ДД" + e);
+            throw new VariableException("Неправильный формат данных, повторите ввод в формате ГГГГ-ММ-ДД");
         }
     }
     public void setHeight(Integer height) {

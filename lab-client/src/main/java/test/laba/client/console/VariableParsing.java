@@ -110,10 +110,11 @@ public  class VariableParsing {
     public ZonedDateTime toRightBirthday(String birthday) throws VariableException {
         ZonedDateTime birth;
         try {
-            LocalDate parsed = LocalDate.parse(birthday, DateTimeFormatter.ISO_LOCAL_DATE);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+            LocalDate parsed = LocalDate.parse(birthday, formatter);
             birth = ZonedDateTime.of(parsed, LocalTime.MIDNIGHT, ZoneId.of("Europe/Berlin"));
         } catch (DateTimeException e) {
-            throw new VariableException("Неправильный формат данных, повторите ввод в формате ГГГГ-ММ-ДД, вы ввели: " + birthday, console);
+            throw new VariableException("Неправильный формат данных, повторите ввод в формате ДД-MM-ГГГГ, вы ввели: " + birthday, console);
         }
         return birth;
     }

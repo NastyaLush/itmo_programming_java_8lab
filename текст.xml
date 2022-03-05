@@ -57,6 +57,25 @@
 			</location>
 		</owner>
 	</product><product>
+		<name>2</name>
+		<coordinates>
+			<x>2</x>
+			<y>2.0</y>
+		</coordinates>
+		<price>2</price>
+		<manufactureCost>2</manufactureCost>
+		<unitOfMeasure>PCS</unitOfMeasure>
+		<owner>
+			<name>2</name>
+			<birthday>2004-12-03</birthday>
+			<height>3</height>
+			<location>
+				<x>3</x> 
+				<y>3</y>
+				<name>3</name>
+			</location>
+		</owner>
+	</product><product>
 		<name>1</name>
 		<coordinates>
 			<x>3</x>
