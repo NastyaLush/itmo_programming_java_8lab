@@ -16,7 +16,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 
 @XmlRootElement(name = "owner")
-//@XmlType(propOrder = { "name", "birthday", "height", "location"})
 public class Person implements Comparable<Person> {
     private String name; //Поле не может быть null, Строка не может быть пустой
     private java.time.ZonedDateTime birthday; //Поле не может быть null
