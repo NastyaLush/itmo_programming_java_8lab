@@ -1,15 +1,22 @@
 package test.laba.client.console;
 
-import test.laba.client.mainClasses.Location;
-import test.laba.client.mainClasses.UnitOfMeasure;
-import test.laba.client.mainClasses.Coordinates;
-import test.laba.client.mainClasses.Person;
-import test.laba.client.mainClasses.Product;
+import test.laba.client.dataClasses.Location;
+import test.laba.client.dataClasses.UnitOfMeasure;
+import test.laba.client.dataClasses.Coordinates;
+import test.laba.client.dataClasses.Person;
+import test.laba.client.dataClasses.Product;
 
 import java.util.HashMap;
 
-
+/**
+ * class is responsible for creation info collection string for xml file
+ */
 public class SaveCollection {
+    /**
+     *
+     * @param productHashMap collection for saving
+     * @return creation info collection string for xml file
+     */
     public String save(HashMap<Long, Product> productHashMap) {
         StringBuilder s = new StringBuilder("<root>" + '\n' + '\t');
 

@@ -1,4 +1,4 @@
-package test.laba.client.mainClasses;
+package test.laba.client.dataClasses;
 
 
 import test.laba.client.exception.CreateError;
@@ -13,7 +13,9 @@ import java.util.Objects;
 
 @XmlRootElement(name = "product")
 @XmlType(propOrder = { "name", "coordinates", "price", "manufactureCost", "unitOfMeasure", "owner" })
-
+/**
+ * main data class
+ */
 public class  Product implements Comparable<Product> {
     private long id; //Значение поля должно быть больше 0, Значение этого поля должно быть уникальным, Значение этого поля должно генерироваться автоматически
     private String name; //Поле не может быть null, Строка не может быть пустой
@@ -25,9 +27,24 @@ public class  Product implements Comparable<Product> {
     private Person owner; //Поле может быть null
 
     @SuppressWarnings("all")
+    /**
+     * the constructor which create only creation date
+     */
     public Product() {
         this.creationDate = ZonedDateTime.now();
     }
+
+    /**
+     * the constructor fill all fields and generate id
+     * @param name product name, type string, not null
+     * @param coordinates coordinates, not null
+     * @param price long price, not null and more than zero
+     * @param manufactureCost integer manufactureCost
+     * @param unitOfMeasure unit of measure, not null
+     * @param owner person, not null
+     * @param root object is responsible for collection
+     * @throws CreateError if variables are not right throws createError
+     */
     public Product(String name, Coordinates coordinates, Long price, Integer manufactureCost, UnitOfMeasure unitOfMeasure, Person owner, Root root) throws CreateError {
         if (name == null || name.isEmpty() || coordinates == null || price == null || price <= 0  || unitOfMeasure == null || owner == null) {
             throw new CreateError("Ошибка при создании объекта Product, обратите внимание:\n"
@@ -177,6 +194,12 @@ public class  Product implements Comparable<Product> {
 
     }
 
+
+    /**
+     * check product on match criteria of fields
+     * @param root object is responsible for collection
+     * @return true or false
+     */
     public boolean isRightProduct(Root root) {
         createID(root);
         return id > 0 && name != null && !"".equals(name) && coordinates != null && price != null && price > 0 && unitOfMeasure != null && owner != null && owner.isRightPerson() && coordinates.isRightCoordinates();

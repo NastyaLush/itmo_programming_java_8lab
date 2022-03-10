@@ -5,19 +5,33 @@ package test.laba.client.commands;
 import test.laba.client.console.Console;
 import test.laba.client.console.ConsoleParsing;
 import test.laba.client.exception.VariableException;
-import test.laba.client.mainClasses.Product;
-import test.laba.client.mainClasses.Root;
-import test.laba.client.mainClasses.UnitOfMeasure;
+import test.laba.client.dataClasses.Product;
+import test.laba.client.dataClasses.Root;
+import test.laba.client.dataClasses.UnitOfMeasure;
 
 import java.time.ZonedDateTime;
 
+/**
+ * update id command
+ */
 public class UpdateID extends AbstractCommand {
     private final Console console;
+
+    /**
+     * the constructor, add description and console
+     * @param console object for console working
+     */
     public UpdateID(Console console) {
         super("Update_ID", "обновить значение элемента коллекции, id которого равен заданному");
         this.console = console;
     }
 
+    /**
+     *
+     * @param root object contained collection
+     * @param id id for updating
+     * @param consoleParsing object is responsible for parsing from console
+     */
     public void execute(Root root, Long id, ConsoleParsing consoleParsing) {
         long key;
         // запрашиваем необходимо ли изменение и изменяем

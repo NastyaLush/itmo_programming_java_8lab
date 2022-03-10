@@ -2,6 +2,10 @@ package test.laba.client.commands;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
+
+/**
+ * history command
+ */
 public class History extends AbstractCommand {
     private Deque<String> history = new ArrayDeque<>();
     private Integer i = 0;
@@ -18,6 +22,10 @@ public class History extends AbstractCommand {
         }
     }
 
+    /**
+     * output the last 10 commands (without their arguments)
+     * @return sring with the last 10 commands (without their arguments)
+     */
     public  String execute() {
         return "History: " + history;
     }

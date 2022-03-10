@@ -10,7 +10,7 @@
 		<unitOfMeasure>GRAMS</unitOfMeasure>
 		<owner>
 			<name>Pavel</name>
-			<birthday>1212-12-12</birthday>
+			<birthday>11-11-1111 00:00:00</birthday>
 			<height>6</height>
 			<location>
 				<x>9</x> 
@@ -19,25 +19,6 @@
 			</location>
 		</owner>
 	</product><product>
-		<name>milka</name>
-		<coordinates>
-			<x>23</x>
-			<y>32.0</y>
-		</coordinates>
-		<price>1</price>
-		<manufactureCost>456</manufactureCost>
-		<unitOfMeasure>GRAMS</unitOfMeasure>
-		<owner>
-			<name>daria</name>
-			<birthday>1212-12-12</birthday>
-			<height>158</height>
-			<location>
-				<x>32</x> 
-				<y>23</y>
-				<name>23</name>
-			</location>
-		</owner>
-	</product><product>
 		<name>1</name>
 		<coordinates>
 			<x>3</x>
@@ -48,45 +29,7 @@
 		<unitOfMeasure>PCS</unitOfMeasure>
 		<owner>
 			<name>6</name>
-			<birthday>2004-12-12</birthday>
-			<height>8</height>
-			<location>
-				<x>1</x> 
-				<y>6</y>
-				<name>h</name>
-			</location>
-		</owner>
-	</product><product>
-		<name>2</name>
-		<coordinates>
-			<x>2</x>
-			<y>2.0</y>
-		</coordinates>
-		<price>2</price>
-		<manufactureCost>2</manufactureCost>
-		<unitOfMeasure>PCS</unitOfMeasure>
-		<owner>
-			<name>2</name>
-			<birthday>2004-12-03</birthday>
-			<height>3</height>
-			<location>
-				<x>3</x> 
-				<y>3</y>
-				<name>3</name>
-			</location>
-		</owner>
-	</product><product>
-		<name>1</name>
-		<coordinates>
-			<x>3</x>
-			<y>3.0</y>
-		</coordinates>
-		<price>3</price>
-		<manufactureCost>4</manufactureCost>
-		<unitOfMeasure>PCS</unitOfMeasure>
-		<owner>
-			<name>6</name>
-			<birthday>2004-12-12</birthday>
+			<birthday>12-10-1212 00:00:00</birthday>
 			<height>8</height>
 			<location>
 				<x>1</x> 

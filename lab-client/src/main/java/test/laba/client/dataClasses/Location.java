@@ -1,4 +1,4 @@
-package test.laba.client.mainClasses;
+package test.laba.client.dataClasses;
 
 
 import test.laba.client.console.Console;
@@ -7,6 +7,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import java.util.Comparator;
 
+/**
+ * data class
+ */
 @XmlRootElement(name = "location")
 @XmlType(propOrder = { "x", "y", "name" })
 public class Location implements Comparable<Location> {
@@ -17,6 +20,9 @@ public class Location implements Comparable<Location> {
     public Location() {
     }
     @SuppressWarnings("all")
+    /**
+     * the constructor create location object
+     */
     public Location(Long x, Integer y, String s, Console console) {
         if (x != null) {
             this.x = x;

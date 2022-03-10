@@ -4,20 +4,28 @@ package test.laba.client.console;
 
 import test.laba.client.exception.CreateError;
 import test.laba.client.exception.VariableException;
-import test.laba.client.mainClasses.Location;
-import test.laba.client.mainClasses.UnitOfMeasure;
-import test.laba.client.mainClasses.Coordinates;
-import test.laba.client.mainClasses.Person;
-import test.laba.client.mainClasses.Product;
-import test.laba.client.mainClasses.Root;
+import test.laba.client.dataClasses.Location;
+import test.laba.client.dataClasses.UnitOfMeasure;
+import test.laba.client.dataClasses.Coordinates;
+import test.laba.client.dataClasses.Person;
+import test.laba.client.dataClasses.Product;
+import test.laba.client.dataClasses.Root;
 import java.time.ZonedDateTime;
 
-
+/**
+ * the class is responsible for work with creating products from console
+ */
 public  class ConsoleParsing extends VariableParsing implements Variable {
 
     public ConsoleParsing(Console console) {
         super(console);
     }
+
+    /**
+     * create java object accept data from console
+     * @param root root contained collection
+     * @return product object
+     */
     public Product parsProductFromConsole(Root root) {
         String name = parsField("Введите название продукта: ", console, this::toRightName);
         Coordinates coordinates = parsCoordinatesFromConsole();
@@ -72,17 +80,17 @@ public  class ConsoleParsing extends VariableParsing implements Variable {
                 String simpleField = console.scanner();
                 value = (T) pars.function(simpleField);
                 break;
-            } catch (VariableException | NumberFormatException e) {
+            } catch (VariableException | IllegalArgumentException e) {
                 console.printError("Не правильный тип данных");
             }
         }
         return value;
     }
-    public String getEnvVariable() {
+    protected String getEnvVariable() {
         return Variable.ENV_VARIBLE;
     }
-    private interface IFunction {
-        Object function(String oldField);
+    private interface IFunction<T> {
+        T function(String oldField);
     }
 }
 

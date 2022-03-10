@@ -5,14 +5,27 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
+/**
+ * the class is responsible for work with script
+ */
 public class ScriptConsole extends Console {
     private final BufferedReader reader;
-    private FileReader fileReader;
+    private final FileReader fileReader;
 
+    /**
+     * the constructor accept file for reading and buffered reader
+     * @param reader buffered reader
+     * @param fileReader file reader
+     */
     public ScriptConsole(BufferedReader reader, FileReader fileReader) {
         this.reader = reader;
         this.fileReader = fileReader;
     }
+
+    /**
+     * scan a line from script
+     * @return line from script
+     */
     public String scanner()  {
         String command;
         try {
@@ -22,9 +35,19 @@ public class ScriptConsole extends Console {
             return null;
         }
     }
+
+    /**
+     * print argument to console
+     * @param object object for print
+     */
     public void print(Object object) {
         System.out.println(object);
     }
+
+    /**
+     * print error on console and close file and buffered reader
+     * @param object object for print with red text
+     */
     public void  printError(Object object)  {
         System.out.println(ansiRed + object + ansiReset);
         try {
@@ -36,15 +59,32 @@ public class ScriptConsole extends Console {
             throw new ScriptError();
         }
     }
+
+    /**
+     * to nothing override from parent class
+     * @param object object for asking
+     */
     public void ask(Object object) {
     }
-    public String askFullQuestion(String s) {
-        ask(s);
+
+    /**
+     * ask question and return answer
+     * @param question question for asking
+     * @return answer
+     */
+    public String askFullQuestion(String question) {
+        ask(question);
         return scanner();
     }
-    public boolean askQuestion(String s) {
+
+    /**
+     * ask question and return true if answer was yes, another case false
+     * @param question question for asking
+     * @return answer
+     */
+    public boolean askQuestion(String question) {
         String answer;
-        ask(s);
+        ask(question);
         answer = scanner().toLowerCase();
         if ("да".equals(answer) || "yes".equals(answer)) {
             return true;
@@ -53,6 +93,6 @@ public class ScriptConsole extends Console {
             return false;
         }
         printError("Ответ не распознан, пожалуйста введите да или нет");
-        return askQuestion(s);
+        return askQuestion(question);
     }
 }

@@ -8,20 +8,31 @@ import test.laba.client.console.SaveCollection;
 import test.laba.client.console.ScriptConsole;
 import test.laba.client.exception.CommandWithoutArguments;
 import test.laba.client.exception.ScriptError;
-import test.laba.client.mainClasses.Root;
+import test.laba.client.dataClasses.Root;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
-
+/**
+ * execute script command
+ */
 public class ExecuteScript extends AbstractCommand {
-    private Console console;
+    private final Console console;
     public ExecuteScript(Console console) {
         super("Execute_script", "считать и исполнить скрипт из указанного файла. В скрипте содержатся команды в таком же виде, в котором их вводит пользователь в интерактивном режиме.");
         this.console = console;
     }
+
+    /**
+     * execute script
+     * @param fileName name file for work
+     * @param root object contained collection values
+     * @param fileManager object for work with file
+     * @throws CommandWithoutArguments throws if variable parsing is impossible
+     * @throws IOException throws if work with file is impossible
+     */
     public void execute(String fileName, Root root, FileManager fileManager) throws CommandWithoutArguments, IOException {
         try (FileReader fr = new FileReader(fileName)) {
             BufferedReader reader = new BufferedReader(fr);

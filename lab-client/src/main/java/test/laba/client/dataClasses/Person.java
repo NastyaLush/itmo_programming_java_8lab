@@ -1,4 +1,4 @@
-package test.laba.client.mainClasses;
+package test.laba.client.dataClasses;
 
 
 import test.laba.client.console.Console;
@@ -9,12 +9,16 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.time.DateTimeException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 
+/**
+ * data class
+ */
 @XmlRootElement(name = "owner")
 public class Person implements Comparable<Person> {
     private String name; //Поле не может быть null, Строка не может быть пустой
@@ -25,6 +29,15 @@ public class Person implements Comparable<Person> {
     public  Person() {
     }
 
+    /**
+     * the consrtructo create object person
+     * @param name person name, not null
+     * @param birthday person birthday, not null
+     * @param height person height, not null and more than zero
+     * @param location person losation, not null
+     * @param console console for work
+     * @throws CreateError throws if fields do not match the criteria
+     */
     @SuppressWarnings("all")
     public Person(String name, ZonedDateTime birthday, Integer height, Location location, Console console) throws CreateError {
         if (name == null || name.isEmpty() || height <= 0  || location == null) {
@@ -45,11 +58,8 @@ public class Person implements Comparable<Person> {
         return name;
     }
     public String getBirthday() {
-        final int numberOfSingleDigit = 10;
-        String s = birthday.getYear() + "-";
-        s +=  (birthday.getDayOfMonth() < numberOfSingleDigit) ? "0" + birthday.getDayOfMonth() : birthday.getDayOfMonth() + "-";
-        s +=  (birthday.getMonthValue() < numberOfSingleDigit) ? "0" + birthday.getMonthValue() : birthday.getMonthValue();
-        return s;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+        return birthday.format(formatter);
     }
     public Integer getHeight() {
         return height;
@@ -67,10 +77,17 @@ public class Person implements Comparable<Person> {
     @XmlElement
     public void setBirthday(String birthday) {
         try {
-            LocalDate parsed = LocalDate.parse(birthday, DateTimeFormatter.ISO_LOCAL_DATE);
-            this.birthday  = ZonedDateTime.of(parsed, LocalTime.MIDNIGHT, ZoneId.of("Europe/Berlin"));
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+            LocalDate parsed = LocalDate.parse(birthday, formatter);
+            this.birthday = ZonedDateTime.of(parsed, LocalTime.MIDNIGHT, ZoneId.of("Europe/Berlin"));
         } catch (DateTimeException e) {
-            throw new VariableException("Неправильный формат данных, повторите ввод в формате ГГГГ-ММ-ДД");
+            try {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+                LocalDateTime parsed = LocalDateTime.parse(birthday, formatter);
+                this.birthday = ZonedDateTime.of(parsed, ZoneId.of("Europe/Berlin"));
+            } catch (DateTimeException exception) {
+                throw new VariableException("Неправильный формат данных, повторите ввод в формате ДД-MM-ГГГГ или ДД-ММ-ГГГГ ЧЧ:ММ:СС, вы ввели: " + birthday);
+            }
         }
     }
     public void setHeight(Integer height) {
@@ -87,7 +104,7 @@ public class Person implements Comparable<Person> {
 
     @Override
     public String toString() {
-        return "Person:"
+        return "Person: "
                 + "name=" + name
                 + ", birthday=" + getBirthday()
                 + ", height=" + height

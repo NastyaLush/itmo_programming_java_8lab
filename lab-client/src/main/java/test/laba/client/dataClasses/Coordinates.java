@@ -1,4 +1,4 @@
-package test.laba.client.mainClasses;
+package test.laba.client.dataClasses;
 
 
 import test.laba.client.console.Console;
@@ -7,7 +7,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import java.util.Comparator;
 
-
+/**
+ * data class
+ */
 @XmlRootElement(name = "coordinates")
 @XmlType(propOrder = { "x", "y" })
 public class Coordinates implements Comparable<Coordinates> {
@@ -20,13 +22,15 @@ public class Coordinates implements Comparable<Coordinates> {
 
     public Coordinates() {
     }
-    @SuppressWarnings("all")
+    /**
+     * the constructor create location object
+     */
     public Coordinates(Integer x, Float y, Console console)  {
-            if (x >= minNumberOfX) {
-                this.x = x;
-            }
-            this.y = y;
-            this.console = console;
+        if (x >= minNumberOfX) {
+            this.x = x;
+        }
+        this.y = y;
+        this.console = console;
 
     }
 

@@ -1,4 +1,8 @@
 package test.laba.client.commands;
+
+/**
+ * abstract class, contains getters and setters
+ */
 public abstract class AbstractCommand implements AbstractCommandInterface {
     private final String description;
     private final String name;

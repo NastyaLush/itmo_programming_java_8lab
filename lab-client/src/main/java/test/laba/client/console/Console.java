@@ -3,29 +3,60 @@ package test.laba.client.console;
 
 import test.laba.client.exception.CommandWithArguments;
 import test.laba.client.exception.CommandWithoutArguments;
-import test.laba.client.mainClasses.Root;
+import test.laba.client.dataClasses.Root;
 
 import java.util.Scanner;
 
-
+/**
+ * the class is responsible for work with console and choose command for run
+ */
 public class Console {
     protected final String ansiReset = "\u001B[0m";
     protected final String ansiRed = "\u001B[31m";
     private final Scanner userScanner = new Scanner(System.in);
+
+    /**
+     * scan line from console
+     * @return scanning string
+     */
     public String scanner()  {
         return userScanner.nextLine();
     }
+
+    /**
+     * print the argument
+     * @param object object for printing
+     */
     public void print(Object object) {
       System.out.println(object);
     }
+
+    /**
+     * print the argument with red text
+     * @param object object for printing with red text
+     */
     public void  printError(Object object) {
         System.out.println(ansiRed + object + ansiReset);
     }
+
+    /**
+     * print the argument
+     * @param object object for printing
+     */
     public void  ask(Object object) {
         System.out.println(object);
     }
 
-    public void interactivelyMode(Root root, CommandsManager commandsManager, FileManager fileManager, Console console, ConsoleParsing parsingInterface) throws CommandWithoutArguments {
+    /**
+     * separates command and arguments. transmits for implementations
+     * @param root object contained collection
+     * @param commandsManager object is responsible for implements command
+     * @param fileManager object worked with file
+     * @param console object worked with console
+     * @param consoleParsing object is responsible for parsing from console
+     * @throws CommandWithoutArguments throws if command accept wrong argument
+     */
+    public void interactivelyMode(Root root, CommandsManager commandsManager, FileManager fileManager, Console console, ConsoleParsing consoleParsing) throws CommandWithoutArguments {
         print("Программа в интерактивном режиме, для получения информации о возможностях, введите help ");
         String[] command;
         boolean flag = true;
@@ -42,11 +73,22 @@ public class Console {
             command[numberOfArguments] = command[numberOfArguments].trim();
             command[numberOfCommand] = command[numberOfCommand].toLowerCase();
             commandsManager.getHistory().addToHistory(command[numberOfCommand]);
-            flag = command(command, root, commandsManager, fileManager, console, parsingInterface);
+            flag = command(command, root, commandsManager, fileManager, console, consoleParsing);
             System.out.println("команда обработана");
         }
 
     }
+
+    /**
+     * chose command for implementation
+     * @param command command name
+     * @param root object contained collection
+     * @param commandsManager object is responsible for implements command
+     * @param fileManager object worked with file
+     * @param console object worked with console
+     * @param consoleParsing object is responsible for parsing from console
+     * @throws CommandWithoutArguments throws if command accept wrong argument
+     */
     public boolean command(String[] command, Root root, CommandsManager commandsManager, FileManager fileManager, Console console, ConsoleParsing consoleParsing) throws CommandWithoutArguments  {
        boolean flag;
         try {
@@ -86,7 +128,7 @@ public class Console {
        }
         return flag;
     }
-    private boolean commandHelper(String[] command, Root root, CommandsManager commandsManager, FileManager fileManager, Console console, ConsoleParsing consoleParsing) throws CommandWithoutArguments {
+    private boolean commandHelper(String[] command, Root root, CommandsManager commandsManager, FileManager fileManager, Console console, ConsoleParsing consoleParsing) throws CommandWithoutArguments, CommandWithArguments {
         boolean flag = true;
         switch (command[0].trim()) {
             case "remove_key" :
@@ -119,7 +161,7 @@ public class Console {
         }
         return flag;
     }
-    public boolean commandHelper2(String[] command, Root root, CommandsManager commandsManager, FileManager fileManager, Console console, ConsoleParsing consoleParsing) throws CommandWithoutArguments {
+    public boolean commandHelper2(String[] command, Root root, CommandsManager commandsManager, FileManager fileManager, Console console, ConsoleParsing consoleParsing) throws CommandWithoutArguments, CommandWithArguments {
         switch (command[0].trim()) {
             case "execute_script":
                 commandsManager.executeScript(command[1], root, fileManager, console);
@@ -147,9 +189,15 @@ public class Console {
         }
         return true;
     }
-    public boolean askQuestion(String s) {
+
+    /**
+     * print question and return true if answer yes, another case false
+     * @param question question for answering
+     * @return true if answer yes, false if answer no
+     */
+    public boolean askQuestion(String question) {
         String answer;
-        ask(s);
+        ask(question);
         answer = scanner().toLowerCase();
         if ("да".equals(answer) || "yes".equals(answer)) {
             return true;
@@ -158,10 +206,16 @@ public class Console {
             return false;
         }
         printError("Ответ не распознан, пожалуйста введите да или нет");
-        return askQuestion(s);
+        return askQuestion(question);
     }
-    public String askFullQuestion(String s) {
-        ask(s);
+
+    /**
+     * print question and return answer
+     * @param question question for answering
+     * @return answer
+     */
+    public String askFullQuestion(String question) {
+        ask(question);
         return scanner();
     }
 
