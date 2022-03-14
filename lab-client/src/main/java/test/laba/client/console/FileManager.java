@@ -57,7 +57,7 @@ public class FileManager implements Variable  {
         int numberOfCommand = 0;
         int numberOfArguments = 1;
         int numberOfBeginTrim = 2;
-        while (reader != null && reader.readLine() != null) {
+        while (reader.ready()) {
             command = (reader.readLine().trim() + " ").split(" ", limitOfWords);
             for (int i = numberOfBeginTrim; i < command.length; i++) {
                 command[numberOfArguments] += " " + command[i];

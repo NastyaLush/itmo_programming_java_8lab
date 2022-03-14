@@ -18,6 +18,6 @@ public class InsertNull extends AbstractCommand {
      * @param consoleParsing object is responsible for parsing from console
      */
     public void execute(Root root, String arg, ConsoleParsing consoleParsing) {
-         root.setProductWithKey(consoleParsing.parsProductFromConsole(root), consoleParsing.createKey(arg));
+         root.setProductWithKey(consoleParsing.createKey(arg), consoleParsing.parsProductFromConsole(root));
     }
 }

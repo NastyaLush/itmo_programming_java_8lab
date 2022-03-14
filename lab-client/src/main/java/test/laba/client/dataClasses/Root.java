@@ -51,7 +51,7 @@ public class Root {
         products.put(createKey(), product);
         dateOfCreation = ZonedDateTime.now();
     }
-    public void setProductWithKey(Product product, Long key) {
+    public void setProductWithKey(Long key, Product product) {
         products.put(key, product);
         dateOfCreation = ZonedDateTime.now();
     }

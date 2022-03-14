@@ -74,7 +74,7 @@ public class Console {
             command[numberOfCommand] = command[numberOfCommand].toLowerCase();
             commandsManager.getHistory().addToHistory(command[numberOfCommand]);
             flag = command(command, root, commandsManager, fileManager, console, consoleParsing);
-            System.out.println("команда обработана");
+            System.out.println("command finished");
         }
 
     }

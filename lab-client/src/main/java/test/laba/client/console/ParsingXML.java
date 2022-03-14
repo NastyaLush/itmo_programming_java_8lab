@@ -22,7 +22,7 @@ public class ParsingXML extends ConsoleParsing {
      */
     public ParsingXML(Console console) throws FileNotFoundException {
         super(console);
-        if(getEnvVarible() != null) {
+        if (getEnvVarible() != null) {
             fileReader = new FileReader(getEnvVariable());
         } else {
             throw new FileNotFoundException();
