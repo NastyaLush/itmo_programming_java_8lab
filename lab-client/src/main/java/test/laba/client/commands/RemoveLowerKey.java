@@ -19,7 +19,7 @@ public class RemoveLowerKey extends AbstractCommand {
      */
     public void execute(String arg, Root root, ConsoleParsing consoleParsing) {
         Long key;
-        key = consoleParsing.toLongNumber(arg);
+        key = consoleParsing.createKey(arg);
         root.removeIfKeyLess(key);
     }
 }

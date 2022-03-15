@@ -38,7 +38,6 @@ public class Person implements Comparable<Person> {
      * @param console console for work
      * @throws CreateError throws if fields do not match the criteria
      */
-    @SuppressWarnings("all")
     public Person(String name, ZonedDateTime birthday, Integer height, Location location, Console console) throws CreateError {
         if (name == null || name.isEmpty() || height <= 0  || location == null) {
             throw new CreateError(" ошибка при создании объекта Person: проверьте данные"
@@ -104,11 +103,15 @@ public class Person implements Comparable<Person> {
 
     @Override
     public String toString() {
-        return "Person: "
-                + "name=" + name
-                + ", birthday=" + getBirthday()
-                + ", height=" + height
-                + ", location=" + location;
+        if (name != null) {
+            return "Person: "
+                    + "name=" + name
+                    + ", birthday=" + getBirthday()
+                    + ", height=" + height
+                    + ", location=" + location;
+        } else {
+            return "Person: " + "null";
+        }
     }
 
     @Override

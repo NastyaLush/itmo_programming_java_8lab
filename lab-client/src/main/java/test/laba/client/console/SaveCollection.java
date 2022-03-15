@@ -68,8 +68,12 @@ public class SaveCollection {
         if (product.getUnitOfMeasure() != null) {
             s += "\t\t" + saveUnitOfMeasure(product.getUnitOfMeasure()) + '\n';
         }
-        s += "\t\t" + savePerson(product.getOwner()) + '\n' + '\t'
-                + "</product>";
+        if (product.getOwner() != null && product.getOwner().getName() != null) {
+            s += "\t\t" + savePerson(product.getOwner()) + '\n' + '\t';
+        } else {
+            s += "\t\t" + "<owner>" + null + "</owner>" + '\n' + '\t';
+        }
+        s += "</product>";
         return s;
 
     }

@@ -5,6 +5,7 @@ import test.laba.client.dataClasses.Root;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -36,9 +37,13 @@ public class ParsingXML extends ConsoleParsing {
      * @throws IOException throws if parsing impossible
      */
     public Root createJavaObjects() throws JAXBException, IOException {
-        JAXBContext context = JAXBContext.newInstance(Root.class);
-        Unmarshaller unmarshaller = context.createUnmarshaller();
-        return (Root) unmarshaller.unmarshal(fileReader);
+        File file = new File(getEnvVariable());
+        if (file.length() != 0) {
+            JAXBContext context = JAXBContext.newInstance(Root.class);
+            Unmarshaller unmarshaller = context.createUnmarshaller();
+            return (Root) unmarshaller.unmarshal(fileReader);
+        }
+        return new Root();
     }
 
     /**

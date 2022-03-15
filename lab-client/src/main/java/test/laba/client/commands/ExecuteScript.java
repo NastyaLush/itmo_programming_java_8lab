@@ -15,6 +15,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
+
 /**
  * execute script command
  */
@@ -36,17 +37,25 @@ public class ExecuteScript extends AbstractCommand {
     public void execute(String fileName, Root root, FileManager fileManager) throws CommandWithoutArguments, IOException {
         try (FileReader fr = new FileReader(fileName)) {
             BufferedReader reader = new BufferedReader(fr);
+            root.addToStack(fileName);
             ScriptConsole scriptConsole = new ScriptConsole(reader, fr);
             SaveCollection saveCollection = new SaveCollection();
             ConsoleParsing consoleParsing = new ConsoleParsing(scriptConsole);
             CommandsManager commandsManager = new CommandsManager(saveCollection, scriptConsole);
-            fileManager.readScript(reader, root, commandsManager, fileManager, consoleParsing, scriptConsole);
+            if (!root.containsInStack(fileName)) {
+                fileManager.readScript(reader, root, commandsManager, fileManager, consoleParsing, scriptConsole);
+            } else {
+                console.printError("обнаружен цикл, невозможно выполнить скрипт");
+                root.cleanStack();
+            }
         } catch (FileNotFoundException e) {
             console.printError("Файл не найден, проверьте путь: " + fileName);
         } catch (IOException e) {
-            console.printError("не удалось выпллнить скрипт");
+            console.printError("не удалось выполнить скрипт");
         } catch (ScriptError e) {
-            console.printError("ошибка при выполнении скрипта");
+            console.printError(e);
+        } catch (StackOverflowError e) {
+            console.printError("в цикле появилась бесконечный цикл");
         }
 
     }

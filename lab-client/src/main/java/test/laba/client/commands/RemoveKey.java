@@ -18,7 +18,7 @@ public class RemoveKey extends AbstractCommand {
      * @param consoleParsing  object is responsible for parsing from console
      */
     public void execute(String arg, Root root, ConsoleParsing consoleParsing)  {
-        Long key = consoleParsing.toLongNumber(arg);
+        Long key = consoleParsing.createKey(arg);
         root.remove(key);
     }
 }

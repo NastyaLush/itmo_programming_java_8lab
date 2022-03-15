@@ -143,7 +143,11 @@ public class CommandsManager {
         if (!isArguments(arg)) {
             throw new CommandWithArguments("Команда " + insertNull.getName() + " должна принимать аргументы, а именно ключ нового элемента. Обратите внимание сначала идет команда, затем через пробел аргументы", console);
         }
-        insertNull.execute(root, arg, consoleParsing);
+        try {
+            insertNull.execute(root, arg, consoleParsing);
+        } catch (IllegalArgumentException e) {
+            console.printError("Введен неправильный ключ");
+        }
     }
     /**
      * check accept command arguments or not and execute command, check argument for compliance with requirements
@@ -162,25 +166,16 @@ public class CommandsManager {
         boolean flag = true;
         Product product;
             //проверка соответствия формата ID
-            while (flag) {
-                try {
-                    id = Long.parseLong(argument);
-                    flag = false;
-                } catch (NumberFormatException e) {
-                    console.printError("Неправильный формат ввода, ожидалось число, повторите попытку");
-                    console.print("Введите ID");
-                    argument = console.scanner();
+            try {
+                id = Long.parseLong(argument);
+                //проверка существования ID
+                if (!root.containsID(id)) {
+                    console.print("Данного ID не существует");
+                } else {
+                    updateID.execute(root, id, consoleParsing);
                 }
-            }
-
-            //проверка существования ID
-            if (!root.containsID(id)) {
-                console.print("Данного ID не существует, идет создание нового объекта");
-               product = consoleParsing.parsProductFromConsole(root);
-               product.setId(id);
-               root.setProduct(product);
-            } else {
-               updateID.execute(root, id, consoleParsing);
+            } catch (NumberFormatException e) {
+                console.printError("Неправильный формат ввода, ожидалось число, повторите попытку");
             }
         }
     /**
@@ -195,7 +190,11 @@ public class CommandsManager {
         if (!isArguments(arg)) {
             throw new CommandWithArguments("Команда " + removeKey.getName() + " должна принимать аргументы, а именно ключ элемента, который надо удалить. Обратите внимание сначала идет команда, затем через пробел аргументы", console);
         }
-        removeKey.execute(arg, root, consoleParsing);
+        try {
+            removeKey.execute(arg, root, consoleParsing);
+        } catch (IllegalArgumentException e) {
+            console.printError("Введен неправильный ключ, ожидалось число типа long");
+        }
     }
     /**
      * check accept command arguments or not and execute command
@@ -243,8 +242,10 @@ public class CommandsManager {
         }
         try {
             executeScript.execute(arg, root, fileManager);
+            root.deleteFromStack(arg);
         } catch (java.io.IOException | CommandWithoutArguments e) {
             console.printError("Ошибка при выполнении скрипта");
+            root.cleanStack();
         }
     }
 
@@ -302,7 +303,11 @@ public class CommandsManager {
         if (!isArguments(arg)) {
             throw new CommandWithArguments("Команда " + removeLowerKey.getName() + " должна принимать аргументы", console);
         }
-        removeLowerKey.execute(arg, root, consoleParsing);
+        try {
+            removeLowerKey.execute(arg, root, consoleParsing);
+        } catch (IllegalArgumentException e) {
+            console.printError("Введен неверный ключ, ожидалось число типа long");
+        }
     }
 
     /**

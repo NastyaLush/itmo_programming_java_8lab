@@ -27,12 +27,15 @@ public  class ConsoleParsing extends VariableParsing implements Variable {
      * @return product object
      */
     public Product parsProductFromConsole(Root root) {
+        Person owner = null;
         String name = parsField("Введите название продукта: ", console, this::toRightName);
         Coordinates coordinates = parsCoordinatesFromConsole();
         Long price = parsField("Введите цену продукта, price: ", console, this::toRightPrice);
         Integer manufactureCost = parsField("Введите поле manufactureCost: ", console, this::toRightNumberInt);
         UnitOfMeasure unitOfMeasure = parsField("Введите unitOfMeasure, возможные варианты:PCS, MILLILITERS, GRAMS", console, this::toRightUnitOfMeasure);
-        Person owner = parsPersonFromConsole();
+        if (console.askQuestion("Хотите добавить владельца?")) {
+            owner = parsPersonFromConsole();
+        }
         Product product = null;
 
         try {
@@ -74,16 +77,22 @@ public  class ConsoleParsing extends VariableParsing implements Variable {
     }
     private <T> T parsField(String question, Console console, IFunction pars) {
     T value;
-        while (true) {
+    String simpleField = null;
             try {
                 console.ask(question);
-                String simpleField = console.scanner();
-                value = (T) pars.function(simpleField);
-                break;
+                simpleField = console.scanner();
+                if (simpleField != null) {
+                    value = (T) pars.function(simpleField);
+                } else {
+                    throw new VariableException("не может быть null", console);
+                }
+                if (value == null) {
+                    throw new VariableException("не может быть null", console);
+                }
             } catch (VariableException | IllegalArgumentException e) {
                 console.printError("Не правильный тип данных");
+                value = parsField(question, console, pars);
             }
-        }
         return value;
     }
     protected String getEnvVariable() {

@@ -4,7 +4,6 @@ package test.laba.client.console;
 import test.laba.client.exception.CommandWithArguments;
 import test.laba.client.exception.CommandWithoutArguments;
 import test.laba.client.dataClasses.Root;
-
 import java.util.Scanner;
 
 /**
@@ -14,6 +13,7 @@ public class Console {
     protected final String ansiReset = "\u001B[0m";
     protected final String ansiRed = "\u001B[31m";
     private final Scanner userScanner = new Scanner(System.in);
+
 
     /**
      * scan line from console
@@ -64,11 +64,7 @@ public class Console {
         int numberOfArguments = 1;
         int numberOfBeginTrim = 2;
         final int limit = 3;
-        print(2341);
-        while (flag) {
-            print(21341);
-            if(userScanner.hasNext()){
-                print(2341);
+        while (flag && userScanner.hasNext()) {
                 command = (userScanner.nextLine().trim() + " ").split(" ", limit);
                 for (int i = numberOfBeginTrim; i < command.length; i++) {
                     command[numberOfArguments] += " " + command[i];
@@ -79,9 +75,6 @@ public class Console {
                 commandsManager.getHistory().addToHistory(command[numberOfCommand]);
                 flag = command(command, root, commandsManager, fileManager, console, consoleParsing);
                 System.out.println("command finished");
-            } else {
-                flag = false;
-            }
         }
 
     }

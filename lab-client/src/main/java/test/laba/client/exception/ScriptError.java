@@ -1,7 +1,7 @@
 package test.laba.client.exception;
 public class ScriptError extends RuntimeException {
-    public ScriptError() {
-        super();
+    public ScriptError(String message) {
+        super(message);
     }
 
 }

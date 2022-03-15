@@ -13,7 +13,7 @@ public final class AverageOfManufactureCost extends AbstractCommand {
      * @param root object contained collection values
      * @return the average value of the manufacture Co st field for all items in the collection
      */
-    public Integer execute(Root root) {
+    public double execute(Root root) {
         if (root.getProducts().size() != 0) {
             return root.averageOfManufactureCost() / (root.getProducts().size());
         } else {

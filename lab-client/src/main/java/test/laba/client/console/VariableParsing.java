@@ -30,11 +30,12 @@ public  class VariableParsing {
 
     /**
      * pars string name to right field name (not null)
-     * @param name name for parsing
+     * @param oldName name for parsing
      * @return string with right name
      * @throws VariableException throws when parsing is impossible
      */
-    public  String toRightName(String name) throws VariableException {
+    public  String toRightName(String oldName) throws VariableException {
+        String name = oldName.trim();
         if (name == null || name.isEmpty()) {
             throw new VariableException("Данное поле не может быть пустым", console);
         }
@@ -102,18 +103,13 @@ public  class VariableParsing {
      * @throws VariableException throws when parsing is impossible
      */
     public  Integer toRightNumberInt(String number) throws VariableException {
-        Integer manufactureCost = null;
-        if (number == null || number.isEmpty()) {
-            return manufactureCost;
-        } else {
-
+        int manufactureCost;
             try {
                 manufactureCost = Integer.valueOf(number);
             } catch (NumberFormatException e) {
                 throw new VariableException("Неправильный тип переменной, ожидалось целое число типа int, вы ввели: " + number, console);
 
             }
-        }
         return manufactureCost;
     }
 
@@ -124,19 +120,12 @@ public  class VariableParsing {
      * @throws VariableException throws when parsing is impossible
      */
     public Long toRightNumberLong(String number) throws VariableException {
-        Long x = null;
-        if (number == null || number.isEmpty()) {
-            return x;
-        } else {
-            try {
-                x = Long.valueOf(number);
-            } catch (NumberFormatException e) {
-                throw new VariableException("Неправильный тип переменной, ожидалось целое число типа long, вы ввели: " + number, console);
+        try {
+            return Long.valueOf(number);
+        } catch (NumberFormatException e) {
+            throw new VariableException("Неправильный тип переменной, ожидалось целое число типа long, вы ввели: " + number, console);
 
-            }
         }
-        return x;
-
     }
 
     /**
@@ -211,19 +200,7 @@ public  class VariableParsing {
     }
     public Long createKey(String id) {
         String newID = id;
-        Long cid = null;
-        boolean flag = true;
-        while (flag) {
-            try {
-                cid = Long.valueOf(newID);
-                flag = false;
-            } catch (NumberFormatException e) {
-                console.printError("Неправильный формат ввода key, повторите попытку, вы ввели: " + newID);
-                console.print("Введите key:");
-                newID = console.scanner();
-            }
-        }
-        return cid;
+        return Long.valueOf(newID);
     }
 }
 

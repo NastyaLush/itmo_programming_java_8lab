@@ -56,7 +56,7 @@ public class ScriptConsole extends Console {
         } catch (IOException e) {
             super.printError("Ошибка при выполнении скрипта");
         } finally {
-            throw new ScriptError();
+            throw new ScriptError("ошибка при выполнении скрипта");
         }
     }
 

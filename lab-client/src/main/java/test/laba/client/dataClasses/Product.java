@@ -32,6 +32,7 @@ public class  Product implements Comparable<Product> {
      */
     public Product() {
         this.creationDate = ZonedDateTime.now();
+        this.owner = null;
     }
 
     /**
@@ -46,7 +47,7 @@ public class  Product implements Comparable<Product> {
      * @throws CreateError if variables are not right throws createError
      */
     public Product(String name, Coordinates coordinates, Long price, Integer manufactureCost, UnitOfMeasure unitOfMeasure, Person owner, Root root) throws CreateError {
-        if (name == null || name.isEmpty() || coordinates == null || price == null || price <= 0  || unitOfMeasure == null || owner == null) {
+        if (name == null || name.isEmpty() || coordinates == null || price == null || price <= 0  || unitOfMeasure == null) {
             throw new CreateError("Ошибка при создании объекта Product, обратите внимание:\n"
                     + "    Поле name может быть null и не может быть пустым\n"
                     + "    Поле coordinates не может быть null\n"
@@ -202,7 +203,11 @@ public class  Product implements Comparable<Product> {
      */
     public boolean isRightProduct(Root root) {
         createID(root);
-        return id > 0 && name != null && !"".equals(name) && coordinates != null && price != null && price > 0 && unitOfMeasure != null && owner != null && owner.isRightPerson() && coordinates.isRightCoordinates();
+        boolean s = id > 0 && name != null && !"".equals(name) && coordinates != null && price != null && price > 0 && unitOfMeasure != null && coordinates.isRightCoordinates();
+        if (owner.equals(null)) {
+            return s && owner != null && owner.isRightPerson();
+        }
+        return s;
     }
 
 }

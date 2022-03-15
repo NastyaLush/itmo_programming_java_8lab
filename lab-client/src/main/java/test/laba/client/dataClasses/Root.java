@@ -8,6 +8,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -20,6 +22,7 @@ public class Root {
     @XmlElement(name = "root")
     private HashMap<Long, Product> products = new HashMap<>();
     private ZonedDateTime dateOfCreation;
+    private HashSet<String> stack = new HashSet<>();
 
     /**
      * the constructor, create only date creation
@@ -163,9 +166,10 @@ public class Root {
      * @return string
      */
     public String showCollection() {
-        StringBuilder s = new StringBuilder("Products: ");
+        StringBuilder s = new StringBuilder("Products: \n");
         for (Map.Entry<Long, Product> entry : products.entrySet()) {
-            s.append("\n").append(entry.getValue());
+            s.append("Ключ: ").append(entry.getKey());
+            s.append(" ").append(entry.getValue()).append("\n");
         }
         return s.toString();
     }
@@ -185,8 +189,8 @@ public class Root {
      *
      * @return number average Of Manufacture Cost of products in collection
      */
-    public int averageOfManufactureCost() {
-        Integer answer = 0;
+    public double averageOfManufactureCost() {
+        double answer = 0.0;
         for (HashMap.Entry<Long, Product> prod : products.entrySet()) {
             if (prod.getValue().getManufactureCost() != null) {
                 answer += prod.getValue().getManufactureCost();
@@ -212,5 +216,23 @@ public class Root {
         }
         return countingByPrice;
 
+    }
+    public void addToStack(String filename) {
+        stack.add(filename);
+    }
+    public void cleanStack() {
+        stack.clear();
+    }
+    public void deleteFromStack(String fileName) {
+        stack.remove(fileName);
+    }
+    public boolean containsInStack(String fileName) {
+        Iterator iterator = stack.iterator();
+        while (iterator.hasNext()) {
+            if (fileName.equals(iterator.next())) {
+                return true;
+            }
+        }
+        return false;
     }
 }
