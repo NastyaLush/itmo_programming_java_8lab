@@ -218,7 +218,7 @@ public  class VariableParsing {
                 cid = Long.valueOf(newID);
                 flag = false;
             } catch (NumberFormatException e) {
-                console.printError("Неправильный формат ввода key, повторите попытку, вы ввели: " + id);
+                console.printError("Неправильный формат ввода key, повторите попытку, вы ввели: " + newID);
                 console.print("Введите key:");
                 newID = console.scanner();
             }

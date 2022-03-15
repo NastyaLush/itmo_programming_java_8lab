@@ -1,3 +1,0 @@
-ADSfS
-show
-execute_script файл.txt

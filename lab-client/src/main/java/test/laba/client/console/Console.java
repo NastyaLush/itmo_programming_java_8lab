@@ -64,17 +64,24 @@ public class Console {
         int numberOfArguments = 1;
         int numberOfBeginTrim = 2;
         final int limit = 3;
+        print(2341);
         while (flag) {
-            command = (userScanner.nextLine().trim() + " ").split(" ", limit);
-            for (int i = numberOfBeginTrim; i < command.length; i++) {
-                command[numberOfArguments] += " " + command[i];
-                command[i] = command[i].trim();
+            print(21341);
+            if(userScanner.hasNext()){
+                print(2341);
+                command = (userScanner.nextLine().trim() + " ").split(" ", limit);
+                for (int i = numberOfBeginTrim; i < command.length; i++) {
+                    command[numberOfArguments] += " " + command[i];
+                    command[i] = command[i].trim();
+                }
+                command[numberOfArguments] = command[numberOfArguments].trim();
+                command[numberOfCommand] = command[numberOfCommand].toLowerCase();
+                commandsManager.getHistory().addToHistory(command[numberOfCommand]);
+                flag = command(command, root, commandsManager, fileManager, console, consoleParsing);
+                System.out.println("command finished");
+            } else {
+                flag = false;
             }
-            command[numberOfArguments] = command[numberOfArguments].trim();
-            command[numberOfCommand] = command[numberOfCommand].toLowerCase();
-            commandsManager.getHistory().addToHistory(command[numberOfCommand]);
-            flag = command(command, root, commandsManager, fileManager, console, consoleParsing);
-            System.out.println("command finished");
         }
 
     }
