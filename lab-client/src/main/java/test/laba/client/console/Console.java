@@ -4,6 +4,7 @@ package test.laba.client.console;
 import test.laba.client.exception.CommandWithArguments;
 import test.laba.client.exception.CommandWithoutArguments;
 import test.laba.client.dataClasses.Root;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 /**
@@ -20,7 +21,8 @@ public class Console {
      * @return scanning string
      */
     public String scanner()  {
-        return userScanner.nextLine();
+       return userScanner.nextLine();
+
     }
 
     /**
@@ -89,32 +91,33 @@ public class Console {
      * @param consoleParsing object is responsible for parsing from console
      * @throws CommandWithoutArguments throws if command accept wrong argument
      */
-    public boolean command(String[] command, Root root, CommandsManager commandsManager, FileManager fileManager, Console console, ConsoleParsing consoleParsing) throws CommandWithoutArguments  {
+    public boolean command(String[] command, Root root, CommandsManager commandsManager, FileManager fileManager, Console console, ConsoleParsing consoleParsing) throws CommandWithoutArguments {
        boolean flag;
         try {
             switch (command[0].trim()) {
-                case "help":
-                    commandsManager.help(command[1], console);
-                    flag = true;
-                    break;
-
-                case "info" :
-                    commandsManager.info(command[1], root, console);
-                    flag = true;
-                    break;
-
                 case "show" :
                     commandsManager.show(command[1], root, console);
                     flag = true;
                     break;
 
                 case "insert_null" :
+                try {
                     commandsManager.insertNull(command[1].trim(), root, console, consoleParsing);
-                    return true;
+                    flag = true;
+                } catch (NoSuchElementException e) {
+                    console.printError("invalid argument");
+                    flag = false;
+                }
+                    return flag;
 
                 case "update_id" :
+                try {
                     commandsManager.updateID(command[1], root, console, consoleParsing);
                     flag = true;
+                } catch (NoSuchElementException e) {
+                    console.printError("invalid argument");
+                    flag = false;
+                }
                     break;
 
 
@@ -169,6 +172,13 @@ public class Console {
 
             case "average_of_manufacture_cost" :
                 commandsManager.averageOfManufactureCost(command[1], root, console);
+                break;
+            case "help":
+                commandsManager.help(command[1], console);
+                break;
+
+            case "info" :
+                commandsManager.info(command[1], root, console);
                 break;
 
             case "group_counting_by_price" :

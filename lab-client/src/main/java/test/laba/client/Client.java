@@ -29,6 +29,5 @@ public final class Client {
         if (root != null) {
             console.interactivelyMode(root, commandsManager, fileManager, console, parsingInterface);
         }
-
     }
 }
