@@ -4,11 +4,15 @@ import test.laba.client.exception.VariableException;
 import test.laba.client.dataClasses.Product;
 import test.laba.client.dataClasses.Root;
 
+import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.PropertyException;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.HashMap;
 
 
@@ -26,7 +30,7 @@ public class FileManager implements Variable  {
                 }
                 return root;
             } catch (JAXBException | IOException e) {
-                console.printError("Ошибка при попытке парсинга");
+                console.printError("Ошибка при попытке парсинга" + e);
             } catch (VariableException e) {
                 console.printError("");
             } finally {
@@ -45,12 +49,31 @@ public class FileManager implements Variable  {
             console.printError("Невозможно закрыть файл!");
         }
     }
-    public void save(Root root, SaveCollection saveCollection) throws IOException {
+    public void save(Root root) throws IOException {
         try (FileWriter fileWriter = new FileWriter(Variable.ENV_VARIBLE)) {
-            fileWriter.write(saveCollection.save(root.getProducts()));
+            fileWriter.write(saveCollection(root));
         }
     }
+    public String saveCollection(Root root) {
+        //писать результат сериализации будем в Writer(StringWriter)
+        StringWriter writer = new StringWriter();
+        try {
+            //создание объекта Marshaller, который выполняет сериализацию
+            JAXBContext context = JAXBContext.newInstance(Root.class);
+            Marshaller marshaller = context.createMarshaller();
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+            // сама сериализация
+            marshaller.marshal(root, writer);
 
+        } catch (PropertyException e) {
+            e.printStackTrace();
+        } catch (JAXBException e) {
+            e.printStackTrace();
+        }
+        //преобразовываем в строку все записанное в StringWriter
+        String result = writer.toString();
+        return result;
+    }
     public void readScript(BufferedReader reader, Root root, CommandsManager commandsManager, FileManager fileManager, ConsoleParsing consoleParsing, ScriptConsole scriptConsole) throws CommandWithoutArguments, IOException {
         String[] command;
         final int limitOfWords = 3;

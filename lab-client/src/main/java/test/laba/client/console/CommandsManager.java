@@ -1,6 +1,5 @@
 package test.laba.client.console;
 
-
 import test.laba.client.commands.AbstractCommand;
 import test.laba.client.commands.AverageOfManufactureCost;
 import test.laba.client.commands.Clear;
@@ -26,16 +25,15 @@ import test.laba.client.dataClasses.Root;
 import test.laba.client.dataClasses.UnitOfMeasure;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
  * class is responsible for implementation commands
  */
 public class CommandsManager {
+    private final HashMap<String, AbstractCommand> commands = new HashMap<>();
     private final AverageOfManufactureCost averageOfManufactureCost;
     private final Clear clear;
     private final ExecuteScript executeScript;
@@ -55,43 +53,41 @@ public class CommandsManager {
 
     /**
      * create command classes
-     * @param saveCollection object is responsible for saving collection
      * @param console object is responsible for work with console
      */
-    public CommandsManager(SaveCollection saveCollection, Console console) {
+    public CommandsManager(Console console) {
         this.executeScript = new ExecuteScript(console);
-        List<AbstractCommand> commands = new ArrayList<>();
-        commands.add(executeScript);
+        commands.put(executeScript.getName(), executeScript);
         this.info = new Info();
-        commands.add(info);
+        commands.put(info.getName(), info);
         this.averageOfManufactureCost = new AverageOfManufactureCost();
-        commands.add(averageOfManufactureCost);
+        commands.put(averageOfManufactureCost.getName(), averageOfManufactureCost);
         this.clear = new Clear();
-        commands.add(clear);
+        commands.put(clear.getName(), clear);
         this.exit = new Exit();
-        commands.add(exit);
+        commands.put(exit.getName(), exit);
         this.groupCountingByPrice = new GroupCountingByPrice();
-        commands.add(groupCountingByPrice);
-        this.help = new Help(commands);
-        commands.add(help);
+        commands.put(groupCountingByPrice.getName(), groupCountingByPrice);
+        this.help = new Help(commands.values());
+        commands.put(help.getName(), help);
         this.history = new History();
-        commands.add(history);
+        commands.put(history.getName(), history);
         this.insertNull = new InsertNull();
-        commands.add(insertNull);
+        commands.put(insertNull.getName(), insertNull);
         this.removeAnyByUnitOfMeasure = new RemoveAnyByUnitOfMeasure();
-        commands.add(removeAnyByUnitOfMeasure);
+        commands.put(removeAnyByUnitOfMeasure.getName(), removeAnyByUnitOfMeasure);
         this.removeKey = new  RemoveKey();
-        commands.add(removeKey);
+        commands.put(removeKey.getName(), removeKey);
         this.removeLower = new  RemoveLower();
-        commands.add(removeLower);
+        commands.put(removeLower.getName(), removeLower);
         this.removeLowerKey = new RemoveLowerKey();
-        commands.add(removeLowerKey);
-        this.save = new Save(saveCollection);
-        commands.add(save);
+        commands.put(removeLowerKey.getName(), removeLowerKey);
+        this.save = new Save();
+        commands.put(save.getName(), save);
         this.show = new Show();
-        commands.add(show);
+        commands.put(show.getName(), show);
         this.updateID = new UpdateID(console);
-        commands.add(updateID);
+        commands.put(updateID.getName(), updateID);
     }
     /**
      * check accept command arguments or not and execute command
@@ -99,6 +95,7 @@ public class CommandsManager {
      * @param console object is responsible for work with console
      * @throws CommandWithoutArguments throws if argument not right
      */
+
     public void help(String arg, Console console) throws CommandWithoutArguments {
         if (isArguments(arg)) {
             throw new CommandWithoutArguments("Команда " + help.getName() + " не принимает аргументы", console);

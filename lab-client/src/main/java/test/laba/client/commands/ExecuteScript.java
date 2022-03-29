@@ -4,7 +4,6 @@ import test.laba.client.console.CommandsManager;
 import test.laba.client.console.Console;
 import test.laba.client.console.ConsoleParsing;
 import test.laba.client.console.FileManager;
-import test.laba.client.console.SaveCollection;
 import test.laba.client.console.ScriptConsole;
 import test.laba.client.exception.CommandWithoutArguments;
 import test.laba.client.exception.ScriptError;
@@ -35,25 +34,25 @@ public class ExecuteScript extends AbstractCommand {
      * @throws IOException throws if work with file is impossible
      */
     public void execute(String fileName, Root root, FileManager fileManager) throws CommandWithoutArguments, IOException {
-        try (FileReader fr = new FileReader(fileName)) {
+        try (FileReader fr = new FileReader(fileName.trim())) {
             BufferedReader reader = new BufferedReader(fr);
-            root.addToStack(fileName);
             ScriptConsole scriptConsole = new ScriptConsole(reader, fr);
-            SaveCollection saveCollection = new SaveCollection();
             ConsoleParsing consoleParsing = new ConsoleParsing(scriptConsole);
-            CommandsManager commandsManager = new CommandsManager(saveCollection, scriptConsole);
+            CommandsManager commandsManager = new CommandsManager(scriptConsole);
             if (!root.containsInStack(fileName)) {
+                root.addToStack(fileName);
+                console.print("Идет выполнение скрипта: " + fileName);
                 fileManager.readScript(reader, root, commandsManager, fileManager, consoleParsing, scriptConsole);
             } else {
                 console.printError("обнаружен цикл, невозможно выполнить скрипт");
                 root.cleanStack();
             }
         } catch (FileNotFoundException e) {
-            console.printError("Файл не найден, проверьте путь: " + fileName);
+            console.printError("Файл не найден, проверьте путь или права:" + fileName);
         } catch (IOException e) {
             console.printError("не удалось выполнить скрипт");
         } catch (ScriptError e) {
-            console.printError(e);
+           // console.printError("");
         } catch (StackOverflowError e) {
             console.printError("в цикле появилась бесконечный цикл");
         }

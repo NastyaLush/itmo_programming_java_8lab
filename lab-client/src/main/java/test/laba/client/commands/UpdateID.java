@@ -49,18 +49,18 @@ public class UpdateID extends AbstractCommand {
 
     }
     private void changeNameProduct(Product product, ConsoleParsing consoleParsing) {
-        if (console.askQuestion("Хотите изменить название продукта?")) {
+        if (console.askQuestion("Хотите изменить название продукта?(yes/no/да/нет)")) {
             String answer = parsFieldFromConsole(consoleParsing::toRightName, product::getName, "Введите измененное имя:");
             product.setName(answer);
         }
     }
     private void changeCoordinates(Product product, ConsoleParsing consoleParsing) {
-        if (console.askQuestion("Хотите изменить координаты?")) {
-            if (console.askQuestion("Хотите изменить координату X?")) {
+        if (console.askQuestion("Хотите изменить координаты?(yes/no/да/нет)")) {
+            if (console.askQuestion("Хотите изменить координату X?(yes/no/да/нет)")) {
                 Integer x = parsFieldFromConsole(consoleParsing::toRightX, product.getCoordinates()::getX, "Введите координату х: ");
                 product.getCoordinates().setX(x);
             }
-            if (console.askQuestion("Хотите изменить координату Y?")) {
+            if (console.askQuestion("Хотите изменить координату Y?(yes/no/да/нет)")) {
                 Float y = parsFieldFromConsole(consoleParsing::toRightY, product.getCoordinates()::getY, "Введите координату y: ");
                 product.getCoordinates().setY(y);
             }
@@ -82,7 +82,7 @@ public class UpdateID extends AbstractCommand {
     }
     private void changeUnitOfMeasure(Product product, ConsoleParsing consoleParsing) {
         if (console.askQuestion("Хотите изменить unitOfMeasure?")) {
-            UnitOfMeasure unitOfMeasure = parsFieldFromConsole(consoleParsing::toRightUnitOfMeasure, product::getUnitOfMeasure, "Введите : unitOfMeasure");
+            UnitOfMeasure unitOfMeasure = parsFieldFromConsole(consoleParsing::toRightUnitOfMeasure, product::getUnitOfMeasure, "Введите : unitOfMeasure, варианты: " + product.getUnitOfMeasure().toString());
             product.setUnitOfMeasure(unitOfMeasure);
 
         }
@@ -90,34 +90,38 @@ public class UpdateID extends AbstractCommand {
     private void changePerson(Product product, ConsoleParsing consoleParsing) {
         if (console.askQuestion("Хотите изменить owner?")) {
             console.ask("Owner: " + product.getOwner());
-            changeNamePerson(product, consoleParsing);
-            changeBirthday(product, consoleParsing);
-            changeHeight(product, consoleParsing);
-            changeLocation(product, consoleParsing);
+            if (product.getOwner() != null) {
+                changeNamePerson(product, consoleParsing);
+                changeBirthday(product, consoleParsing);
+                changeHeight(product, consoleParsing);
+                changeLocation(product, consoleParsing);
+            } else {
+                product.setOwner(consoleParsing.parsPersonFromConsole());
+            }
         }
     }
 
     private void changeNamePerson(Product product, ConsoleParsing consoleParsing) {
-        if (console.askQuestion("Хотите изменить имя владельца?")) {
+        if (console.askQuestion("Хотите изменить имя владельца?(yes/no/да/нет)")) {
             String answer = parsFieldFromConsole(consoleParsing::toRightName, product.getOwner()::getName, "Введите имя владельца: ");
             product.getOwner().setName(answer);
         }
     }
     private void changeBirthday(Product product, ConsoleParsing consoleParsing) {
-        if (console.askQuestion("Хотите изменить дату рождения владельца?")) {
-            ZonedDateTime birthday = parsFieldFromConsole(consoleParsing::toRightBirthday, product.getOwner()::getBirthday, "Введите дату рождения владельца: ");
+        if (console.askQuestion("Хотите изменить дату рождения владельца?(yes/no/да/нет)")) {
+            ZonedDateTime birthday = parsFieldFromConsole(consoleParsing::toRightBirthday, product.getOwner()::getBirthday, "Введите дату рождения владельца в формате ДД-MM-ГГГГ или ДД-ММ-ГГГГ ЧЧ:ММ:СС: ");
             product.getOwner().setBirthday(birthday);
         }
     }
     private void changeHeight(Product product, ConsoleParsing consoleParsing) {
-        if (console.askQuestion("Хотите изменить рост владельца?")) {
+        if (console.askQuestion("Хотите изменить рост владельца?(yes/no/да/нет)")) {
             Integer height = parsFieldFromConsole(consoleParsing::toRightHeight, product.getOwner()::getHeight, "Введите рост владельца: ");
             product.getOwner().setHeight(height);
         }
     }
     private void changeLocation(Product product, ConsoleParsing consoleParsing) {
 
-        if (console.askQuestion("Хотите изменить локацию владельца?")) {
+        if (console.askQuestion("Хотите изменить локацию владельца?(yes/no/да/нет)")) {
             console.ask("Location: " + product.getOwner().getLocation());
             changeLocationX(product, consoleParsing);
             changeLocationY(product, consoleParsing);
@@ -126,19 +130,19 @@ public class UpdateID extends AbstractCommand {
     }
 
     private void changeLocationX(Product product, ConsoleParsing consoleParsing) {
-        if (console.askQuestion("Хотите изменить координату х локации?")) {
+        if (console.askQuestion("Хотите изменить координату х локации?(yes/no/да/нет)")) {
             Long xLocation = parsFieldFromConsole(consoleParsing::toRightNumberLong, product.getOwner().getLocation()::getX, "Введите координату х: ");
             product.getOwner().getLocation().setX(xLocation);
         }
     }
     private void changeLocationY(Product product, ConsoleParsing consoleParsing) {
-        if (console.askQuestion("Хотите изменить координату у локации?")) {
+        if (console.askQuestion("Хотите изменить координату у локации?(yes/no/да/нет)")) {
             Integer y = parsFieldFromConsole(consoleParsing::toRightNumberInt, product.getOwner().getLocation()::getY, "Введите координату y: ");
             product.getOwner().getLocation().setY(y);
         }
     }
     private void changeLocationName(Product product, ConsoleParsing consoleParsing) {
-        if (console.askQuestion("Хотите изменить название локации?")) {
+        if (console.askQuestion("Хотите изменить название локации?(yes/no/да/нет)")) {
             String answer = parsFieldFromConsole(consoleParsing::toRightName, product.getOwner().getLocation()::getName, "Введите название локации: ");
             product.getOwner().getLocation().setName(answer);
         }
@@ -147,6 +151,21 @@ public class UpdateID extends AbstractCommand {
         String answer;
         T value;
         console.ask("Значение поля сейчас: " + getField.getFunction());
+        while (true) {
+            answer = console.askFullQuestion(request);
+            try {
+                value = (T) pars.function(answer);
+                break;
+            } catch (VariableException | IllegalArgumentException e) {
+                console.printError("Неправильный тип данных, повторите ввод");
+            }
+        }
+        return value;
+    }
+    private <T> T  parsFieldFromConsole(IFunction pars, String request) {
+        String answer;
+        T value;
+        console.ask("Значение поля сейчас: " + null);
         while (true) {
             answer = console.askFullQuestion(request);
             try {

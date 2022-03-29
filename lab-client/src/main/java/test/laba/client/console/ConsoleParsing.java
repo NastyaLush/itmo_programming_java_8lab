@@ -33,7 +33,7 @@ public  class ConsoleParsing extends VariableParsing implements Variable {
         Long price = parsField("Введите цену продукта, price: ", console, this::toRightPrice);
         Integer manufactureCost = parsField("Введите поле manufactureCost: ", console, this::toRightNumberInt);
         UnitOfMeasure unitOfMeasure = parsField("Введите unitOfMeasure, возможные варианты:PCS, MILLILITERS, GRAMS", console, this::toRightUnitOfMeasure);
-        if (console.askQuestion("Хотите добавить владельца?")) {
+        if (console.askQuestion("Хотите добавить владельца?(yes/no/да/нет)")) {
             owner = parsPersonFromConsole();
         }
         Product product = null;
@@ -55,7 +55,7 @@ public  class ConsoleParsing extends VariableParsing implements Variable {
 
         return new Location(x, y, name, console);
     }
-    private  Person parsPersonFromConsole() {
+    public   Person parsPersonFromConsole() {
         String name = parsField("Введите имя владельца: ", console, this::toRightName);
         ZonedDateTime newBirthday = parsField("Введите дату рождения владельца: ", console, this::toRightBirthday);
         Integer height = parsField("Введите рост владельца: ", console, this::toRightHeight);

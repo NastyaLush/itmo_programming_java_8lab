@@ -2,7 +2,6 @@ package test.laba.client.dataClasses;
 
 
 import test.laba.client.exception.CreateError;
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import java.time.LocalDate;
@@ -12,7 +11,7 @@ import java.util.Map;
 import java.util.Objects;
 
 @XmlRootElement(name = "product")
-@XmlType(propOrder = { "name", "coordinates", "price", "manufactureCost", "unitOfMeasure", "owner" })
+@XmlType(propOrder = {"id", "name", "coordinates", "price", "manufactureCost", "unitOfMeasure", "owner" })
 /**
  * main data class
  */
@@ -43,7 +42,6 @@ public class  Product implements Comparable<Product> {
      * @param manufactureCost integer manufactureCost
      * @param unitOfMeasure unit of measure, not null
      * @param owner person, not null
-     * @param root object is responsible for collection
      * @throws CreateError if variables are not right throws createError
      */
     public Product(String name, Coordinates coordinates, Long price, Integer manufactureCost, UnitOfMeasure unitOfMeasure, Person owner, Root root) throws CreateError {
@@ -81,7 +79,6 @@ public class  Product implements Comparable<Product> {
                 + ", owner=" + owner + '\n';
     }
 
-    @XmlAttribute
     public void setId(long id) {
         this.id = id;
     }
@@ -202,9 +199,8 @@ public class  Product implements Comparable<Product> {
      * @return true or false
      */
     public boolean isRightProduct(Root root) {
-        createID(root);
         boolean s = id > 0 && name != null && !"".equals(name) && coordinates != null && price != null && price > 0 && unitOfMeasure != null && coordinates.isRightCoordinates();
-        if (owner.equals(null)) {
+        if (owner != null) {
             return s && owner != null && owner.isRightPerson();
         }
         return s;

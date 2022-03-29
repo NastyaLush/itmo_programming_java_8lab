@@ -11,8 +11,6 @@ import java.util.Scanner;
  * the class is responsible for work with console and choose command for run
  */
 public class Console {
-    protected final String ansiReset = "\u001B[0m";
-    protected final String ansiRed = "\u001B[31m";
     private final Scanner userScanner = new Scanner(System.in);
 
 
@@ -33,12 +31,15 @@ public class Console {
       System.out.println(object);
     }
 
+    public String toColor(String s, Colors colors) {
+        return colors + s + Colors.END;
+    }
     /**
      * print the argument with red text
      * @param object object for printing with red text
      */
     public void  printError(Object object) {
-        System.out.println(ansiRed + object + ansiReset);
+        System.out.println(toColor(object.toString(), Colors.RED));
     }
 
     /**
@@ -76,7 +77,7 @@ public class Console {
                 command[numberOfCommand] = command[numberOfCommand].toLowerCase();
                 commandsManager.getHistory().addToHistory(command[numberOfCommand]);
                 flag = command(command, root, commandsManager, fileManager, console, consoleParsing);
-                System.out.println("command finished");
+                System.out.println(toColor("command finished", Colors.GREEN));
         }
 
     }
@@ -208,7 +209,7 @@ public class Console {
     public boolean askQuestion(String question) {
         String answer;
         ask(question);
-        answer = scanner().toLowerCase();
+        answer = scanner().toLowerCase().trim();
         if ("да".equals(answer) || "yes".equals(answer)) {
             return true;
         }

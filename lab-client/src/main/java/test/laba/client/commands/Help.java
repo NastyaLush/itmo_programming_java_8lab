@@ -1,13 +1,15 @@
 package test.laba.client.commands;
 
-import java.util.List;
+import test.laba.client.console.Colors;
+import java.util.Collection;
+
 
 /**
  * help command
  */
 public class Help extends AbstractCommand {
-    private final List<AbstractCommand> commands;
-    public Help(List<AbstractCommand> commands) {
+    private final Collection<AbstractCommand> commands;
+    public Help(Collection<AbstractCommand> commands) {
         super("Help", "вывести справку по доступным командам");
         this.commands = commands;
     }
@@ -17,9 +19,10 @@ public class Help extends AbstractCommand {
      * @return string with output help for available commands
      */
     public String execute() {
+
         String s = "";
         for (AbstractCommand command:commands) {
-            s += command.getName() + ": " + command.getDescription() + '\n';
+            s +=  Colors.BlUE + command.getName() + Colors.END + ": " + command.getDescription() + '\n';
         }
         return s;
     }

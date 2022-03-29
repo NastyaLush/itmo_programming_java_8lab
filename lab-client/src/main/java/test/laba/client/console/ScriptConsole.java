@@ -49,14 +49,14 @@ public class ScriptConsole extends Console {
      * @param object object for print with red text
      */
     public void  printError(Object object)  {
-        System.out.println(ansiRed + object + ansiReset);
+        System.out.println(Colors.RED + object.toString() + Colors.END);
         try {
             fileReader.close();
             reader.close();
         } catch (IOException e) {
             super.printError("Ошибка при выполнении скрипта");
         } finally {
-            throw new ScriptError("ошибка при выполнении скрипта");
+            throw new ScriptError();
         }
     }
 

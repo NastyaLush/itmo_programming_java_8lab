@@ -1,7 +1,6 @@
 package test.laba.client.commands;
 
 import test.laba.client.console.FileManager;
-import test.laba.client.console.SaveCollection;
 import test.laba.client.dataClasses.Root;
 
 import java.io.IOException;
@@ -10,10 +9,8 @@ import java.io.IOException;
  * save command
  */
 public class Save extends AbstractCommand {
-    private final SaveCollection saveCollection;
-    public Save(SaveCollection saveCollection) {
+    public Save() {
         super("Save", "сохранить коллекцию в файл");
-        this.saveCollection = saveCollection;
     }
 
     /**
@@ -23,6 +20,6 @@ public class Save extends AbstractCommand {
      * @throws IOException throws if save is impossible
      */
     public void execute(Root root, FileManager fileManager) throws IOException {
-        fileManager.save(root, saveCollection);
+        fileManager.save(root);
     }
 }

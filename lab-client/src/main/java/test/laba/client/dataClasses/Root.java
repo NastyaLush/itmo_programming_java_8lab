@@ -1,11 +1,8 @@
 package test.laba.client.dataClasses;
 
 import test.laba.client.console.Console;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -17,12 +14,12 @@ import java.util.Map;
  * the collection class, contains fields: collection and date of creation
  */
 @XmlRootElement(name = "root")
-@XmlAccessorType(XmlAccessType.FIELD)
 public class Root {
-    @XmlElement(name = "root")
-    private HashMap<Long, Product> products = new HashMap<>();
+    @XmlTransient
     private ZonedDateTime dateOfCreation;
+    @XmlTransient
     private HashSet<String> stack = new HashSet<>();
+    private HashMap<Long, Product> products = new HashMap<>();
 
     /**
      * the constructor, create only date creation
@@ -49,7 +46,6 @@ public class Root {
     public void setProducts(HashMap<Long, Product> products) {
         this.products = products;
     }
-    @XmlElement
     public void setProduct(Product product) {
         products.put(createKey(), product);
         dateOfCreation = ZonedDateTime.now();
@@ -77,7 +73,6 @@ public class Root {
         }
         return null;
     }
-
     /**
      *
      * @param id id for searching
@@ -98,14 +93,12 @@ public class Root {
         }
         return key;
     }
-
     /**
      * the method which clear collection
      */
     public void clear() {
         products.clear();
     }
-
     /**
      * create the string with information about collection
      * @return string with information about collection
@@ -115,7 +108,6 @@ public class Root {
                 + "\nDate of initialization: " + getDateOfCreation()
                 + "\nNumber of elements: " + getProducts().size();
     }
-
     /**
      * remove one product if argument matches with UnitOfMeasure field of product in collection
      * @param unitOfMeasure argument for removing
@@ -128,7 +120,6 @@ public class Root {
             }
         }
     }
-
     /**
      * remove all products which less than argument
      * @param product argument for comparing
@@ -136,7 +127,6 @@ public class Root {
     public void removeIfLess(Product product) {
         products.entrySet().removeIf(entry -> product.compareTo(entry.getValue()) > 0);
     }
-
     /**
      * remove all products which key less than argument
      * @param key key for comparing
@@ -144,7 +134,6 @@ public class Root {
     public void removeIfKeyLess(Long key) {
         products.entrySet().removeIf(entry -> key > entry.getKey());
     }
-
     /**
      * @param key key for searching
      * @return product wich key equal to argument
@@ -152,7 +141,6 @@ public class Root {
     public Product getProductByKey(Long key) {
         return products.get(key);
     }
-
     /**
      * delete product by key
      * @param deleteKey key for deleting
