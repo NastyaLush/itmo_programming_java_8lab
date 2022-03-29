@@ -1,6 +1,5 @@
 package test.laba.client.commands;
 
-
 import test.laba.client.dataClasses.Root;
 
 /**
@@ -16,7 +15,8 @@ public class Clear extends AbstractCommand {
      * clear collection
      * @param root object contained collection values
      */
-    public void execute(Root root) {
+    public String execute(String arg, Root root) {
         root.clear();
+        return "collection cleared";
     }
 }

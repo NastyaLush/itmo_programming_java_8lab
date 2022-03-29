@@ -7,17 +7,19 @@ import test.laba.client.dataClasses.Root;
  * insert null command
  */
 public class InsertNull extends AbstractCommand {
-    public InsertNull() {
+    private ConsoleParsing consoleParsing;
+    public InsertNull(ConsoleParsing consoleParsing) {
         super("Insert_Null", "добавить новый элемент с заданным ключом");
+        this.consoleParsing = consoleParsing;
     }
 
     /**
      * add new product with key to collection
      * @param root object contained collection values
      * @param arg key for adding
-     * @param consoleParsing object is responsible for parsing from console
      */
-    public void execute(Root root, String arg, ConsoleParsing consoleParsing) {
+    public String execute(String arg, Root root) {
          root.setProductWithKey(consoleParsing.createKey(arg), consoleParsing.parsProductFromConsole(root));
+         return "insert null was executed";
     }
 }

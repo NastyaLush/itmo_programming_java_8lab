@@ -9,17 +9,23 @@ import java.io.IOException;
  * save command
  */
 public class Save extends AbstractCommand {
-    public Save() {
+    private FileManager fileManager;
+    public Save(FileManager fileManager) {
         super("Save", "сохранить коллекцию в файл");
+        this.fileManager = fileManager;
     }
 
     /**
      * save collection in file
      * @param root object contained collection values
-     * @param fileManager object for file work
      * @throws IOException throws if save is impossible
      */
-    public void execute(Root root, FileManager fileManager) throws IOException {
-        fileManager.save(root);
+    public String execute(String arg, Root root) {
+        try {
+            fileManager.save(root);
+        } catch (IOException e) {
+            return "error, collection wasn't saved";
+        }
+        return "collection was saved";
     }
 }

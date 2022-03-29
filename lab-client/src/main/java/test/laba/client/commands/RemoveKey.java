@@ -7,18 +7,20 @@ import test.laba.client.dataClasses.Root;
  * remove key object
  */
 public class RemoveKey extends AbstractCommand {
-    public RemoveKey() {
+    private ConsoleParsing consoleParsing;
+    public RemoveKey(ConsoleParsing consoleParsing) {
         super("Remove_Key", "удалить элемент из коллекции по его ключу");
+        this.consoleParsing = consoleParsing;
     }
 
     /**
      *
      * @param arg key for searching
      * @param root object contained collection values
-     * @param consoleParsing  object is responsible for parsing from console
      */
-    public void execute(String arg, Root root, ConsoleParsing consoleParsing)  {
+    public String execute(String arg, Root root)  {
         Long key = consoleParsing.createKey(arg);
         root.remove(key);
+        return "the element was deleted";
     }
 }

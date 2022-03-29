@@ -20,12 +20,12 @@ public final class Client {
         Root root;
         Console console = new Console();
         ConsoleParsing parsingInterface = new ConsoleParsing(console);
-        CommandsManager commandsManager = new CommandsManager(console);
-
         FileManager fileManager = new FileManager();
+        CommandsManager commandsManager = new CommandsManager(console, parsingInterface, fileManager);
+
         root = fileManager.read(console);
         if (root != null) {
-            console.interactivelyMode(root, commandsManager, fileManager, console, parsingInterface);
+            console.interactivelyMode(root, commandsManager, console);
         }
     }
 }

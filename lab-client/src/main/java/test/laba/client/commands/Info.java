@@ -15,7 +15,7 @@ public class Info extends AbstractCommand {
      * @param root object contained collection values
      * @return string with information
      */
-    public String execute(Root root) {
+    public String execute(String arg, Root root) {
         return root.infoAboutCollection();
     }
 }

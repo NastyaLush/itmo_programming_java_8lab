@@ -1,5 +1,6 @@
 package test.laba.client.commands;
 
+import test.laba.client.dataClasses.Root;
 /**
  * abstract class, contains getters and setters
  */
@@ -25,4 +26,5 @@ public abstract class AbstractCommand implements AbstractCommandInterface {
     public String getName() {
         return name;
     }
+    public abstract String execute(String arguments, Root root);
 }

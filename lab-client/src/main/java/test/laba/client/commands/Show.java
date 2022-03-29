@@ -15,7 +15,7 @@ public class Show extends AbstractCommand {
      * @param root object contained collection values
      * @return string with info about values
      */
-    public String execute(Root root) {
+    public String execute(String arg, Root root) {
         return root.showCollection();
     }
 }

@@ -1,5 +1,4 @@
 package test.laba.client.console;
-import test.laba.client.exception.CommandWithoutArguments;
 import test.laba.client.exception.VariableException;
 import test.laba.client.dataClasses.Product;
 import test.laba.client.dataClasses.Root;
@@ -74,8 +73,9 @@ public class FileManager implements Variable  {
         String result = writer.toString();
         return result;
     }
-    public void readScript(BufferedReader reader, Root root, CommandsManager commandsManager, FileManager fileManager, ConsoleParsing consoleParsing, ScriptConsole scriptConsole) throws CommandWithoutArguments, IOException {
+    public void readScript(BufferedReader reader, Root root, CommandsManager commandsManager, ScriptConsole scriptConsole) throws IOException {
         String[] command;
+        String answer;
         final int limitOfWords = 3;
         int numberOfCommand = 0;
         int numberOfArguments = 1;
@@ -87,7 +87,9 @@ public class FileManager implements Variable  {
                 command[i] = command[i].trim();
             }
             commandsManager.getHistory().addToHistory(command[numberOfCommand]);
-           if (!scriptConsole.command(command, root, commandsManager, fileManager, scriptConsole, consoleParsing)) {
+            answer = commandsManager.chooseCommand(command, root);
+            scriptConsole.print(answer);
+           if ("Thank you for using".equals(answer)) {
                reader.close();
                break;
            }

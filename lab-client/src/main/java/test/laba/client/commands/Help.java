@@ -1,8 +1,8 @@
 package test.laba.client.commands;
 
 import test.laba.client.console.Colors;
+import test.laba.client.dataClasses.Root;
 import java.util.Collection;
-
 
 /**
  * help command
@@ -18,8 +18,7 @@ public class Help extends AbstractCommand {
      * output help for available commands
      * @return string with output help for available commands
      */
-    public String execute() {
-
+    public String execute(String arg, Root root) {
         String s = "";
         for (AbstractCommand command:commands) {
             s +=  Colors.BlUE + command.getName() + Colors.END + ": " + command.getDescription() + '\n';

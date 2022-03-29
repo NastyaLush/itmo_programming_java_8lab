@@ -2,6 +2,7 @@ package test.laba.client.commands;
 
 import test.laba.client.dataClasses.Root;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * group counting by price
@@ -16,7 +17,13 @@ public class GroupCountingByPrice extends AbstractCommand {
      * @param root object contained collection values
      * @return collection with information, key- price, value- count
      */
-    public HashMap<Long, Long> execute(Root root) {
-        return root.groupCountingByPrice();
+    public String execute(String arg, Root root) {
+        HashMap<Long, Long> countingByPrice = root.groupCountingByPrice();
+        StringBuilder answer = null;
+        answer.append("price = count\n");
+        for (Map.Entry<Long, Long> entry: countingByPrice.entrySet()) {
+            answer.append(entry.getKey() + " =  " + entry.getValue());
+        }
+        return answer.toString();
     }
 }
