@@ -83,7 +83,7 @@ public class CommandsManager {
     }
 
     public String chooseCommand(String[] arguments, Root root) {
-        AbstractCommand command = this.commands.get(arguments[0]);
+        AbstractCommand command = this.commands.get(arguments[0].toLowerCase());
         if (command != null) {
             if (arguments.length > 1) {
                 return command.execute(arguments[1], root);
@@ -91,12 +91,9 @@ public class CommandsManager {
                 return command.execute("null", root);
             }
         } else {
+            System.out.println(commands);
             return "Данной команды не существует, проверьте корректность данных или введите help для получения списка команд,вы ввели " + arguments[0].trim();
         }
-    }
-
-    private  boolean isArguments(String arg) {
-        return !"".equals(arg);
     }
     public History getHistory() {
         return history;

@@ -6,9 +6,9 @@ import javax.xml.bind.annotation.XmlTransient;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 /**
  * the collection class, contains fields: collection and date of creation
@@ -35,11 +35,29 @@ public class Root {
     public Root(HashMap<Long, Product> products) {
         this.products = products;
     }
+
     public HashMap<Long, Product> getProducts() {
         return products;
     }
     public ZonedDateTime getDateOfCreation() {
         return dateOfCreation;
+    }
+    /**
+     * @param key key for searching
+     * @return product wich key equal to argument
+     */
+    public Product getProductByKey(Long key) {
+        return products.get(key);
+    }
+    /**
+     *
+     * @param id id for searching
+     * @return key of product by id
+     */
+    public Long getKeyOnID(Long id) {
+        AtomicReference<Long> answer = null;
+        products.entrySet().stream().filter(x -> x.getValue().getId() == id).limit(1).forEach(e -> answer.set(e.getKey()));
+        return answer.get();
     }
 
 
@@ -54,37 +72,14 @@ public class Root {
         products.put(key, product);
         dateOfCreation = ZonedDateTime.now();
     }
-    @Override
-    public String toString() {
-        return "Root{"
-                + "products=" + products
-                + ", dateOfLastModification=" + dateOfCreation + '}';
-    }
-    /**
-     *
-     * @param id id for searching
-     * @return key of product by id
-     */
-    public Long getKeyOnID(Long id) {
-        for (Map.Entry<Long, Product> productEntry: products.entrySet()) {
-            if (productEntry.getValue().getId() == id) {
-                return productEntry.getKey();
-            }
-        }
-        return null;
-    }
+
     /**
      *
      * @param id id for searching
      * @return true if product of collection contains this id and false in another case
      */
     public boolean containsID(Long id) {
-        for (Map.Entry<Long, Product> productEntry: products.entrySet()) {
-            if (productEntry.getValue().getId() == id) {
-                return true;
-            }
-        }
-        return false;
+        return products.values().stream().allMatch(e -> e.getId() == id);
     }
     private Long createKey() {
         long key = 0;
@@ -113,12 +108,11 @@ public class Root {
      * @param unitOfMeasure argument for removing
      */
     public void removeAnyByUnitOfMeasure(UnitOfMeasure unitOfMeasure) {
-        for (HashMap.Entry<Long, Product> prod: products.entrySet()) {
-            if (unitOfMeasure == prod.getValue().getUnitOfMeasure()) {
-                products.remove(prod.getKey());
-                break;
-            }
-        }
+        products.entrySet()
+                .stream()
+                .filter(x -> x.getValue().getUnitOfMeasure() == unitOfMeasure)
+                .limit(1)
+                .forEach(e -> products.remove(e.getKey()));
     }
     /**
      * remove all products which less than argument
@@ -135,73 +129,38 @@ public class Root {
         products.entrySet().removeIf(entry -> key > entry.getKey());
     }
     /**
-     * @param key key for searching
-     * @return product wich key equal to argument
-     */
-    public Product getProductByKey(Long key) {
-        return products.get(key);
-    }
-    /**
      * delete product by key
      * @param deleteKey key for deleting
      */
     public void remove(Long deleteKey) {
         products.remove(deleteKey);
     }
-
     /**
      * create string with collection value
      * @return string
      */
     public String showCollection() {
         StringBuilder s = new StringBuilder("Products: \n");
-        for (Map.Entry<Long, Product> entry : products.entrySet()) {
-            s.append("Ключ: ").append(entry.getKey());
-            s.append(" ").append(entry.getValue()).append("\n");
-        }
+        products.entrySet().stream().forEach(e -> s.append("Ключ: ").append(e.getKey()).append(" ").append(e.getValue()).append("\n"));
         return s.toString();
     }
-
-    /**
-     * print string with collection values and keys
-     * @param console console for print
-     */
-    public void toStringWithKey(Console console) {
-        console.print("Products: \n");
-        for (Map.Entry<Long, Product> entry : products.entrySet()) {
-            console.print(entry.getKey() + " " + entry.getValue());
-        }
-    }
-
     /**
      *
      * @return number average Of Manufacture Cost of products in collection
      */
-    public double averageOfManufactureCost() {
+    public double sumOfManufactureCost() {
         double answer = 0.0;
-        for (HashMap.Entry<Long, Product> prod : products.entrySet()) {
-            if (prod.getValue().getManufactureCost() != null) {
-                answer += prod.getValue().getManufactureCost();
-            }
-        }
+        answer += products.values().stream().mapToDouble(Product::getManufactureCost).sum();
         return answer;
     }
-
     /**
      *
      * @return hashmap where keys- field value price in product and values- count of this products with this price
      */
-    public HashMap<Long, Long> groupCountingByPrice() {
-        HashMap<Long, Long> countingByPrice = new LinkedHashMap<>();
-        long productsCount;
-        for (HashMap.Entry<Long, Product> entry : products.entrySet()) {
-            if (countingByPrice.get(entry.getValue().getPrice()) != null) {
-                productsCount = countingByPrice.get(entry.getValue().getPrice());
-            } else {
-                productsCount = 0;
-            }
-            countingByPrice.put(entry.getValue().getPrice(), ++productsCount);
-        }
+    public Map<Long, Long> groupCountingByPrice() {
+        Map<Long, Long> countingByPrice = products.entrySet()
+                .stream().map(x -> x.getValue().getPrice()).distinct().collect(Collectors.toMap(e -> e, e -> products.entrySet()
+                        .stream().map(x -> x.getValue().getPrice()).filter(x -> e == x).count()));
         return countingByPrice;
 
     }
@@ -215,12 +174,26 @@ public class Root {
         stack.remove(fileName);
     }
     public boolean containsInStack(String fileName) {
-        Iterator iterator = stack.iterator();
-        while (iterator.hasNext()) {
-            if (fileName.equals(iterator.next())) {
-                return true;
-            }
-        }
-        return false;
+        return stack.stream().allMatch(x -> !x.equals(fileName));
     }
+
+    /**
+     * print string with collection values and keys
+     * @param console console for print
+     */
+    public void toStringWithKey(Console console) {
+        console.print("Products: \n");
+        StringBuilder s = new StringBuilder();
+        products.entrySet().stream().forEach(e -> s.append(e.getKey() + " " + e.getValue() + '\n'));
+        console.print(s.toString());
+    }
+    @Override
+    public String toString() {
+        return "Root{"
+                + "products=" + products
+                + ", dateOfLastModification=" + dateOfCreation + '}';
+    }
+
+
+
 }

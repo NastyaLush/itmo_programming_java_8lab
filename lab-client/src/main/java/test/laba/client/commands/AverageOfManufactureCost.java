@@ -16,7 +16,7 @@ public final class AverageOfManufactureCost extends AbstractCommand {
     public String execute(String arg, Root root) {
         StringBuilder s = null;
         if (root.getProducts().size() != 0) {
-            s.append(root.averageOfManufactureCost() / (root.getProducts().size()));
+            s.append(root.sumOfManufactureCost() / (root.getProducts().size()));
             return s.toString();
         } else {
             return "0";

@@ -19,10 +19,8 @@ public class Help extends AbstractCommand {
      * @return string with output help for available commands
      */
     public String execute(String arg, Root root) {
-        String s = "";
-        for (AbstractCommand command:commands) {
-            s +=  Colors.BlUE + command.getName() + Colors.END + ": " + command.getDescription() + '\n';
-        }
-        return s;
+        StringBuilder s = new StringBuilder();
+        commands.forEach(command -> s.append(Colors.BlUE + command.getName() + Colors.END + ": " + command.getDescription() + '\n'));
+        return s.toString();
     }
 }

@@ -43,9 +43,10 @@ public class ExecuteScript extends AbstractCommand {
                 console.print("Идет выполнение скрипта: " + fileName);
                 fileManager.readScript(reader, root, commandsManager, scriptConsole);
             } else {
-                console.printError("обнаружен цикл, невозможно выполнить скрипт");
                 root.cleanStack();
+                console.printError("обнаружен цикл, невозможно выполнить скрипт");
             }
+            root.deleteFromStack(fileName);
         } catch (FileNotFoundException e) {
             console.printError("Файл не найден, проверьте путь или права:" + fileName);
         } catch (IOException e) {
