@@ -1,11 +1,12 @@
 package test.laba.client;
 
-import test.laba.client.console.CommandsManager;
-import test.laba.client.console.Console;
-import test.laba.client.console.ConsoleParsing;
-import test.laba.client.console.FileManager;
-import test.laba.client.dataClasses.Root;
 
+import test.laba.common.IO.Console;
+import test.laba.common.commands.ConsoleParsing;
+import test.laba.server.workwithfile.FileManager;
+
+import java.io.IOException;
+import java.net.InetSocketAddress;
 
 public final class Client {
     private Client() {
@@ -17,15 +18,16 @@ public final class Client {
      * @param args
      */
     public static void main(String[] args) {
-        Root root;
-        Console console = new Console();
-        ConsoleParsing parsingInterface = new ConsoleParsing(console);
-        FileManager fileManager = new FileManager();
-        CommandsManager commandsManager = new CommandsManager(console, parsingInterface, fileManager);
-
-        root = fileManager.read(console);
-        if (root != null) {
-            console.interactivelyMode(root, commandsManager, console);
+        ClientApp clientApp = new ClientApp();
+        try{
+            // InetSocketAddress addr = new InetSocketAddress(args[0], Integer.valueOf(args[1]));
+            InetSocketAddress addr = new InetSocketAddress("localhost", 1234);
+            clientApp.run(addr);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+
+
+
     }
 }
