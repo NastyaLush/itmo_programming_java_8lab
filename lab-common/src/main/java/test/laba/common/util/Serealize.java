@@ -10,9 +10,8 @@ import java.nio.ByteBuffer;
 public class Serealize {
 
     public static ByteBuffer serialize(Object object)  {
-        System.out.println(object);
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        ObjectOutputStream objectOutputStream = null;
+        ObjectOutputStream objectOutputStream;
         try {
             objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
             objectOutputStream.writeObject(object);
@@ -22,7 +21,7 @@ public class Serealize {
             objectOutputStream.flush();
             objectOutputStream.close();
             byteArrayOutputStream.close();
-            System.out.println("serialisation");
+           // System.out.println("serialisation");
             return byteBuffer;
         } catch (IOException e) {
             e.printStackTrace();
@@ -30,7 +29,7 @@ public class Serealize {
         return null;
     }
     public static Response deserealize(ByteBuffer byteBuffer){
-        System.out.println("deserialization");
+       // System.out.println("deserialization");
         try(ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteBuffer.array())) {
             ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
             Response response = (Response) objectInputStream.readObject();

@@ -4,22 +4,15 @@ import test.laba.common.util.Response;
 import test.laba.common.util.Serealize;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.net.Socket;
 import java.nio.ByteBuffer;
-import java.nio.channels.SocketChannel;
 
 public class Wrapper {
-    SocketChannel socketChannel;
     Socket socket;
     Response response;
-    byte[] bytes = new byte[3000];
     ByteBuffer byteBuffer= ByteBuffer.allocate(3000);
     BufferedReader in;
     OutputStream out;

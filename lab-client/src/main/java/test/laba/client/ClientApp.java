@@ -4,7 +4,6 @@ package test.laba.client;
 import test.laba.common.IO.Console;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.Scanner;
 
@@ -16,7 +15,6 @@ public class ClientApp {
         console.print("Программа в интерактивном режиме, для получения информации о возможностях, введите help");
         String answer;
         while ((answer = console.read()) != null) {
-            System.out.println("try to read");
             wrapper.sent(answer);
             answer = wrapper.read();
             console.print(answer );

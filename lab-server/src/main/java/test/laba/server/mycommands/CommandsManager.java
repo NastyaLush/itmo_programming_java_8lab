@@ -2,22 +2,6 @@ package test.laba.server.mycommands;
 
 import test.laba.common.commands.AbstractCommand;
 import test.laba.common.commands.ConsoleParsing;
-import test.laba.common.exception.VariableException;
-import test.laba.server.mycommands.AverageOfManufactureCost;
-import test.laba.server.mycommands.Clear;
-import test.laba.server.mycommands.ExecuteScript;
-import test.laba.server.mycommands.Exit;
-import test.laba.server.mycommands.GroupCountingByPrice;
-import test.laba.server.mycommands.Help;
-import test.laba.server.mycommands.History;
-import test.laba.server.mycommands.Info;
-import test.laba.server.mycommands.InsertNull;
-import test.laba.server.mycommands.RemoveAnyByUnitOfMeasure;
-import test.laba.server.mycommands.RemoveKey;
-import test.laba.server.mycommands.RemoveLower;
-import test.laba.server.mycommands.RemoveLowerKey;
-import test.laba.server.mycommands.Show;
-import test.laba.server.mycommands.UpdateID;
 import test.laba.common.commands.Root;
 
 import java.util.HashMap;

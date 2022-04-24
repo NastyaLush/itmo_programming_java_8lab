@@ -1,7 +1,6 @@
 package test.laba.client;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
 
 public final class Client {
     private Client() {

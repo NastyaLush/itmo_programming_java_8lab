@@ -6,7 +6,6 @@ import test.laba.common.exception.VariableException;
 import test.laba.server.mycommands.CommandsManager;
 import test.laba.server.workwithfile.FileManager;
 
-import javax.swing.*;
 import java.io.IOException;
 
 public final class Server {
@@ -26,9 +25,7 @@ public final class Server {
         }
         CommandsManager commandsManager = new CommandsManager(consoleParsing, root);
 
-       // Integer port = Integer.valueOf(args[0]);
         Integer port = Integer.valueOf(1234);
-
         ServerApp serverApp = new ServerApp(port, commandsManager);
         try {
             serverApp.run();
