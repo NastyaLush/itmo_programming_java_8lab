@@ -4,25 +4,21 @@ import test.laba.common.util.Response;
 import test.laba.common.util.Serealize;
 import test.laba.server.mycommands.CommandsManager;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.Socket;
 import java.net.SocketAddress;
+import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
-import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
+import java.util.Iterator;
 
 public class ServerApp {
     int port;
     private CommandsManager commandsManager;
     private final HashSet<Clients> clients = new HashSet<>();
+    private static final int SOCKET_TIMEOUT = 10;
 
     public ServerApp(int port, CommandsManager commandsManager){
         this.commandsManager = commandsManager;
@@ -59,24 +55,61 @@ public class ServerApp {
         SocketChannel clientSocket;
         serverSocketChannel = ServerSocketChannel.open();
         serverSocketChannel.bind(addr);
+        serverSocketChannel.configureBlocking(false);
         System.out.println("server works");
-        clientSocket = serverSocketChannel.accept();
-        clients.add(new Clients(clientSocket.socket()));
+        while (true){
+            System.out.println("cycle");
+            try {
+                int count = 0;
+                while (true) {
+                    clientSocket = serverSocketChannel.accept();
+                    if(clientSocket != null){
+                        System.out.println("Получено новое соединение" + clientSocket.getRemoteAddress());
+                        clientSocket.configureBlocking(false);
+                        clients.add(new Clients(clientSocket));
+                    } else {
+                       // System.out.println("work with exist channels ");
+                        work();
+                    }
+                    /*clientSocket.read(buf);
+                    ByteBuffer byteBuffer = Serealize.serialize(executeCommand(buf));
+                    byteBuffer.flip();
+                    clientSocket.socket().getOutputStream().write(byteBuffer.array());
+                    byteBuffer.flip();
+                    System.out.println("response is  send");*/
+                }
+            } catch (SocketTimeoutException e) {
+                System.out.println("no clients for accepting");
+            }
+            work();
+        }
 
-       // clientSocket.write(ByteBuffer.wrap("vbnm,".getBytes(StandardCharsets.UTF_8)));
-        clientSocket.read(buf);
-        clientSocket.shutdownInput();
-        clients.iterator().next().sendMessage("sdfghjkl;");
-        clientSocket.write(Serealize.serialize(new Response("blalallalallala")));
-        System.out.println(Serealize.serialize(new Response("blalallalallala")));
-        ByteBuffer byteBuffer = Serealize.serialize(executeCommand(buf));
-        clientSocket.write(byteBuffer);
-        byteBuffer.flip();
-        System.out.println("response is  send");
-    }
+        //work();
+          /*  clientSocket.read(buf);
+            ByteBuffer byteBuffer = Serealize.serialize(executeCommand(buf));
+            byteBuffer.flip();
+            clientSocket.socket().getOutputStream().write(byteBuffer.array());
+            byteBuffer.flip();*/
+            //System.out.println("response is  send");
+        }
     public Response executeCommand(ByteBuffer byteBuffer) {
         Response response = Serealize.deserealize(byteBuffer);
         Response r = new Response(commandsManager.chooseCommand(response.getMessage()));
         return r;
+    }
+    public void work() {
+        Iterator<Clients> iterator = clients.iterator();
+
+        while (iterator.hasNext()) {
+            Clients clients = iterator.next();
+
+            if(clients.isResponse()){
+                clients.sendMessage(executeCommand(clients.getResponse()));
+                System.out.println("open");
+            } else {
+                //System.out.println("block");
+            }
+
+        }
     }
 }

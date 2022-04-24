@@ -3,34 +3,39 @@ package test.laba.client;
 import test.laba.common.util.Response;
 import test.laba.common.util.Serealize;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
 public class Wrapper {
     SocketChannel socketChannel;
+    Socket socket;
     Response response;
-    ByteBuffer byteBuffer = ByteBuffer.allocate(16000);
-    ByteArrayOutputStream byteArrayOutputStream;
-    public Wrapper(SocketChannel socketChannel){
-        this.socketChannel = socketChannel;
-        //this.byteBuffer = ByteBuffer.allocate(200);
+    byte[] bytes = new byte[3000];
+    ByteBuffer byteBuffer= ByteBuffer.allocate(3000);
+    BufferedReader in;
+    OutputStream out;
+    public Wrapper(Socket socket) throws IOException {
+        this.socket = socket;
+        out = socket.getOutputStream();
+        in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
     }
     public void sent(String s){
         System.out.println("the request is sent:" + s);
         response = new Response(s);
         try {
-            byteBuffer = Serealize.serialize(response);
-            socketChannel.write(byteBuffer);
-            byteBuffer.clear();
-            byteBuffer.flip();
-            /*socketChannel.read(byteBuffer);
-            System.out.println(byteBuffer + "dde");*/
-            /*byteBuffer.flip();
-            while (byteBuffer.hasRemaining()) {
-                socketChannel.write(byteBuffer);
-            }*/
+            ByteBuffer oute = Serealize.serialize(response);
+            out.write(oute.array());
+            oute.clear();
+            oute.flip();
         } catch (IOException e) {
             System.out.println(e);
             // TODO: 15.04.2022
@@ -40,14 +45,12 @@ public class Wrapper {
 
     public Response readResponse(){
         try {
-            System.out.println("read response"+ byteBuffer);
-            //socketChannel.socket().getInputStream().read(byteBuffer.array());
-            socketChannel.read(byteBuffer);
-            System.out.println(byteBuffer);
+            System.out.println("read response");
+            socket.getInputStream().read(byteBuffer.array());
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println(e);
         }
-        return new Response("bla bla") ;//Serealize.deserealize(byteBuffer);
+        return Serealize.deserealize(byteBuffer);
     }
     public String read(){
         return readResponse().getMessage();
