@@ -44,7 +44,7 @@ public class Clients {
                 }
             } else {
                 BufferedInputStream in =new BufferedInputStream(socket.socket().getInputStream());
-                System.out.println(in.);
+                //System.out.println(in.);
                 System.out.println("byte =0");
             }
         }
