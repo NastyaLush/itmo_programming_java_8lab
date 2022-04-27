@@ -1,8 +1,11 @@
 package test.laba.common.commands;
 
+import test.laba.common.IO.Colors;
 import test.laba.common.IO.Console;
 import test.laba.common.dataClasses.Product;
 import test.laba.common.dataClasses.UnitOfMeasure;
+import test.laba.common.exception.AlreadyHaveTheseProduct;
+import test.laba.common.exception.СycleInTheScript;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -20,8 +23,7 @@ import java.util.stream.Collectors;
 public class Root {
     @XmlTransient
     private ZonedDateTime dateOfCreation;
-    @XmlTransient
-    private HashSet<String> stack = new HashSet<>();
+
     private HashMap<Long, Product> products = new HashMap<>();
 
     /**
@@ -71,9 +73,17 @@ public class Root {
         products.put(createKey(), product);
         dateOfCreation = ZonedDateTime.now();
     }
-    public void setProductWithKey(Long key, Product product) {
-        products.put(key, product);
-        dateOfCreation = ZonedDateTime.now();
+    public void setProductWithKey(Long key, Product product) throws AlreadyHaveTheseProduct {
+        if(!products.containsKey(key)) {
+            products.put(key, product);
+            dateOfCreation = ZonedDateTime.now();
+        } else {
+            throw new AlreadyHaveTheseProduct("This key is already exists");
+        }
+    }
+    public void updateProductWithKey(Long key, Product product){
+            products.put(key, product);
+            dateOfCreation = ZonedDateTime.now();
     }
 
     /**
@@ -111,11 +121,10 @@ public class Root {
      * @param unitOfMeasure argument for removing
      */
     public void removeAnyByUnitOfMeasure(UnitOfMeasure unitOfMeasure) {
-        products.entrySet()
+          products.entrySet()
                 .stream()
                 .filter(x -> x.getValue().getUnitOfMeasure() == unitOfMeasure)
-                .limit(1)
-                .forEach(e -> products.remove(e.getKey()));
+                .findFirst().map(e-> products.remove(e.getKey()));
     }
     /**
      * remove all products which less than argument
@@ -143,10 +152,11 @@ public class Root {
      * @return string
      */
     public String showCollection() {
-        StringBuilder s = new StringBuilder("Products: \n");
+        StringBuilder s = new StringBuilder(Colors.BlUE + "Products: \n" + Colors.END);
         products.entrySet().stream().forEach(e -> s.append("Ключ: ").append(e.getKey()).append(" ").append(e.getValue()).append("\n"));
         return s.toString();
     }
+
     /**
      *
      * @return number average Of Manufacture Cost of products in collection
@@ -167,18 +177,7 @@ public class Root {
         return countingByPrice;
 
     }
-    public void addToStack(String filename) {
-        stack.add(filename);
-    }
-    public void cleanStack() {
-        stack.clear();
-    }
-    public void deleteFromStack(String fileName) {
-        stack.remove(fileName);
-    }
-    public boolean containsInStack(String fileName) {
-        return stack.stream().allMatch(x -> !x.equals(fileName));
-    }
+
 
     /**
      * print string with collection values and keys

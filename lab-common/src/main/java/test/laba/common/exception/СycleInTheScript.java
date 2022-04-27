@@ -1,11 +1,8 @@
 package test.laba.common.exception;
 
-
-import test.laba.common.IO.Console;
-
-public class VariableException extends Exception {
+public class СycleInTheScript extends Exception{
     String message;
-    public VariableException(String message) {
+    public СycleInTheScript(String message){
         this.message = message;
     }
 

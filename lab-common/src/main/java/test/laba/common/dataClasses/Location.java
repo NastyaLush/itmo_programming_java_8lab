@@ -6,6 +6,7 @@ import test.laba.common.IO.Console;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+import java.io.Serializable;
 import java.util.Comparator;
 
 /**
@@ -13,7 +14,7 @@ import java.util.Comparator;
  */
 @XmlRootElement(name = "location")
 @XmlType(propOrder = { "x", "y", "name" })
-public class Location implements Comparable<Location> {
+public class Location implements Comparable<Location>, Serializable {
     private Long x;
     private Integer y;
     private String name; //Строка не может быть пустой, Поле не может быть null

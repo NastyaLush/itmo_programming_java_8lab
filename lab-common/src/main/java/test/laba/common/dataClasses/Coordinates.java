@@ -6,6 +6,7 @@ import test.laba.common.IO.Console;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+import java.io.Serializable;
 import java.util.Comparator;
 
 /**
@@ -13,7 +14,7 @@ import java.util.Comparator;
  */
 @XmlRootElement(name = "coordinates")
 @XmlType(propOrder = { "x", "y" })
-public class Coordinates implements Comparable<Coordinates> {
+public class Coordinates implements Comparable<Coordinates>, Serializable {
     private Integer x; //Значение поля должно быть больше -233, Поле не может быть null
     private Float y; //Поле не может быть null
 

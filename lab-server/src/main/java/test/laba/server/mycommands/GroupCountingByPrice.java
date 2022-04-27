@@ -1,7 +1,9 @@
 package test.laba.server.mycommands;
 
+import test.laba.common.IO.Colors;
 import test.laba.common.commands.AbstractCommand;
 import test.laba.common.commands.Root;
+import test.laba.common.util.Response;
 
 import java.util.Map;
 
@@ -18,11 +20,11 @@ public class GroupCountingByPrice extends AbstractCommand {
      * @param root object contained collection values
      * @return collection with information, key- price, value- count
      */
-    public String execute(String arg, Root root) {
+    public Response execute(String arg, Root root) {
         Map<Long, Long> countingByPrice = root.groupCountingByPrice();
         StringBuilder answer = new StringBuilder();
-        answer.append("price = count\n");
+        answer.append(Colors.BlUE + "price = count\n" + Colors.END);
         countingByPrice.entrySet().forEach(entry -> answer.append(entry.getKey() + " =  " + entry.getValue() + '\n'));
-        return answer.toString();
+        return new Response(answer.toString());
     }
 }

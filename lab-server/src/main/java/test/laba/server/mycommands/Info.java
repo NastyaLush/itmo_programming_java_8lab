@@ -1,7 +1,9 @@
 package test.laba.server.mycommands;
 
+import test.laba.common.IO.Colors;
 import test.laba.common.commands.AbstractCommand;
 import test.laba.common.commands.Root;
+import test.laba.common.util.Response;
 
 
 /**
@@ -17,7 +19,7 @@ public class Info extends AbstractCommand {
      * @param root object contained collection values
      * @return string with information
      */
-    public String execute(String arg, Root root) {
-        return root.infoAboutCollection();
+    public Response execute(String arg, Root root) {
+        return new Response(Colors.BlUE + "Information about collection\n" + Colors.END + root.infoAboutCollection());
     }
 }

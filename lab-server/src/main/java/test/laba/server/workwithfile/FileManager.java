@@ -20,11 +20,10 @@ import java.util.HashMap;
 
 
 public class FileManager implements Variable {
-    public Root read() throws VariableException {
+    public Root read() throws VariableException, JAXBException, IOException {
+        ParsingXML parsingXML = new ParsingXML();
         try {
-            ParsingXML parsingXML = new ParsingXML();
             Root root;
-            try {
                 root = parsingXML.createJavaObjects();
                 for (HashMap.Entry<Long, Product> entry : root.getProducts().entrySet()) {
                     if (!entry.getValue().isRightProduct(root)) {
@@ -32,18 +31,9 @@ public class FileManager implements Variable {
                     }
                 }
                 return root;
-            } catch (JAXBException | IOException e) {
-               // console.printError("Ошибка при попытке парсинга");
-                // TODO: create object with exception and answer
-            } finally {
+            }  finally {
                 close(parsingXML);
             }
-        } catch (FileNotFoundException e) {
-            //console.printError("Файл не найден, проверьте путь и переменную окружения LABA");
-            //TODO: create object with exception and answer
-        }
-
-        return null;
     }
     private void close(ParsingXML parsingXML) {
         try {

@@ -7,6 +7,7 @@ import test.laba.common.exception.VariableException;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -20,7 +21,7 @@ import java.util.Comparator;
  * data class
  */
 @XmlRootElement(name = "owner")
-public class Person implements Comparable<Person> {
+public class Person implements Comparable<Person>, Serializable {
     private String name; //Поле не может быть null, Строка не может быть пустой
     private java.time.ZonedDateTime birthday; //Поле не может быть null
     private Integer height; //Значение поля должно быть больше 0

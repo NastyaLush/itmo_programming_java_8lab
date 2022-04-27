@@ -4,6 +4,7 @@ package test.laba.server.workwithfile;
 
 import test.laba.common.commands.AbstractCommand;
 import test.laba.common.commands.Root;
+import test.laba.common.util.Response;
 
 import java.io.IOException;
 
@@ -22,13 +23,13 @@ public class Save extends AbstractCommand {
      * @param root object contained collection values
      * @throws IOException throws if save is impossible
      */
-    public String execute(String arg, Root root) {
+    public Response execute(String arg, Root root) {
         try {
             fileManager.save(root);
         } catch (IOException e) {
-            return "error, collection wasn't saved";
+            return new Response("error, collection wasn't saved");
         }
-        return "collection was saved";
+        return new Response("collection was saved");
     }
 
 

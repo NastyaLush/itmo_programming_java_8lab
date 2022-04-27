@@ -1,7 +1,5 @@
 package test.laba.server.workwithfile;
 
-import test.laba.common.IO.Console;
-import test.laba.common.commands.ConsoleParsing;
 import test.laba.common.commands.Root;
 import test.laba.common.commands.Variable;
 
@@ -37,7 +35,7 @@ public class ParsingXML  {
      * @throws JAXBException throws if parsing impossible
      * @throws IOException throws if parsing impossible
      */
-    public Root createJavaObjects() throws JAXBException, IOException {
+    public Root createJavaObjects() throws JAXBException {
         File file = new File(getEnvVariable());
         if (file.length() != 0) {
             JAXBContext context = JAXBContext.newInstance(Root.class);

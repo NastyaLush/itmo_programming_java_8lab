@@ -1,21 +1,20 @@
 package test.laba.server.mycommands;
 
 
-import test.laba.common.commands.ConsoleParsing;
 import test.laba.common.commands.Root;
 import test.laba.common.exception.VariableException;
 import test.laba.common.commands.AbstractCommand;
 
 import test.laba.common.dataClasses.UnitOfMeasure;
+import test.laba.common.util.Response;
+import test.laba.common.util.ResponseWithError;
 
 /**
  * remove any by unit of measure command
  */
 public class RemoveAnyByUnitOfMeasure extends AbstractCommand {
-    private ConsoleParsing consoleParsing;
-    public RemoveAnyByUnitOfMeasure(ConsoleParsing consoleParsing) {
+    public RemoveAnyByUnitOfMeasure() {
         super("Remove_any_by_unit_of_measure", "удалить из коллекции один элемент, значение поля unitOfMeasure которого эквивалентно заданному");
-        this.consoleParsing = consoleParsing;
     }
 
     /**
@@ -24,15 +23,11 @@ public class RemoveAnyByUnitOfMeasure extends AbstractCommand {
      * @param root  object contained collection values
      * @throws VariableException throws if parsing variable to right field is impossible
      */
-    public String execute(String arg, Root root)  {
-        String argument = arg.trim().toUpperCase();
-            UnitOfMeasure unitOfMeasure;
-        try {
-            unitOfMeasure = consoleParsing.toRightUnitOfMeasure(argument);
-            root.removeAnyByUnitOfMeasure(unitOfMeasure);
-        } catch (VariableException e) {
-            // TODO: 16.04.2022 error handling
-        }
-            return "the product was deleted";
+    public Response execute(String arg, Root root)  {
+            return new ResponseWithError("the Remove_any_by_unit_of_measure can not be executed");
+    }
+    public Response execute(UnitOfMeasure unitOfMeasure, Root root)  {
+        root.removeAnyByUnitOfMeasure(unitOfMeasure);
+        return new Response("the product was deleted");
     }
 }

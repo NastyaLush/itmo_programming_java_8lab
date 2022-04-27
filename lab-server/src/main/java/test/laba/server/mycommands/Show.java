@@ -2,6 +2,7 @@ package test.laba.server.mycommands;
 
 import test.laba.common.commands.AbstractCommand;
 import test.laba.common.commands.Root;
+import test.laba.common.util.Response;
 
 
 /**
@@ -17,7 +18,7 @@ public class Show extends AbstractCommand {
      * @param root object contained collection values
      * @return string with info about values
      */
-    public String execute(String arg, Root root) {
-        return root.showCollection();
+    public Response execute(String arg, Root root) {
+        return new Response( root.showCollection());
     }
 }

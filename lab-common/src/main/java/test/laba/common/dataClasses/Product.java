@@ -7,6 +7,7 @@ import test.laba.common.exception.CreateError;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.Comparator;
@@ -18,7 +19,7 @@ import java.util.Objects;
 /**
  * main data class
  */
-public class  Product implements Comparable<Product> {
+public class  Product implements Comparable<Product>, Serializable {
     private long id; //Значение поля должно быть больше 0, Значение этого поля должно быть уникальным, Значение этого поля должно генерироваться автоматически
     private String name; //Поле не может быть null, Строка не может быть пустой
     private Coordinates coordinates; //Поле не может быть null
@@ -47,7 +48,7 @@ public class  Product implements Comparable<Product> {
      * @param owner person, not null
      * @throws CreateError if variables are not right throws createError
      */
-    public Product(String name, Coordinates coordinates, Long price, Integer manufactureCost, UnitOfMeasure unitOfMeasure, Person owner, Root root) throws CreateError {
+    public Product(String name, Coordinates coordinates, Long price, Integer manufactureCost, UnitOfMeasure unitOfMeasure, Person owner) throws CreateError {
         if (name == null || name.isEmpty() || coordinates == null || price == null || price <= 0  || unitOfMeasure == null) {
             throw new CreateError("Ошибка при создании объекта Product, обратите внимание:\n"
                     + "    Поле name может быть null и не может быть пустым\n"
@@ -56,7 +57,7 @@ public class  Product implements Comparable<Product> {
                     + "    Поле unitOfMeasure не может быть null\n"
                     + "    Поле owner может быть null\n");
         } else {
-            createID(root);
+            //createID(root);
             this.name = name;
             this.coordinates = coordinates;
             this.price = price;

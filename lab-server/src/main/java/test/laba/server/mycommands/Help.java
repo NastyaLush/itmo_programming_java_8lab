@@ -3,6 +3,7 @@ package test.laba.server.mycommands;
 import test.laba.common.commands.AbstractCommand;
 import test.laba.common.IO.Colors;
 import test.laba.common.commands.Root;
+import test.laba.common.util.Response;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -21,9 +22,9 @@ public class Help extends AbstractCommand implements Serializable {
      * output help for available commands
      * @return string with output help for available commands
      */
-    public String execute(String arg, Root root) {
+    public Response execute(String arg, Root root) {
         StringBuilder s = new StringBuilder();
         commands.forEach(command -> s.append(Colors.BlUE + command.getName() + Colors.END + ": " + command.getDescription() + '\n'));
-        return s.toString();
+        return new Response(s.toString());
     }
 }

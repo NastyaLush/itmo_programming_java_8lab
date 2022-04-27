@@ -2,6 +2,7 @@ package test.laba.server.mycommands;
 
 import test.laba.common.commands.AbstractCommand;
 import test.laba.common.commands.Root;
+import test.laba.common.util.Response;
 
 
 /**
@@ -15,7 +16,7 @@ public class Exit extends AbstractCommand {
     /**
      * do nothing
      */
-    public String execute(String arg, Root root) {
-        return "Thank you for using";
+    public Response execute(String arg, Root root) {
+        return new Response("exit");
     }
 }

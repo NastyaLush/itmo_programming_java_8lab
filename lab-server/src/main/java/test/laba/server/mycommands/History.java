@@ -1,7 +1,9 @@
 package test.laba.server.mycommands;
 
+import test.laba.common.IO.Colors;
 import test.laba.common.commands.AbstractCommand;
 import test.laba.common.commands.Root;
+import test.laba.common.util.Response;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -29,7 +31,7 @@ public class History extends AbstractCommand {
      * output the last 10 commands (without their arguments)
      * @return sring with the last 10 commands (without their arguments)
      */
-    public  String execute(String arg, Root root) {
-        return "History: " + history;
+    public Response execute(String arg, Root root) {
+        return new Response(Colors.BlUE +  "History: " + Colors.END + history);
     }
 }

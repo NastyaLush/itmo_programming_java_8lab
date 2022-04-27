@@ -1,6 +1,8 @@
 package test.laba.server.mycommands;
+import test.laba.common.IO.Colors;
 import test.laba.common.commands.AbstractCommand;
 import test.laba.common.commands.Root;
+import test.laba.common.util.Response;
 
 public final class AverageOfManufactureCost extends AbstractCommand {
     /**
@@ -15,13 +17,13 @@ public final class AverageOfManufactureCost extends AbstractCommand {
      * @param root object contained collection values
      * @return the average value of the manufacture Co st field for all items in the collection
      */
-    public String execute(String arg, Root root) {
-        StringBuilder s = null;
+    public Response execute(String arg, Root root) {
+        StringBuilder s = new StringBuilder(Colors.BlUE + "Average_of_manufacture_cost" + Colors.END);
         if (root.getProducts().size() != 0) {
             s.append(root.sumOfManufactureCost() / (root.getProducts().size()));
-            return s.toString();
+            return new Response(s.toString());
         } else {
-            return "0";
+            return new Response("0");
         }
     }
 

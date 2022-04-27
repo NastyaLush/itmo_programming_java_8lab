@@ -1,17 +1,16 @@
 package test.laba.server.mycommands;
 
 import test.laba.common.commands.AbstractCommand;
-import test.laba.common.commands.ConsoleParsing;
 import test.laba.common.commands.Root;
+import test.laba.common.util.Response;
+import test.laba.common.util.ResponseWithError;
 
 /**
  * remove key object
  */
 public class RemoveKey extends AbstractCommand {
-    private ConsoleParsing consoleParsing;
-    public RemoveKey(ConsoleParsing consoleParsing) {
+    public RemoveKey() {
         super("Remove_Key", "удалить элемент из коллекции по его ключу");
-        this.consoleParsing = consoleParsing;
     }
 
 
@@ -20,9 +19,11 @@ public class RemoveKey extends AbstractCommand {
      * @param arg key for searching
      * @param root object contained collection values
      */
-    public String execute(String arg, Root root)  {
-        Long key = consoleParsing.createKey(arg);
+    public Response execute(String arg, Root root) {
+        return new ResponseWithError("Remove_Key can not be executed");
+    }
+    public Response execute(Long key, Root root)  {
         root.remove(key);
-        return "the element was deleted";
+        return new Response("the element was deleted");
     }
 }

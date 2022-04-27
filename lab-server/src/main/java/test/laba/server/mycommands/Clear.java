@@ -2,6 +2,7 @@ package test.laba.server.mycommands;
 
 import test.laba.common.commands.AbstractCommand;
 import test.laba.common.commands.Root;
+import test.laba.common.util.Response;
 
 
 /**
@@ -17,8 +18,8 @@ public class Clear extends AbstractCommand {
      * clear collection
      * @param root object contained collection values
      */
-    public String execute(String arg, Root root) {
+    public Response execute(String arg, Root root) {
         root.clear();
-        return "collection cleared";
+        return new Response("collection cleared");
     }
 }

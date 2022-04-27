@@ -1,4 +1,4 @@
-package test.laba.common.commands;
+package test.laba.client;
 
 
 
@@ -13,6 +13,7 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 /**
  * pars variables from string to right vision
@@ -132,7 +133,11 @@ public  class VariableParsing {
      * @throws VariableException throws when parsing is impossible
      */
     public UnitOfMeasure toRightUnitOfMeasure(String unit) throws VariableException {
-           return UnitOfMeasure.valueOf(unit.toUpperCase());
+        try{
+            return UnitOfMeasure.valueOf(unit.toUpperCase());
+        } catch (IllegalArgumentException e){
+            throw  new VariableException("Can't parse to Unit Of Measure, please chose one of: " + "PCS, MILLILITERS, GRAMS" );
+        }
     }
 
     /**
@@ -185,15 +190,13 @@ public  class VariableParsing {
      * @param number number for parsing
      * @return long number
      */
-    public  Long toLongNumber(String number)  {
+    public  Long toLongNumber(String number) throws VariableException {
        String oldX = number;
         try {
             return Long.valueOf(oldX.trim());
         } catch (NumberFormatException e) {
-            //console.printError("Неправильный формат данных, вы ввели:" + oldX + ")\nВведите новый key");
-           // oldX = console.scanner();
+            throw new VariableException("Неправильный формат данных. Вы ввели:\"" + oldX + "\", ожидалось число типа long");
             // TODO: 16.04.2022 create normal method
-            return toLongNumber(oldX);
         }
     }
     public Long createKey(String id) {

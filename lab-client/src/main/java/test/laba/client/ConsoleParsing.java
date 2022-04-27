@@ -1,8 +1,9 @@
-package test.laba.common.commands;
+package test.laba.client;
 
 
 
 import test.laba.common.IO.Console;
+import test.laba.common.commands.Variable;
 import test.laba.common.exception.CreateError;
 import test.laba.common.exception.VariableException;
 import test.laba.common.dataClasses.Location;
@@ -16,30 +17,32 @@ import java.time.ZonedDateTime;
  * the class is responsible for work with creating products from console
  */
 public  class ConsoleParsing extends VariableParsing implements Variable {
-
+    Console console = null;
+    public ConsoleParsing(Console console){
+        this.console = console;
+    }
     /**
      * create java object accept data from console
-     * @param root root contained collection
      * @return product object
      */
-    public Product parsProductFromConsole(Root root) {
+    public Product parsProductFromConsole() {
         Person owner = null;
         String name = parsField("Введите название продукта: ", this::toRightName);
         Coordinates coordinates = parsCoordinatesFromConsole();
         Long price = parsField("Введите цену продукта, price: ", this::toRightPrice);
         Integer manufactureCost = parsField("Введите поле manufactureCost: ", this::toRightNumberInt);
         UnitOfMeasure unitOfMeasure = parsField("Введите unitOfMeasure, возможные варианты:PCS, MILLILITERS, GRAMS", this::toRightUnitOfMeasure);
-       /* if (console.askQuestion("Хотите добавить владельца?(yes/no/да/нет)")) {
-            // TODO: 16.04.2022 create new class for this
+        if (console.askQuestion("Хотите добавить владельца?(yes/no/да/нет)")) {
             owner = parsPersonFromConsole();
-        }*/
+        }
         Product product = null;
 
         try {
-            product = new Product(name, coordinates, price, manufactureCost, unitOfMeasure, owner, root);
+            product = new Product(name, coordinates, price, manufactureCost, unitOfMeasure, owner);
         } catch (CreateError e) {
-           // console.printError(e);
-            parsProductFromConsole(root);
+            // TODO: 25.04.2022
+           //console.printError(e);
+            //parsProductFromConsole(root);
         }
 
         return product;
@@ -77,9 +80,9 @@ public  class ConsoleParsing extends VariableParsing implements Variable {
     String simpleField = null;
             try {
                 // TODO: 16.04.2022 send request
-                //console.ask(question);
+                console.ask(question);
                 // TODO: 16.04.2022 give request
-                //simpleField = console.scanner();
+                simpleField = console.scanner();
                 if (simpleField != null) {
                     value = (T) pars.function(simpleField);
                 } else {
@@ -88,9 +91,9 @@ public  class ConsoleParsing extends VariableParsing implements Variable {
                 if (value == null) {
                     throw new VariableException("не может быть null");
                 }
-            } catch (VariableException | IllegalArgumentException e) {
+            } catch (VariableException e) {
                 // TODO: respone with exception 
-               // console.printError("Не правильный тип данных");
+                console.printError("Не правильный тип данных," + e.getMessage());
                 value = parsField(question, pars);
             }
         return value;
