@@ -1,4 +1,4 @@
-package test.laba.common.commands;
+package test.laba.server;
 
 import test.laba.common.IO.Colors;
 import test.laba.common.dataClasses.Product;
@@ -68,6 +68,20 @@ public class Root {
     public void setProduct(Product product) {
         products.put(createKey(), product);
         dateOfCreation = ZonedDateTime.now();
+    }
+    public long createID() {
+        long rightID = 0;
+        final int constant = 9;
+        final int numberWithDegree = 10;
+        final int maxDegreeNumberOfLong = 18;
+        boolean flag = true;
+        while (flag) {
+            rightID = (long) (Math.random() * constant * Math.pow(numberWithDegree, maxDegreeNumberOfLong));
+            if (!products.containsKey(rightID)) {
+                flag = false;
+            }
+        }
+        return rightID;
     }
 
     public void setProductWithKey(Long key, Product product) throws AlreadyHaveTheseProduct {

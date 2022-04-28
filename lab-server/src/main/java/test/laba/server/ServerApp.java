@@ -1,8 +1,8 @@
 package test.laba.server;
 
-import test.laba.common.util.Response;
-import test.laba.common.util.ResponseWithCollection;
-import test.laba.common.util.ObjectWrapper;
+import test.laba.common.responses.Response;
+import test.laba.common.responses.ResponseWithCollection;
+import test.laba.common.IO.ObjectWrapper;
 import test.laba.common.util.Values;
 import test.laba.server.mycommands.CommandsManager;
 
@@ -23,7 +23,7 @@ public class ServerApp {
     private int port;
     private final CommandsManager commandsManager;
     private final BufferedReader in;
-    private  final int capacity = 10000;
+    private final int capacity = 10000;
 
 
     public ServerApp(int port, CommandsManager commandsManager) {
@@ -57,18 +57,18 @@ public class ServerApp {
     }
 
     public void readAndWrite(SelectionKey selectionKey, ByteBuffer buf) throws IOException, ClassNotFoundException {
-            SocketChannel socketChannel = (SocketChannel) selectionKey.channel();
-            socketChannel.read(buf);
+        SocketChannel socketChannel = (SocketChannel) selectionKey.channel();
+        socketChannel.read(buf);
             /*if (new String(buf.array()).trim().equals("exit")) {
                 selectionKey.cancel();
                 System.out.println("Not accepting client messages anymore");
             } else {*/
-            if (!write(socketChannel, buf)) {
-                System.out.println("The client was unconnected" + socketChannel);
-                socketChannel.close();
-                selectionKey.cancel();
-            }
-            buf.clear();
+        if (!write(socketChannel, buf)) {
+            System.out.println("The client was unconnected" + socketChannel);
+            socketChannel.close();
+            selectionKey.cancel();
+        }
+        buf.clear();
     }
 
     public boolean write(SocketChannel socketChannel, ByteBuffer buf) throws IOException, ClassNotFoundException {
@@ -119,16 +119,15 @@ public class ServerApp {
     private void interectiveModule(Selector selector, ServerSocketChannel serverSocketChannel, ByteBuffer buf) throws IOException {
         while (true) {
             if (consoleInput()) {
-                Set keySet = selector.selectedKeys();
-                Iterator iterator = keySet.iterator();
+                Set<SelectionKey> keySet = selector.selectedKeys();
+                Iterator<SelectionKey> iterator = keySet.iterator();
                 while (iterator.hasNext()) {
-                    SelectionKey selectionKey = (SelectionKey) iterator.next();
+                    SelectionKey selectionKey = iterator.next();
                     iterator.remove();
                     selectionKey.cancel();
                 }
                 commandsManager.save();
-                System.out.println("Collection was saved");
-                System.out.println("Thank you for using, goodbye");
+                System.out.println("Collection was saved\nThank you for using, goodbye");
                 break;
             }
             int count = selector.select(1);
@@ -147,9 +146,13 @@ public class ServerApp {
                 if (selectionKey.isReadable()) {
                     try {
                         readAndWrite(selectionKey, buf);
-                    } catch (ClassNotFoundException e) {
-                        e.printStackTrace();
+                    } catch (ClassNotFoundException | IOException e) {
+                        System.out.println("The client was unconnected" + selectionKey.channel());
+                        selectionKey.cancel();
                     }
+                }
+                if(selectionKey.isWritable()){
+
                 }
             }
         }

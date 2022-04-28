@@ -1,4 +1,6 @@
-package test.laba.common.util;
+package test.laba.common.IO;
+
+import test.laba.common.responses.Response;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

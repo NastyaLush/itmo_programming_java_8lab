@@ -1,9 +1,9 @@
 package test.laba.server.mycommands;
 
 import test.laba.common.IO.Colors;
-import test.laba.common.commands.AbstractCommand;
-import test.laba.common.commands.Root;
-import test.laba.common.util.Response;
+import test.laba.server.mycommands.commands.AbstractCommand;
+import test.laba.server.Root;
+import test.laba.common.responses.Response;
 
 import java.util.ArrayDeque;
 import java.util.Deque;

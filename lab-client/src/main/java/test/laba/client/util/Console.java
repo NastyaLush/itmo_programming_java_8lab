@@ -1,21 +1,32 @@
-package test.laba.common.IO;
+package test.laba.client.util;
 
-import java.util.Scanner;
+import test.laba.common.IO.Colors;
+import test.laba.common.util.Util;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 /**
  * the class is responsible for work with console and choose command for run
  */
-public class Console {
-    private final Scanner userScanner = new Scanner(System.in);
+public final class Console {
+    private static final BufferedReader USER_SCANNER = new BufferedReader(new InputStreamReader(System.in));
 
+    private Console() {
+    }
 
     /**
      * scan line from console
      *
      * @return scanning string
      */
-    public String scanner() {
-        return userScanner.nextLine();
+    public static String scanner() {
+        try {
+            return USER_SCANNER.readLine();
+        } catch (IOException e) {
+            return null;
+        }
 
     }
 
@@ -24,12 +35,8 @@ public class Console {
      *
      * @param object object for printing
      */
-    public void print(Object object) {
+    public static void print(Object object) {
         System.out.println(object);
-    }
-
-    public String toColor(String s, Colors colors) {
-        return colors + s + Colors.END;
     }
 
     /**
@@ -37,8 +44,8 @@ public class Console {
      *
      * @param object object for printing with red text
      */
-    public void printError(Object object) {
-        System.out.println(toColor(object.toString(), Colors.RED));
+    public static void printError(Object object) {
+        System.out.println(Util.toColor(object.toString(), Colors.RED));
     }
 
     /**
@@ -46,12 +53,16 @@ public class Console {
      *
      * @param object object for printing
      */
-    public void ask(Object object) {
+    public static void ask(Object object) {
         System.out.println(object);
     }
 
-    public String read() {
-        return userScanner.nextLine().trim().toLowerCase();
+    public static String read() {
+        try {
+            return USER_SCANNER.readLine().trim().toLowerCase();
+        } catch (IOException | NullPointerException e) {
+            return null;
+        }
     }
 
 
@@ -61,7 +72,7 @@ public class Console {
      * @param question question for answering
      * @return true if answer yes, false if answer no
      */
-    public boolean askQuestion(String question) {
+    public static boolean askQuestion(String question) {
         String answer;
         ask(question);
         answer = scanner().toLowerCase().trim();
@@ -81,7 +92,7 @@ public class Console {
      * @param question question for answering
      * @return answer
      */
-    public String askFullQuestion(String question) {
+    public static String askFullQuestion(String question) {
         ask(question);
         return scanner();
     }

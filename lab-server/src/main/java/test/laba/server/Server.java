@@ -2,8 +2,8 @@ package test.laba.server;
 
 
 import test.laba.common.IO.Colors;
-import test.laba.common.commands.Root;
 import test.laba.common.exception.VariableException;
+import test.laba.common.util.Util;
 import test.laba.common.util.ValidInputDate;
 import test.laba.server.mycommands.CommandsManager;
 import test.laba.server.workwithfile.FileManager;
@@ -23,7 +23,7 @@ public final class Server {
         Root root;
         try {
             if (args.length < 1) {
-                System.out.println(Colors.RED + "you should write port in the start" + Colors.END);
+                Util.toColor(Colors.RED, "you should write port in the start");
             } else {
                 root = fileManager.read();
                 CommandsManager commandsManager = new CommandsManager(root, new Save(fileManager));
@@ -33,19 +33,18 @@ public final class Server {
                     try {
                         serverApp.run();
                     } catch (IOException e) {
-                        System.out.println(Colors.RED + "impossible to run server" + Colors.END);
-                        e.printStackTrace();
+                        Util.toColor(Colors.RED, "impossible to run server: " + e.getMessage());
                     }
                 } else {
-                    System.out.println(Colors.RED + "impossible to parse port, you should write number between 1 and 65535" + Colors.END);
+                    Util.toColor(Colors.RED, "impossible to parse port, you should write number between 1 and 65535");
                 }
             }
         } catch (VariableException e) {
-            System.out.println(Colors.RED + "check environment variable LABA" + Colors.END);
+            Util.toColor(Colors.RED, "check environment variable LABA");
         } catch (JAXBException e) {
-            System.out.println(Colors.RED + "Mistake while parsing" + Colors.END);
+            Util.toColor(Colors.RED, "Mistake while parsing");
         } catch (IOException e) {
-            System.out.println(Colors.RED + "Mistake while reading file, check environment variable LABA" + Colors.END + e);
+           Util.toColor(Colors.RED, "Mistake while reading file, check environment variable LABA" + e.getMessage());
         }
 
 

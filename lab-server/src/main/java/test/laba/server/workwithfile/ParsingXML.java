@@ -1,7 +1,7 @@
 package test.laba.server.workwithfile;
 
-import test.laba.common.commands.Root;
-import test.laba.common.commands.Variable;
+import test.laba.server.Root;
+import test.laba.server.mycommands.commands.Variable;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;

@@ -1,12 +1,12 @@
 package test.laba.server.mycommands;
 
 
-import test.laba.common.commands.AbstractCommand;
-import test.laba.common.commands.Root;
+import test.laba.server.mycommands.commands.AbstractCommand;
+import test.laba.server.Root;
 import test.laba.common.dataClasses.Product;
 import test.laba.common.exception.AlreadyHaveTheseProduct;
-import test.laba.common.util.Response;
-import test.laba.common.util.ResponseWithError;
+import test.laba.common.responses.Response;
+import test.laba.common.responses.ResponseWithError;
 
 /**
  * insert null command
@@ -22,7 +22,7 @@ public class InsertNull extends AbstractCommand {
      */
     public Response execute(Long key, Product product, Root root) {
         try {
-            product.createID(root);
+            product.setId(root.createID());
             root.setProductWithKey(key, product);
         } catch (AlreadyHaveTheseProduct e) {
             System.out.println(".....");

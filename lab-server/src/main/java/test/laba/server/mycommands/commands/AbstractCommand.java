@@ -1,6 +1,7 @@
-package test.laba.common.commands;
+package test.laba.server.mycommands.commands;
 
-import test.laba.common.util.Response;
+import test.laba.common.responses.Response;
+import test.laba.server.Root;
 
 /**
  * abstract class, contains getters and setters

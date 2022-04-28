@@ -1,4 +1,4 @@
-package test.laba.common.util;
+package test.laba.common.responses;
 
 import test.laba.common.dataClasses.Product;
 import test.laba.common.dataClasses.UnitOfMeasure;
@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class Response implements Serializable {
     private static final long serialVersionUID = 11;
-    private final Map collection = null;
+    private Map collection = null;
     private String command;
     private Product product;
     private UnitOfMeasure unitOfMeasure;
@@ -49,6 +49,11 @@ public class Response implements Serializable {
 
     public Response(Product product) {
         this.product = product;
+    }
+
+    public Response(Map collection, String command) {
+        this.collection = collection;
+        this.command = command;
     }
 
     public String getCommand() {

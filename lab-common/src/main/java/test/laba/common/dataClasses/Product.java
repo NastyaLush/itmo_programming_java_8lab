@@ -2,7 +2,6 @@ package test.laba.common.dataClasses;
 
 
 
-import test.laba.common.commands.Root;
 import test.laba.common.exception.CreateError;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -143,20 +142,6 @@ public class  Product implements Comparable<Product>, Serializable {
 
     public Person getOwner() {
         return owner;
-    }
-    public void createID(Root root) {
-        long rightID;
-        final int constant = 9;
-        final int numberWithDegree = 10;
-        final int maxDegreeNumberOfLong = 18;
-        boolean flag = true;
-        while (flag) {
-            rightID = (long) (Math.random() * constant * Math.pow(numberWithDegree, maxDegreeNumberOfLong));
-            if (!root.getProducts().containsKey(rightID)) {
-                this.id = rightID;
-                flag = false;
-            }
-        }
     }
 
 

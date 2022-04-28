@@ -1,11 +1,9 @@
-package test.laba.client;
+package test.laba.client.util;
 
-import test.laba.common.util.Response;
-import test.laba.common.util.ObjectWrapper;
+import test.laba.common.responses.Response;
+import test.laba.common.IO.ObjectWrapper;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.ByteBuffer;
@@ -15,13 +13,11 @@ public class Wrapper {
     private Socket socket;
     private final int capaciti = 10000;
     private ByteBuffer byteBuffer = ByteBuffer.allocate(capaciti);
-    private BufferedReader in;
     private OutputStream out;
 
     public Wrapper(Socket socket) throws IOException {
         this.socket = socket;
         out = socket.getOutputStream();
-        in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
     }
 
     public void sent(Response response) throws IOException {
@@ -33,7 +29,7 @@ public class Wrapper {
     }
 
 
-    public Response readResponse() throws IOException, ClassNotFoundException {
+    public Response readResponse() throws IOException {
         socket.getInputStream().read(byteBuffer.array());
         return ObjectWrapper.deserialize(byteBuffer);
     }

@@ -1,4 +1,4 @@
-package test.laba.common.commands;
+package test.laba.server.mycommands.commands;
 
 import java.io.Serializable;
 

@@ -1,4 +1,4 @@
-package test.laba.client;
+package test.laba.client.util;
 
 
 import test.laba.common.exception.VariableException;
@@ -15,9 +15,10 @@ import java.time.format.DateTimeFormatter;
 /**
  * pars variables from string to right vision
  */
-public class VariableParsing {
-
-    private final int falseX = -233;
+public final class VariableParsing {
+    private static final int FALSE_X = -233;
+    private VariableParsing() {
+    }
     /**
      * pars string name to right field name (not null)
      *
@@ -25,7 +26,7 @@ public class VariableParsing {
      * @return string with right name
      * @throws VariableException throws when parsing is impossible
      */
-    public String toRightName(String oldName) throws VariableException {
+    public static String toRightName(String oldName) throws VariableException {
         String name = oldName.trim();
         if (name.isEmpty()) {
             throw new VariableException("Данное поле не может быть пустым");
@@ -40,14 +41,14 @@ public class VariableParsing {
      * @return integer
      * @throws VariableException throws when parsing is impossible
      */
-    public Integer toRightX(String x) throws VariableException {
+    public static Integer toRightX(String x) throws VariableException {
         int rightX;
         try {
             rightX = Integer.parseInt(x);
         } catch (NumberFormatException e) {
             throw new VariableException("Должно быть введено целое число типа int");
         }
-        if (rightX <= falseX) {
+        if (rightX <= FALSE_X) {
             throw new VariableException("Число должно быть больше -233");
         }
         return rightX;
@@ -60,7 +61,7 @@ public class VariableParsing {
      * @return float
      * @throws VariableException throws when parsing is impossible
      */
-    public Float toRightY(String y) throws VariableException {
+    public static Float toRightY(String y) throws VariableException {
         float rightY;
         try {
             rightY = Float.parseFloat(y);
@@ -77,7 +78,7 @@ public class VariableParsing {
      * @return long
      * @throws VariableException throws when parsing is impossible
      */
-    public Long toRightPrice(String price) throws VariableException {
+    public static Long toRightPrice(String price) throws VariableException {
         long rightPrice;
         try {
             rightPrice = Long.parseLong(price);
@@ -97,7 +98,7 @@ public class VariableParsing {
      * @return integer
      * @throws VariableException throws when parsing is impossible
      */
-    public Integer toRightNumberInt(String number) throws VariableException {
+    public static Integer toRightNumberInt(String number) throws VariableException {
         int manufactureCost;
         try {
             manufactureCost = Integer.parseInt(number);
@@ -115,7 +116,7 @@ public class VariableParsing {
      * @return long
      * @throws VariableException throws when parsing is impossible
      */
-    public Long toRightNumberLong(String number) throws VariableException {
+    public static Long toRightNumberLong(String number) throws VariableException {
         try {
             return Long.valueOf(number);
         } catch (NumberFormatException e) {
@@ -131,7 +132,7 @@ public class VariableParsing {
      * @return UnitOfMeasure
      * @throws VariableException throws when parsing is impossible
      */
-    public UnitOfMeasure toRightUnitOfMeasure(String unit) throws VariableException {
+    public static UnitOfMeasure toRightUnitOfMeasure(String unit) throws VariableException {
         try {
             return UnitOfMeasure.valueOf(unit.toUpperCase());
         } catch (IllegalArgumentException e) {
@@ -146,7 +147,7 @@ public class VariableParsing {
      * @return UnitOfMeasure
      * @throws VariableException throws when parsing is impossible
      */
-    public Integer toRightHeight(String height) throws VariableException {
+    public static Integer toRightHeight(String height) throws VariableException {
         Integer rightHeight = null;
         if (height != null) {
             try {
@@ -168,7 +169,7 @@ public class VariableParsing {
      * @return ZonedDateTime
      * @throws VariableException throws when parsing is impossible
      */
-    public ZonedDateTime toRightBirthday(String birthday) throws VariableException {
+    public static ZonedDateTime toRightBirthday(String birthday) throws VariableException {
         ZonedDateTime birth;
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
@@ -192,7 +193,7 @@ public class VariableParsing {
      * @param number number for parsing
      * @return long number
      */
-    public Long toLongNumber(String number) throws VariableException {
+    public static Long toLongNumber(String number) throws VariableException {
         try {
             return Long.valueOf(number.trim());
         } catch (NumberFormatException e) {

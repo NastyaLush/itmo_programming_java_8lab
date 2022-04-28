@@ -1,6 +1,7 @@
 package test.laba.client;
 
 import test.laba.common.IO.Colors;
+import test.laba.common.util.Util;
 
 import java.io.IOException;
 
@@ -30,23 +31,22 @@ public final class Client {
                 host = args[1];
                 break;
             default:
-                System.out.println(Colors.RED + "Please write port and host( default it's localhost)" + Colors.END);
+                Util.toColor(Colors.RED, "Please write port and host( default it's localhost)");
         }
         if (port != null) {
             try {
                 if (checkPort(port) && checkHost(host)) {
                     clientApp.run(host, getPort(port));
                 } else {
-                    System.out.println(Colors.RED
-                            + "Can't connect to the server, please check host address and port" + Colors.END);
+                    Util.toColor(Colors.RED, "Can't connect to the server, please check host address and port");
                 }
             } catch (IOException e) {
-                System.out.println(Colors.RED
-                        + "Can't connect to the server, check host address and port" + Colors.END);
+                Util.toColor(Colors.RED, "Can't connect to the server, check host address and port");
             } catch (NumberFormatException e) {
-                System.out.println(Colors.RED
-                        + ("impossible pars host address and port ") + Colors.END);
+                Util.toColor(Colors.RED, "impossible pars host address and port ");
             }
+        } else {
+            Util.toColor(Colors.RED, "Can't connect to the server, check host address and port");
         }
     }
 }

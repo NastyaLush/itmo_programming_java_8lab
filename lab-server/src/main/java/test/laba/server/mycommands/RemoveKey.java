@@ -1,9 +1,9 @@
 package test.laba.server.mycommands;
 
-import test.laba.common.commands.AbstractCommand;
-import test.laba.common.commands.Root;
-import test.laba.common.util.Response;
-import test.laba.common.util.ResponseWithError;
+import test.laba.server.mycommands.commands.AbstractCommand;
+import test.laba.server.Root;
+import test.laba.common.responses.Response;
+import test.laba.common.responses.ResponseWithError;
 
 /**
  * remove key object

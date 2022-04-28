@@ -1,4 +1,4 @@
-package test.laba.common.commands;
+package test.laba.server.mycommands.commands;
 
 public interface Variable {
     String ENV_VARIBLE = System.getenv("LABA");
