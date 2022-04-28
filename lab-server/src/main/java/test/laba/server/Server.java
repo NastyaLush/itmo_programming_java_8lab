@@ -1,8 +1,10 @@
 package test.laba.server;
 
 
+import test.laba.common.IO.Colors;
 import test.laba.common.commands.Root;
 import test.laba.common.exception.VariableException;
+import test.laba.common.util.ValidInputDate;
 import test.laba.server.mycommands.CommandsManager;
 import test.laba.server.workwithfile.FileManager;
 import test.laba.server.workwithfile.Save;
@@ -18,24 +20,32 @@ public final class Server {
 
     public static void main(String[] args) {
         FileManager fileManager = new FileManager();
-        Root root = null;
+        Root root;
         try {
-            root = fileManager.read();
-            CommandsManager commandsManager = new CommandsManager( root, new Save(fileManager));
-
-            Integer port = Integer.valueOf(1234);
-            ServerApp serverApp = new ServerApp(port, commandsManager);
-            try {
-                serverApp.run();
-            } catch (IOException e) {
-                // TODO: 16.04.2022
+            if (args.length < 1) {
+                System.out.println(Colors.RED + "you should write port, while beginning" + Colors.END);
+            } else {
+                root = fileManager.read();
+                CommandsManager commandsManager = new CommandsManager(root, new Save(fileManager));
+                if (ValidInputDate.checkPort(args[0])) {
+                    Integer port = ValidInputDate.getPort(args[0]);
+                    ServerApp serverApp = new ServerApp(port, commandsManager);
+                    try {
+                        serverApp.run();
+                    } catch (IOException e) {
+                        System.out.println(Colors.RED + "impossible to run server" + Colors.END);
+                        e.printStackTrace();
+                    }
+                } else {
+                    System.out.println(Colors.RED + "impossible to parse port, you should write number between 1 and 65535" + Colors.END);
+                }
             }
         } catch (VariableException e) {
-            // TODO: 16.04.2022 error handling
+            System.out.println(Colors.RED + "check environment variable" + Colors.END);
         } catch (JAXBException e) {
-            System.out.println("Ошибка при попытке парсинга");
+            System.out.println(Colors.RED + "Mistake while parsing" + Colors.END);
         } catch (IOException e) {
-            System.out.println("Ошибка при чтении файла");
+            System.out.println(Colors.RED + "Mistake while reading file" + Colors.END + e);
         }
 
 

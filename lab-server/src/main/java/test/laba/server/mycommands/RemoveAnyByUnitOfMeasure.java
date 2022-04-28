@@ -2,7 +2,6 @@ package test.laba.server.mycommands;
 
 
 import test.laba.common.commands.Root;
-import test.laba.common.exception.VariableException;
 import test.laba.common.commands.AbstractCommand;
 
 import test.laba.common.dataClasses.UnitOfMeasure;
@@ -19,14 +18,15 @@ public class RemoveAnyByUnitOfMeasure extends AbstractCommand {
 
     /**
      * remove one element from the collection, the value of the unit Of Measure field of which is equivalent to the specified
-     * @param arg argument type of unit of measure to comparing
-     * @param root  object contained collection values
-     * @throws VariableException throws if parsing variable to right field is impossible
+     *
+     * @param arg  argument type of unit of measure to comparing
+     * @param root object contained collection values
      */
-    public Response execute(String arg, Root root)  {
-            return new ResponseWithError("the Remove_any_by_unit_of_measure can not be executed");
+    public Response execute(String arg, Root root) {
+        return new ResponseWithError("the Remove_any_by_unit_of_measure can not be executed");
     }
-    public Response execute(UnitOfMeasure unitOfMeasure, Root root)  {
+
+    public Response execute(UnitOfMeasure unitOfMeasure, Root root) {
         root.removeAnyByUnitOfMeasure(unitOfMeasure);
         return new Response("the product was deleted");
     }

@@ -11,7 +11,6 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.Comparator;
-import java.util.Map;
 import java.util.Objects;
 
 @XmlRootElement(name = "product")
@@ -159,14 +158,7 @@ public class  Product implements Comparable<Product>, Serializable {
             }
         }
     }
-    public boolean isIdContainsInCollection(Root root, Long newId) {
-        for (Map.Entry<Long, Product> entry : root.getProducts().entrySet()) {
-            if (entry.getValue().getId() == newId) {
-                return false;
-            }
-        }
-        return true;
-    }
+
 
 
     @Override
@@ -199,13 +191,12 @@ public class  Product implements Comparable<Product>, Serializable {
 
     /**
      * check product on match criteria of fields
-     * @param root object is responsible for collection
      * @return true or false
      */
-    public boolean isRightProduct(Root root) {
+    public boolean isRightProduct() {
         boolean s = id > 0 && name != null && !"".equals(name) && coordinates != null && price != null && price > 0 && unitOfMeasure != null && coordinates.isRightCoordinates();
         if (owner != null) {
-            return s && owner != null && owner.isRightPerson();
+            return s && owner.isRightPerson();
         }
         return s;
     }

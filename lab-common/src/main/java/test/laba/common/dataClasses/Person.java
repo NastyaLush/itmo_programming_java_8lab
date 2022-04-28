@@ -1,7 +1,6 @@
 package test.laba.common.dataClasses;
 
 
-import test.laba.common.IO.Console;
 import test.laba.common.exception.CreateError;
 import test.laba.common.exception.VariableException;
 
@@ -36,7 +35,6 @@ public class Person implements Comparable<Person>, Serializable {
      * @param birthday person birthday, not null
      * @param height person height, not null and more than zero
      * @param location person losation, not null
-     * @param console console for work
      * @throws CreateError throws if fields do not match the criteria
      */
     public Person(String name, ZonedDateTime birthday, Integer height, Location location) throws CreateError {
@@ -46,7 +44,6 @@ public class Person implements Comparable<Person>, Serializable {
                     + "\nПоле birthday не может быть null"
                     + "\nЗначение поля height должно быть больше 0"
                     + "\nПоле Location не может быть null");
-            // TODO: 16.04.2022 error handling
         } else {
             this.name = name;
             this.birthday = birthday;

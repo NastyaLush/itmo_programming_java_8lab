@@ -1,8 +1,8 @@
 package test.laba.common.exception;
 
-public class СycleInTheScript extends Exception{
-    String message;
-    public СycleInTheScript(String message){
+public class ParsException extends Exception {
+    private final String message;
+    public ParsException(String message) {
         this.message = message;
     }
 

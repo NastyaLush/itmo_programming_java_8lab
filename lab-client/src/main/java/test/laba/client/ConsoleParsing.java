@@ -1,7 +1,5 @@
 package test.laba.client;
 
-
-
 import test.laba.common.IO.Console;
 import test.laba.common.commands.Variable;
 import test.laba.common.exception.CreateError;
@@ -11,21 +9,25 @@ import test.laba.common.dataClasses.UnitOfMeasure;
 import test.laba.common.dataClasses.Coordinates;
 import test.laba.common.dataClasses.Person;
 import test.laba.common.dataClasses.Product;
+
 import java.time.ZonedDateTime;
 
 /**
  * the class is responsible for work with creating products from console
  */
-public  class ConsoleParsing extends VariableParsing implements Variable {
-    Console console = null;
-    public ConsoleParsing(Console console){
+public class ConsoleParsing extends VariableParsing implements Variable {
+    private Console console;
+
+    public ConsoleParsing(Console console) {
         this.console = console;
     }
+
     /**
      * create java object accept data from console
+     *
      * @return product object
      */
-    public Product parsProductFromConsole() {
+    public Product parsProductFromConsole() throws CreateError {
         Person owner = null;
         String name = parsField("Введите название продукта: ", this::toRightName);
         Coordinates coordinates = parsCoordinatesFromConsole();
@@ -35,27 +37,26 @@ public  class ConsoleParsing extends VariableParsing implements Variable {
         if (console.askQuestion("Хотите добавить владельца?(yes/no/да/нет)")) {
             owner = parsPersonFromConsole();
         }
-        Product product = null;
-
-        try {
-            product = new Product(name, coordinates, price, manufactureCost, unitOfMeasure, owner);
-        } catch (CreateError e) {
-            // TODO: 25.04.2022
-           //console.printError(e);
-            //parsProductFromConsole(root);
-        }
-
+        Product product;
+        product = new Product(name, coordinates, price, manufactureCost, unitOfMeasure, owner);
         return product;
 
     }
+
     private Location parsLocationFromConsole() {
         Long x = parsField("Введите координату X локации: ", this::toRightNumberLong);
         Integer y = parsField("Введите координату Y локации: ", this::toRightNumberInt);
         String name = parsField("Введите название локации: ", this::toRightName);
 
-        return new Location(x, y, name);
+        try {
+            return new Location(x, y, name);
+        } catch (VariableException e) {
+            console.printError(e.getMessage());
+            return null;
+        }
     }
-    public   Person parsPersonFromConsole() {
+
+    public Person parsPersonFromConsole() {
         String name = parsField("Введите имя владельца: ", this::toRightName);
         ZonedDateTime newBirthday = parsField("Введите дату рождения владельца: ", this::toRightBirthday);
         Integer height = parsField("Введите рост владельца: ", this::toRightHeight);
@@ -68,36 +69,35 @@ public  class ConsoleParsing extends VariableParsing implements Variable {
             return parsPersonFromConsole();
         }
     }
-    private  Coordinates parsCoordinatesFromConsole() {
+
+    private Coordinates parsCoordinatesFromConsole() {
         Integer x = parsField("Введите координату х: ", this::toRightX);
         Float y = parsField("Введите координату y: ", this::toRightY);
-
         return new Coordinates(x, y);
 
     }
+
     private <T> T parsField(String question, IFunction pars) {
-    T value;
-    String simpleField = null;
-            try {
-                // TODO: 16.04.2022 send request
-                console.ask(question);
-                // TODO: 16.04.2022 give request
-                simpleField = console.scanner();
-                if (simpleField != null) {
-                    value = (T) pars.function(simpleField);
-                } else {
-                    throw new VariableException("не может быть null");
-                }
-                if (value == null) {
-                    throw new VariableException("не может быть null");
-                }
-            } catch (VariableException e) {
-                // TODO: respone with exception 
-                console.printError("Не правильный тип данных," + e.getMessage());
-                value = parsField(question, pars);
+        T value;
+        String simpleField;
+        try {
+            console.ask(question);
+            simpleField = console.scanner();
+            if (simpleField != null) {
+                value = (T) pars.function(simpleField);
+            } else {
+                throw new VariableException("не может быть null");
             }
+            if (value == null) {
+                throw new VariableException("не может быть null");
+            }
+        } catch (VariableException e) {
+            console.printError("Не правильный тип данных," + e.getMessage());
+            value = parsField(question, pars);
+        }
         return value;
     }
+
     private interface IFunction<T> {
         T function(String oldField) throws VariableException;
     }

@@ -15,10 +15,11 @@ public class Show extends AbstractCommand {
 
     /**
      * show collection values
+     *
      * @param root object contained collection values
      * @return string with info about values
      */
     public Response execute(String arg, Root root) {
-        return new Response( root.showCollection());
+        return new Response(root.showCollection());
     }
 }

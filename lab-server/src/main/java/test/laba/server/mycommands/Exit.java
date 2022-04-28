@@ -14,7 +14,7 @@ public class Exit extends AbstractCommand {
     }
 
     /**
-     * do nothing
+     * returns exit
      */
     public Response execute(String arg, Root root) {
         return new Response("exit");

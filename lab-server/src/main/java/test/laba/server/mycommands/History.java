@@ -29,7 +29,7 @@ public class History extends AbstractCommand {
 
     /**
      * output the last 10 commands (without their arguments)
-     * @return sring with the last 10 commands (without their arguments)
+     * @return string with the last 10 commands (without their arguments)
      */
     public Response execute(String arg, Root root) {
         return new Response(Colors.BlUE +  "History: " + Colors.END + history);

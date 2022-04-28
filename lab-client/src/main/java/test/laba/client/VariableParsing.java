@@ -1,9 +1,7 @@
 package test.laba.client;
 
 
-
 import test.laba.common.exception.VariableException;
-import test.laba.common.IO.Console;
 import test.laba.common.dataClasses.UnitOfMeasure;
 
 import java.time.DateTimeException;
@@ -13,28 +11,23 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Locale;
 
 /**
  * pars variables from string to right vision
  */
-public  class VariableParsing {
+public class VariableParsing {
+
     private final int falseX = -233;
-
-    /**
-     * the constructor accepts object for print
-     * @param console console for work
-     */
-
     /**
      * pars string name to right field name (not null)
+     *
      * @param oldName name for parsing
      * @return string with right name
      * @throws VariableException throws when parsing is impossible
      */
-    public  String toRightName(String oldName) throws VariableException {
+    public String toRightName(String oldName) throws VariableException {
         String name = oldName.trim();
-        if (name == null || name.isEmpty()) {
+        if (name.isEmpty()) {
             throw new VariableException("Данное поле не может быть пустым");
         }
         return name;
@@ -42,11 +35,12 @@ public  class VariableParsing {
 
     /**
      * pars string x to coordination x ( not null and more than -233)
+     *
      * @param x number for parsing
      * @return integer
      * @throws VariableException throws when parsing is impossible
      */
-    public  Integer toRightX(String x) throws VariableException {
+    public Integer toRightX(String x) throws VariableException {
         int rightX;
         try {
             rightX = Integer.parseInt(x);
@@ -61,6 +55,7 @@ public  class VariableParsing {
 
     /**
      * pars string y to coordination y ( not null)
+     *
      * @param y number for parsing
      * @return float
      * @throws VariableException throws when parsing is impossible
@@ -77,11 +72,12 @@ public  class VariableParsing {
 
     /**
      * pars string price to product price, the number must be integer(type long) and more than zero
+     *
      * @param price number for parsing
      * @return long
      * @throws VariableException throws when parsing is impossible
      */
-    public  Long toRightPrice(String price) throws VariableException {
+    public Long toRightPrice(String price) throws VariableException {
         long rightPrice;
         try {
             rightPrice = Long.parseLong(price);
@@ -96,23 +92,25 @@ public  class VariableParsing {
 
     /**
      * pars string number to int number
+     *
      * @param number number for parsing
      * @return integer
      * @throws VariableException throws when parsing is impossible
      */
-    public  Integer toRightNumberInt(String number) throws VariableException {
+    public Integer toRightNumberInt(String number) throws VariableException {
         int manufactureCost;
-            try {
-                manufactureCost = Integer.valueOf(number);
-            } catch (NumberFormatException e) {
-                throw new VariableException("Неправильный тип переменной, ожидалось целое число типа int, вы ввели: " + number);
+        try {
+            manufactureCost = Integer.parseInt(number);
+        } catch (NumberFormatException e) {
+            throw new VariableException("Неправильный тип переменной, ожидалось целое число типа int, вы ввели: " + number);
 
-            }
+        }
         return manufactureCost;
     }
 
     /**
      * pars string number to integer long number
+     *
      * @param number number for parsing
      * @return long
      * @throws VariableException throws when parsing is impossible
@@ -128,20 +126,22 @@ public  class VariableParsing {
 
     /**
      * pars string argument to unitOfMeasure type of UnitOfMeasure
+     *
      * @param unit unit for parsing to unit of measure
      * @return UnitOfMeasure
      * @throws VariableException throws when parsing is impossible
      */
     public UnitOfMeasure toRightUnitOfMeasure(String unit) throws VariableException {
-        try{
+        try {
             return UnitOfMeasure.valueOf(unit.toUpperCase());
-        } catch (IllegalArgumentException e){
-            throw  new VariableException("Can't parse to Unit Of Measure, please chose one of: " + "PCS, MILLILITERS, GRAMS" );
+        } catch (IllegalArgumentException e) {
+            throw new VariableException("Can't parse to Unit Of Measure, please chose one of: " + "PCS, MILLILITERS, GRAMS");
         }
     }
 
     /**
      * pars string height to integer height, which must be more zero
+     *
      * @param height number for parsing
      * @return UnitOfMeasure
      * @throws VariableException throws when parsing is impossible
@@ -163,6 +163,7 @@ public  class VariableParsing {
 
     /**
      * pars string birthday to birthday type of ZonedDAteTime with pattern "dd-MM-yyyy"
+     *
      * @param birthday string for parsing to ZonedDateTime
      * @return ZonedDateTime
      * @throws VariableException throws when parsing is impossible
@@ -187,22 +188,18 @@ public  class VariableParsing {
 
     /**
      * pars string to long number
+     *
      * @param number number for parsing
      * @return long number
      */
-    public  Long toLongNumber(String number) throws VariableException {
-       String oldX = number;
+    public Long toLongNumber(String number) throws VariableException {
         try {
-            return Long.valueOf(oldX.trim());
+            return Long.valueOf(number.trim());
         } catch (NumberFormatException e) {
-            throw new VariableException("Неправильный формат данных. Вы ввели:\"" + oldX + "\", ожидалось число типа long");
-            // TODO: 16.04.2022 create normal method
+            throw new VariableException("Неправильный формат данных. Вы ввели:\"" + number + "\", ожидалось число типа long");
         }
     }
-    public Long createKey(String id) {
-        String newID = id;
-        return Long.valueOf(newID);
-    }
+
 }
 
 

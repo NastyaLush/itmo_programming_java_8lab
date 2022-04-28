@@ -1,10 +1,7 @@
 package test.laba.common.exception;
 
-
-import test.laba.common.IO.Console;
-
 public class VariableException extends Exception {
-    String message;
+    private final String message;
     public VariableException(String message) {
         this.message = message;
     }

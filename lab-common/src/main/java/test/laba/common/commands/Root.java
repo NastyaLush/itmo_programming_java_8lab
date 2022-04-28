@@ -1,17 +1,14 @@
 package test.laba.common.commands;
 
 import test.laba.common.IO.Colors;
-import test.laba.common.IO.Console;
 import test.laba.common.dataClasses.Product;
 import test.laba.common.dataClasses.UnitOfMeasure;
 import test.laba.common.exception.AlreadyHaveTheseProduct;
-import test.laba.common.exception.СycleInTheScript;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -35,6 +32,7 @@ public class Root {
 
     /**
      * the constructor, add collection
+     *
      * @param products argument for adding
      */
     public Root(HashMap<Long, Product> products) {
@@ -44,18 +42,20 @@ public class Root {
     public HashMap<Long, Product> getProducts() {
         return products;
     }
+
     public ZonedDateTime getDateOfCreation() {
         return dateOfCreation;
     }
+
     /**
      * @param key key for searching
-     * @return product wich key equal to argument
+     * @return product wish key equal to argument
      */
     public Product getProductByKey(Long key) {
         return products.get(key);
     }
+
     /**
-     *
      * @param id id for searching
      * @return key of product by id
      */
@@ -65,35 +65,33 @@ public class Root {
         return answer.get();
     }
 
-
-    public void setProducts(HashMap<Long, Product> products) {
-        this.products = products;
-    }
     public void setProduct(Product product) {
         products.put(createKey(), product);
         dateOfCreation = ZonedDateTime.now();
     }
+
     public void setProductWithKey(Long key, Product product) throws AlreadyHaveTheseProduct {
-        if(!products.containsKey(key)) {
+        if (!products.containsKey(key)) {
             products.put(key, product);
             dateOfCreation = ZonedDateTime.now();
         } else {
             throw new AlreadyHaveTheseProduct("This key is already exists");
         }
     }
-    public void updateProductWithKey(Long key, Product product){
-            products.put(key, product);
-            dateOfCreation = ZonedDateTime.now();
+
+    public void updateProductWithKey(Long key, Product product) {
+        products.put(key, product);
+        dateOfCreation = ZonedDateTime.now();
     }
 
     /**
-     *
      * @param id id for searching
      * @return true if product of collection contains this id and false in another case
      */
     public boolean containsID(Long id) {
         return products.values().stream().anyMatch(e -> e.getId() == id);
     }
+
     private Long createKey() {
         long key = 0;
         while (getProducts().containsKey(key)) {
@@ -101,14 +99,17 @@ public class Root {
         }
         return key;
     }
+
     /**
      * the method which clear collection
      */
     public void clear() {
         products.clear();
     }
+
     /**
      * create the string with information about collection
+     *
      * @return string with information about collection
      */
     public String infoAboutCollection() {
@@ -116,49 +117,58 @@ public class Root {
                 + "\nDate of initialization: " + getDateOfCreation()
                 + "\nNumber of elements: " + getProducts().size();
     }
+
     /**
      * remove one product if argument matches with UnitOfMeasure field of product in collection
+     *
      * @param unitOfMeasure argument for removing
      */
     public void removeAnyByUnitOfMeasure(UnitOfMeasure unitOfMeasure) {
-          products.entrySet()
+        products.entrySet()
                 .stream()
                 .filter(x -> x.getValue().getUnitOfMeasure() == unitOfMeasure)
-                .findFirst().map(e-> products.remove(e.getKey()));
+                .findFirst().map(e -> products.remove(e.getKey()));
     }
+
     /**
      * remove all products which less than argument
+     *
      * @param product argument for comparing
      */
     public void removeIfLess(Product product) {
         products.entrySet().removeIf(entry -> product.compareTo(entry.getValue()) > 0);
     }
+
     /**
      * remove all products which key less than argument
+     *
      * @param key key for comparing
      */
     public void removeIfKeyLess(Long key) {
         products.entrySet().removeIf(entry -> key > entry.getKey());
     }
+
     /**
      * delete product by key
+     *
      * @param deleteKey key for deleting
      */
     public void remove(Long deleteKey) {
         products.remove(deleteKey);
     }
+
     /**
      * create string with collection value
+     *
      * @return string
      */
     public String showCollection() {
         StringBuilder s = new StringBuilder(Colors.BlUE + "Products: \n" + Colors.END);
-        products.entrySet().stream().forEach(e -> s.append("Ключ: ").append(e.getKey()).append(" ").append(e.getValue()).append("\n"));
+        products.forEach((key, value) -> s.append("Ключ: ").append(key).append(" ").append(value).append("\n"));
         return s.toString();
     }
 
     /**
-     *
      * @return number average Of Manufacture Cost of products in collection
      */
     public double sumOfManufactureCost() {
@@ -166,36 +176,24 @@ public class Root {
         answer += products.values().stream().mapToDouble(Product::getManufactureCost).sum();
         return answer;
     }
+
     /**
-     *
-     * @return hashmap where keys- field value price in product and values- count of this products with this price
+     * @return hashmap where keys- field value price in product and values- count of these products with this price
      */
     public Map<Long, Long> groupCountingByPrice() {
-        Map<Long, Long> countingByPrice = products.entrySet()
-                .stream().map(x -> x.getValue().getPrice()).distinct().collect(Collectors.toMap(e -> e, e -> products.entrySet()
-                        .stream().map(x -> x.getValue().getPrice()).filter(x -> e == x).count()));
-        return countingByPrice;
+        return products.values()
+                .stream().map(Product::getPrice).distinct().collect(Collectors.toMap(e -> e, e -> products.values()
+                        .stream().map(Product::getPrice).filter(e::equals).count()));
 
     }
 
 
-    /**
-     * print string with collection values and keys
-     * @param console console for print
-     */
-    public void toStringWithKey(Console console) {
-        console.print("Products: \n");
-        StringBuilder s = new StringBuilder();
-        products.entrySet().stream().forEach(e -> s.append(e.getKey() + " " + e.getValue() + '\n'));
-        console.print(s.toString());
-    }
     @Override
     public String toString() {
         return "Root{"
                 + "products=" + products
                 + ", dateOfLastModification=" + dateOfCreation + '}';
     }
-
 
 
 }

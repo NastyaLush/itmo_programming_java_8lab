@@ -18,7 +18,7 @@ public class ParsingXML  {
     private final FileReader fileReader;
 
     /**
-     * the constructor accept console for print and create filereader
+     * the constructor accept console for print and create file reader
      * @throws FileNotFoundException throws if file not found
      */
     public ParsingXML() throws FileNotFoundException {
@@ -33,7 +33,6 @@ public class ParsingXML  {
      * create java objects from xml file
      * @return object contained collection
      * @throws JAXBException throws if parsing impossible
-     * @throws IOException throws if parsing impossible
      */
     public Root createJavaObjects() throws JAXBException {
         File file = new File(getEnvVariable());

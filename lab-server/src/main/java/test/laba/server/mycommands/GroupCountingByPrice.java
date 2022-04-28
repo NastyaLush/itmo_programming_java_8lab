@@ -24,7 +24,7 @@ public class GroupCountingByPrice extends AbstractCommand {
         Map<Long, Long> countingByPrice = root.groupCountingByPrice();
         StringBuilder answer = new StringBuilder();
         answer.append(Colors.BlUE + "price = count\n" + Colors.END);
-        countingByPrice.entrySet().forEach(entry -> answer.append(entry.getKey() + " =  " + entry.getValue() + '\n'));
+        countingByPrice.forEach((key, value) -> answer.append(key).append(" =  ").append(value).append('\n'));
         return new Response(answer.toString());
     }
 }

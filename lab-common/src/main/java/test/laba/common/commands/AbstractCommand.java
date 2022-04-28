@@ -1,7 +1,5 @@
 package test.laba.common.commands;
 
-
-import test.laba.common.exception.VariableException;
 import test.laba.common.util.Response;
 
 /**

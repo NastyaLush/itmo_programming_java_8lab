@@ -9,7 +9,6 @@ import java.io.Serializable;
 public enum UnitOfMeasure implements Serializable {
     PCS,
     MILLILITERS,
-    GRAMS,
-    ;
+    GRAMS
 
 }

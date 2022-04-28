@@ -24,7 +24,8 @@ public class Help extends AbstractCommand implements Serializable {
      */
     public Response execute(String arg, Root root) {
         StringBuilder s = new StringBuilder();
-        commands.forEach(command -> s.append(Colors.BlUE + command.getName() + Colors.END + ": " + command.getDescription() + '\n'));
+        commands.forEach(command -> s.append(Colors.BlUE).append(command.getName()).append(Colors.END)
+                .append(": ").append(command.getDescription()).append('\n'));
         return new Response(s.toString());
     }
 }

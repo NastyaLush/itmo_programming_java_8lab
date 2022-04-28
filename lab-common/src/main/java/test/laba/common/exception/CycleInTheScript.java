@@ -1,9 +1,9 @@
 package test.laba.common.exception;
 
-public class AlreadyHaveTheseProduct extends Exception {
+public class CycleInTheScript extends Exception {
     private final String message;
 
-    public AlreadyHaveTheseProduct(String message) {
+    public CycleInTheScript(String message) {
         this.message = message;
     }
 
@@ -12,3 +12,4 @@ public class AlreadyHaveTheseProduct extends Exception {
         return message;
     }
 }
+

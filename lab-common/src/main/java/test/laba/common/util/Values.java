@@ -9,7 +9,7 @@ public enum Values {
     COLLECTION("get collection"),
     SCRIPT("script");
 
-    String message;
+    private String message;
 
     Values(String message) {
         this.message = message;

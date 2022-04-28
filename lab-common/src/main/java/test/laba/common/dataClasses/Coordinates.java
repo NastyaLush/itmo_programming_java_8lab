@@ -1,8 +1,6 @@
 package test.laba.common.dataClasses;
 
-
-
-import test.laba.common.IO.Console;
+import test.laba.common.exception.VariableException;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
@@ -18,8 +16,6 @@ public class Coordinates implements Comparable<Coordinates>, Serializable {
     private Integer x; //Значение поля должно быть больше -233, Поле не может быть null
     private Float y; //Поле не может быть null
 
-
-    private Console console;
     private final int minNumberOfX = -233;
 
     public Coordinates() {
@@ -43,23 +39,21 @@ public class Coordinates implements Comparable<Coordinates>, Serializable {
         return y;
     }
 
-    public void setX(Integer x) {
+    public void setX(Integer x) throws VariableException {
         if (x >= minNumberOfX) {
             this.x = x;
         } else {
-            /*console.printError("Ошибка при добавлении координаты X:значение поля x должно быть больше -233, Поле не может быть null\n"
-                    + "Вы ввели: " + x);*/
-            // TODO: 16.04.2022 error handlinh
+            throw new VariableException("Ошибка при добавлении координаты X:значение поля x должно быть больше -233, Поле не может быть null\n"
+                    + "Вы ввели: " + x);
         }
     }
 
-    public void setY(Float y) {
+    public void setY(Float y) throws VariableException {
         if (y != null) {
             this.y = y;
         } else {
-            /*console.printError("Ошибка при добавлении координаты Y: Поле не может быть null\n"
-                    + "Вы ввели: " + y);*/
-            // TODO: 16.04.2022 error handlinh
+            throw  new VariableException("Ошибка при добавлении координаты Y: Поле не может быть null\n"
+                    + "Вы ввели: " + y);
         }
 
     }

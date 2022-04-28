@@ -1,8 +1,6 @@
 package test.laba.common.dataClasses;
 
-
-
-import test.laba.common.IO.Console;
+import test.laba.common.exception.VariableException;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
@@ -25,7 +23,7 @@ public class Location implements Comparable<Location>, Serializable {
     /**
      * the constructor create location object
      */
-    public Location(Long x, Integer y, String s) {
+    public Location(Long x, Integer y, String s) throws VariableException {
         if (x != null) {
             this.x = x;
         }
@@ -33,9 +31,8 @@ public class Location implements Comparable<Location>, Serializable {
             this.y = y;
         }
         if (s == null || s.isEmpty()) {
-           /* console.printError("Строка не может быть пустой, Поле не может быть null\n"
-                    + "ваше значение: " + s);*/
-            // TODO: 16.04.2022 error handling
+            throw new VariableException("Строка не может быть пустой, Поле не может быть null\n"
+                    + "ваше значение: " + s);
         }
         name = s;
     }
