@@ -18,21 +18,35 @@ public final class Client {
      */
     public static void main(String[] args) {
         ClientApp clientApp = new ClientApp();
-        try {
-            if (checkPort(args[0]) && checkHost(args[1])) {
-                clientApp.run(args[1], getPort(args[0]));
-            } else {
+        int lenght = args.length;
+        String port = null;
+        String host = "localhost";
+        switch (lenght) {
+            case 1:
+                port = args[0];
+                break;
+            case 2:
+                port = args[0];
+                host = args[1];
+                break;
+            default:
+                System.out.println(Colors.RED + "Please write port and host( default it's localhost)" + Colors.END);
+        }
+        if (port != null) {
+            try {
+                if (checkPort(port) && checkHost(host)) {
+                    clientApp.run(host, getPort(port));
+                } else {
+                    System.out.println(Colors.RED
+                            + "Can't connect to the server, please check host address and port" + Colors.END);
+                }
+            } catch (IOException e) {
                 System.out.println(Colors.RED
-                        + "Can't connect to the server, please check host address and port" + Colors.END);
+                        + "Can't connect to the server, check host address and port" + Colors.END);
+            } catch (NumberFormatException e) {
+                System.out.println(Colors.RED
+                        + ("impossible pars host address and port ") + Colors.END);
             }
-        } catch (IOException e) {
-            System.out.println(Colors.RED
-                    + "Can't connect to the server, check host address and port" + Colors.END);
-            //e.printStackTrace();
-        } catch (IndexOutOfBoundsException | NumberFormatException e) {
-            System.out.println(Colors.RED
-                    + ("impossible pars host address and port ") + Colors.END);
-            //e.printStackTrace();
         }
     }
 }

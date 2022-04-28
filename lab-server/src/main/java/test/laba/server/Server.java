@@ -23,7 +23,7 @@ public final class Server {
         Root root;
         try {
             if (args.length < 1) {
-                System.out.println(Colors.RED + "you should write port, while beginning" + Colors.END);
+                System.out.println(Colors.RED + "you should write port in the start" + Colors.END);
             } else {
                 root = fileManager.read();
                 CommandsManager commandsManager = new CommandsManager(root, new Save(fileManager));
@@ -41,11 +41,11 @@ public final class Server {
                 }
             }
         } catch (VariableException e) {
-            System.out.println(Colors.RED + "check environment variable" + Colors.END);
+            System.out.println(Colors.RED + "check environment variable LABA" + Colors.END);
         } catch (JAXBException e) {
             System.out.println(Colors.RED + "Mistake while parsing" + Colors.END);
         } catch (IOException e) {
-            System.out.println(Colors.RED + "Mistake while reading file" + Colors.END + e);
+            System.out.println(Colors.RED + "Mistake while reading file, check environment variable LABA" + Colors.END + e);
         }
 
 
