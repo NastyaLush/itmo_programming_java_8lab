@@ -14,35 +14,27 @@ public final class ObjectWrapper {
     private ObjectWrapper() {
     }
 
-    public static ByteBuffer serialize(Object object) {
+    public static ByteBuffer serialize(Object object) throws IOException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         ObjectOutputStream objectOutputStream;
-        try {
-            objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
-            objectOutputStream.writeObject(object);
+        objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
+        objectOutputStream.writeObject(object);
 
-            ByteBuffer byteBuffer = ByteBuffer.wrap(byteArrayOutputStream.toByteArray());
+        ByteBuffer byteBuffer = ByteBuffer.wrap(byteArrayOutputStream.toByteArray());
 
-            objectOutputStream.flush();
-            objectOutputStream.close();
-            byteArrayOutputStream.close();
-            return byteBuffer;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
+        objectOutputStream.flush();
+        objectOutputStream.close();
+        byteArrayOutputStream.close();
+        return byteBuffer;
     }
 
-    public static Response deserialize(ByteBuffer byteBuffer) {
+    public static Response deserialize(ByteBuffer byteBuffer) throws IOException, ClassNotFoundException {
         byteBuffer.flip();
         try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteBuffer.array())) {
             ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
             Response response = (Response) objectInputStream.readObject();
             objectInputStream.close();
             return response;
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
         }
-        return null;
     }
 }

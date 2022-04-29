@@ -32,7 +32,7 @@ public class Wrapper {
     }
 
 
-    public Response readResponse() throws IOException {
+    public Response readResponse() throws IOException, ClassNotFoundException {
         in.read(byteBuffer.array());
         return ObjectWrapper.deserialize(byteBuffer);
     }

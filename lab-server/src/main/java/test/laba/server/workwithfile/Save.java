@@ -2,6 +2,7 @@ package test.laba.server.workwithfile;
 
 
 
+import test.laba.common.responses.ResponseWithError;
 import test.laba.server.mycommands.commands.AbstractCommand;
 import test.laba.server.mycommands.Root;
 import test.laba.common.exception.ParsException;
@@ -27,9 +28,9 @@ public class Save extends AbstractCommand {
         try {
             fileManager.save(root);
         } catch (IOException e) {
-            System.out.println("error, collection wasn't saved");
+            return new ResponseWithError("error, collection wasn't saved");
         } catch (ParsException e) {
-            System.out.println(e.getMessage());
+            return new ResponseWithError("error, collection wasn't saved, because of pars mistake");
         }
         return new Response("collection was saved");
     }

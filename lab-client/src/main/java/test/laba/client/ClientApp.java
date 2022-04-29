@@ -35,8 +35,8 @@ public class ClientApp {
             wrapper.sent(new Response(Values.COLLECTION.toString()));
             valuesOfCommands = wrapper.readWithMap();
         } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-            Console.printError("Can not give collection");
+            //e.printStackTrace();
+            Console.printError("Can not give collection: " + e.getMessage());
         }
         Console.print("Программа в интерактивном режиме, для получения информации о возможностях, введите help");
         String answer;

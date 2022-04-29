@@ -47,10 +47,9 @@ public class ServerApp {
         interectiveModule(selector, serverSocketChannel);
     }
 
-    public Response executeCommand(ByteBuffer byteBuffer) {
+    public Response executeCommand(ByteBuffer byteBuffer) throws IOException, ClassNotFoundException {
 
         Response response = ObjectWrapper.deserialize(byteBuffer);
-        System.out.println(response);
         if (!response.getCommand().equals(Values.COLLECTION.toString())) {
             return commandsManager.chooseCommand(response);
         }
@@ -95,10 +94,10 @@ public class ServerApp {
             SocketChannel socket = serverSocketChannel.accept();
             socket.configureBlocking(false);
             socket.register(selector, SelectionKey.OP_READ);
-            System.out.println("Connection from: " + socket);
+            Util.toColor(Colors.GREEN, "Connection from: " + socket);
         } catch (IOException e) {
-            System.err.println("Unable to accept channel");
-            e.printStackTrace();
+            Util.toColor(Colors.GREEN, "Unable to accept channel");
+            //e.printStackTrace();
             selectionKey.cancel();
         }
     }
