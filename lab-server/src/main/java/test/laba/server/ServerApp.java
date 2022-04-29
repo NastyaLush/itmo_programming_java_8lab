@@ -79,7 +79,6 @@ public class ServerApp {
 
     public void accept(ServerSocketChannel serverSocketChannel, Selector selector, SelectionKey selectionKey) {
         try {
-
             SocketChannel socket = serverSocketChannel.accept();
             socket.configureBlocking(false);
             socket.register(selector, SelectionKey.OP_READ);
@@ -142,25 +141,26 @@ public class ServerApp {
             while (iterator.hasNext()) {
                 SelectionKey selectionKey = (SelectionKey) iterator.next();
                 iterator.remove();
-                if (selectionKey.isAcceptable()) {
-                    System.out.println("Got acceptable key");
+                System.out.println(selectionKey.isValid());
+                if (selectionKey.isAcceptable() && selectionKey.isValid()) {
                     accept(serverSocketChannel, selector, selectionKey);
                 }
-                if (selectionKey.isReadable()) {
+                if (selectionKey.isValid() && selectionKey.isReadable()) {
                     try {
-                        System.out.println("isreadable");
                         read(selectionKey);
                     } catch (ClassNotFoundException | IOException e) {
                         System.out.println("The client was unconnected" + selectionKey.channel());
                         selectionKey.cancel();
                     }
                 }
-                if (selectionKey.isWritable()) {
-                    System.out.println("iswritable");
+                if (selectionKey.isValid() && selectionKey.isWritable()) {
                     if (!write(selectionKey)) {
                         System.out.println("The client was unconnected" + selectionKey.channel());
                         selectionKey.cancel();
                     }
+                }
+                if (!selectionKey.isValid()) {
+                    selectionKey.cancel();
                 }
             }
         }

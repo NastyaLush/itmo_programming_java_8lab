@@ -48,6 +48,7 @@ public class ClientApp {
                 }
                 try {
                     sendAndReceiveCommand(command);
+                    // need fix
                 } catch (CycleInTheScript e) {
                     Console.printError(e.getMessage());
                 } catch (ClassNotFoundException e) {
@@ -65,43 +66,22 @@ public class ClientApp {
         }
     }
 
-    public void run(String host, int port) throws IOException {
-
-        try (Socket socket = new Socket(host, port)) {
-            wrapper = new Wrapper(socket);
-            Console.print("client was connected");
-            interactivelyMode();
-
+    public Response updateID(String[] command) throws VariableException, IOException, ClassNotFoundException {
+        long id = VariableParsing.toLongNumber(command[1]);
+        Response response = new Response(command[0], id);
+        response.setFlag(false);
+        wrapper.sent(response);
+        response = wrapper.readResponse();
+        if (response instanceof ResponseWithError) {
+            Console.print(response.getCommand());
+            isNormalUpdateID = false;
+        } else {
+            Product product = response.getProduct();
+            response = new Response(Values.PRODUCT_WITH_QUESTIONS.toString(), id, updateId.execute(product));
+            response.setFlag(true);
         }
-        Console.print("goodbye");
-
+        return response;
     }
-
-    public void readScript(Response response) throws CycleInTheScript {
-        String fileName = response.getMessage();
-        try (FileReader fr = new FileReader(fileName.trim())) {
-            addToStack(fileName);
-            BufferedReader reader = new BufferedReader(fr);
-            Console.print("Start executing script: " + fileName);
-            while (reader.ready()) {
-                String[] command = (reader.readLine().trim() + " ").split(" ", 2);
-                if (command.length < 2) {
-                    command = new String[]{command[0], ""};
-                }
-                sendAndReceiveCommand(command);
-            }
-        } catch (FileNotFoundException e) {
-            Console.printError("File not found, check out path or file rights: " + fileName);
-        } catch (IOException e) {
-            Console.printError("failed to execute the script");
-            cleanStack();
-        } catch (ClassNotFoundException e) {
-            Console.printError("Can not sent command");
-        } finally {
-            deleteFromStack(fileName);
-        }
-    }
-
     public Response sendUniqCommand(String[] command) throws IOException {
         Values value = (Values) valuesOfCommands.get(command[0]);
         Response response = null;
@@ -137,7 +117,6 @@ public class ClientApp {
         }
         return response;
     }
-
     public void sendAndReceiveCommand(String[] command) throws IOException, CycleInTheScript, ClassNotFoundException {
         Response response;
         if (valuesOfCommands.containsKey(command[0].trim().toLowerCase())) {
@@ -154,9 +133,50 @@ public class ClientApp {
             if (response.getCommand().equals(Values.SCRIPT.toString())) {
                 readScript(response);
             }
+        } else {
+            isNormalUpdateID = true;
         }
     }
 
+
+    public void run(String host, int port) throws IOException {
+
+        try (Socket socket = new Socket(host, port)) {
+            wrapper = new Wrapper(socket);
+            Console.print("client was connected");
+            interactivelyMode();
+
+        }
+        Console.print("goodbye");
+
+    }
+
+
+
+    public void readScript(Response response) throws CycleInTheScript {
+        String fileName = response.getMessage();
+        try (FileReader fr = new FileReader(fileName.trim())) {
+            addToStack(fileName);
+            BufferedReader reader = new BufferedReader(fr);
+            Console.print("Start executing script: " + fileName);
+            while (reader.ready()) {
+                String[] command = (reader.readLine().trim() + " ").split(" ", 2);
+                if (command.length < 2) {
+                    command = new String[]{command[0], ""};
+                }
+                sendAndReceiveCommand(command);
+            }
+        } catch (FileNotFoundException e) {
+            Console.printError("File not found, check out path or file rights: " + fileName);
+        } catch (IOException e) {
+            Console.printError("failed to execute the script");
+            cleanStack();
+        } catch (ClassNotFoundException e) {
+            Console.printError("Can not sent command");
+        } finally {
+            deleteFromStack(fileName);
+        }
+    }
     public void addToStack(String filename) throws CycleInTheScript {
         if (!containsInStack(filename)) {
             executeScriptFiles.add(filename);
@@ -164,33 +184,14 @@ public class ClientApp {
             throw new CycleInTheScript("Обнаружен цикл при выполнении скрипта");
         }
     }
-
     public void cleanStack() {
         executeScriptFiles.clear();
     }
-
     public void deleteFromStack(String fileName) {
         executeScriptFiles.remove(fileName);
     }
-
     public boolean containsInStack(String fileName) {
         return executeScriptFiles.stream().anyMatch(x -> x.equals(fileName));
     }
 
-    public Response updateID(String[] command) throws VariableException, IOException, ClassNotFoundException {
-        long id = VariableParsing.toLongNumber(command[1]);
-        Response response = new Response(command[0], id);
-        response.setFlag(false);
-        wrapper.sent(response);
-        response = wrapper.readResponse();
-        if (response instanceof ResponseWithError) {
-            Console.print(response.getCommand());
-            isNormalUpdateID = false;
-        } else {
-            Product product = response.getProduct();
-            response = new Response(Values.PRODUCT_WITH_QUESTIONS.toString(), id, updateId.execute(product));
-            response.setFlag(true);
-        }
-        return response;
-    }
 }
