@@ -44,7 +44,7 @@ public final class Server {
         } catch (JAXBException e) {
             Util.toColor(Colors.RED, "Mistake while parsing");
         } catch (IOException e) {
-           Util.toColor(Colors.RED, "Mistake while reading file, check environment variable LABA" + e.getMessage());
+           Util.toColor(Colors.RED, "Mistake while reading file, check environment variable LABA: " + e.getMessage());
         }
 
 

@@ -1,8 +1,10 @@
 package test.laba.server;
 
+import test.laba.common.IO.Colors;
 import test.laba.common.responses.Response;
 import test.laba.common.responses.ResponseWithCollection;
 import test.laba.common.IO.ObjectWrapper;
+import test.laba.common.util.Util;
 import test.laba.common.util.Values;
 import test.laba.server.mycommands.CommandsManager;
 
@@ -41,7 +43,7 @@ public class ServerApp {
 
         Selector selector = Selector.open();
         serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
-        System.out.println("server works");
+        Util.toColor(Colors.GREEN, "server works");
         interectiveModule(selector, serverSocketChannel);
     }
 
@@ -65,6 +67,15 @@ public class ServerApp {
         selectionKey.interestOps(SelectionKey.OP_WRITE);
         buf.clear();
     }
+    /*private void readInBuf(SocketChannel socketChannel) throws IOException {
+        int newCapacity = capacity;
+        ByteBuffer buf = ByteBuffer.allocate(capacity);
+        while(socketChannel.read(buf)>0){
+            newCapacity = newCapacity*2;
+            ByteBuffer byteBuffer = ByteBuffer.allocate(newCapacity);
+
+        }
+    }*/
 
     public boolean write(SelectionKey selectionKey) throws IOException {
         Response response = (Response) selectionKey.attachment();
@@ -92,21 +103,27 @@ public class ServerApp {
 
     private boolean consoleInput() throws IOException {
         boolean flag = false;
+        String command = null;
         int isReadyConsole = System.in.available();
         if (isReadyConsole > 0) {
-            String command = in.readLine().trim().toLowerCase();
-            switch (command) {
-                case "exit":
-                    flag = true;
-                    break;
-                case "save":
-                    commandsManager.save();
-                    System.out.println("Collection was saved");
-                    break;
+            try {
+                command = in.readLine().trim().toLowerCase();
+                switch (command) {
+                    case "exit":
+                        flag = true;
+                        break;
+                    case "save":
+                        commandsManager.save();
+                        Util.toColor(Colors.GREEN, "Collection was saved");
+                        break;
 
-                default:
-                    System.out.println("There is no so command");
+                    default:
+                        Util.toColor(Colors.GREEN, "There is no so command");
+                }
+            } catch (NullPointerException e) {
+                Util.toColor(Colors.RED, "you write null, please repeat input ");
             }
+
         }
         return flag;
     }
@@ -121,7 +138,7 @@ public class ServerApp {
                 selectionKey.cancel();
             }
             commandsManager.save();
-            System.out.println("Collection was saved\nThank you for using, goodbye");
+            Util.toColor(Colors.GREEN, "Collection was saved\nThank you for using, goodbye");
             return false;
         }
         return true;
@@ -141,7 +158,6 @@ public class ServerApp {
             while (iterator.hasNext()) {
                 SelectionKey selectionKey = (SelectionKey) iterator.next();
                 iterator.remove();
-                System.out.println(selectionKey.isValid());
                 if (selectionKey.isAcceptable() && selectionKey.isValid()) {
                     accept(serverSocketChannel, selector, selectionKey);
                 }
@@ -149,13 +165,13 @@ public class ServerApp {
                     try {
                         read(selectionKey);
                     } catch (ClassNotFoundException | IOException e) {
-                        System.out.println("The client was unconnected" + selectionKey.channel());
+                        Util.toColor(Colors.GREEN, "The client was unconnected" + selectionKey.channel());
                         selectionKey.cancel();
                     }
                 }
                 if (selectionKey.isValid() && selectionKey.isWritable()) {
                     if (!write(selectionKey)) {
-                        System.out.println("The client was unconnected" + selectionKey.channel());
+                        Util.toColor(Colors.GREEN, "The client was unconnected" + selectionKey.channel());
                         selectionKey.cancel();
                     }
                 }
