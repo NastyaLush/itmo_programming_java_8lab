@@ -31,10 +31,8 @@ public final class ValidInputDate {
         String ip = argument;
         InetAddress inet = InetAddress.getByName(ip);
         if (inet.isReachable(TIME_OUT)) {
-            System.out.println(ip + " is reachable");
             return true;
         }
-        System.out.println(ip + " is not reachable");
         return false;
     }
 

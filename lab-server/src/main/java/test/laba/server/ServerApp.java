@@ -42,41 +42,37 @@ public class ServerApp {
         Selector selector = Selector.open();
         serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
         System.out.println("server works");
-        ByteBuffer buf = ByteBuffer.allocate(capacity);
-        interectiveModule(selector, serverSocketChannel, buf);
+        interectiveModule(selector, serverSocketChannel);
     }
 
-    public Response executeCommand(ByteBuffer byteBuffer) throws IOException, ClassNotFoundException {
+    public Response executeCommand(ByteBuffer byteBuffer) {
 
         Response response = ObjectWrapper.deserialize(byteBuffer);
-        //System.out.println(response);
+        System.out.println(response);
         if (!response.getCommand().equals(Values.COLLECTION.toString())) {
             return commandsManager.chooseCommand(response);
         }
-        return new ResponseWithCollection(commandsManager.getCommandValues());
+        response = new ResponseWithCollection(commandsManager.getCommandValues());
+        return response;
     }
 
-    public void readAndWrite(SelectionKey selectionKey, ByteBuffer buf) throws IOException, ClassNotFoundException {
+    public void read(SelectionKey selectionKey) throws IOException, ClassNotFoundException {
         SocketChannel socketChannel = (SocketChannel) selectionKey.channel();
+        ByteBuffer buf = ByteBuffer.allocate(capacity);
         socketChannel.read(buf);
-            /*if (new String(buf.array()).trim().equals("exit")) {
-                selectionKey.cancel();
-                System.out.println("Not accepting client messages anymore");
-            } else {*/
-        if (!write(socketChannel, buf)) {
-            System.out.println("The client was unconnected" + socketChannel);
-            socketChannel.close();
-            selectionKey.cancel();
-        }
+        Response response = executeCommand(buf);
+        selectionKey.attach(response);
+        selectionKey.interestOps(SelectionKey.OP_WRITE);
         buf.clear();
     }
 
-    public boolean write(SocketChannel socketChannel, ByteBuffer buf) throws IOException, ClassNotFoundException {
-        Response response = executeCommand(buf);
+    public boolean write(SelectionKey selectionKey) throws IOException {
+        Response response = (Response) selectionKey.attachment();
         String answer = response.getCommand();
-        ByteBuffer byteBuffer = ObjectWrapper.serialize(response);
+        ByteBuffer byteBuffer = ObjectWrapper.serialize(selectionKey.attachment());
+        SocketChannel socketChannel = (SocketChannel) selectionKey.channel();
         socketChannel.write(byteBuffer);
-
+        selectionKey.interestOps(SelectionKey.OP_READ);
         byteBuffer.clear();
         return !"exit".equals(answer);
     }
@@ -116,18 +112,25 @@ public class ServerApp {
         return flag;
     }
 
-    private void interectiveModule(Selector selector, ServerSocketChannel serverSocketChannel, ByteBuffer buf) throws IOException {
+    public boolean console(Selector selector) throws IOException {
+        if (consoleInput()) {
+            Set<SelectionKey> keySet = selector.selectedKeys();
+            Iterator<SelectionKey> iterator = keySet.iterator();
+            while (iterator.hasNext()) {
+                SelectionKey selectionKey = iterator.next();
+                iterator.remove();
+                selectionKey.cancel();
+            }
+            commandsManager.save();
+            System.out.println("Collection was saved\nThank you for using, goodbye");
+            return false;
+        }
+        return true;
+    }
+
+    private void interectiveModule(Selector selector, ServerSocketChannel serverSocketChannel) throws IOException {
         while (true) {
-            if (consoleInput()) {
-                Set<SelectionKey> keySet = selector.selectedKeys();
-                Iterator<SelectionKey> iterator = keySet.iterator();
-                while (iterator.hasNext()) {
-                    SelectionKey selectionKey = iterator.next();
-                    iterator.remove();
-                    selectionKey.cancel();
-                }
-                commandsManager.save();
-                System.out.println("Collection was saved\nThank you for using, goodbye");
+            if (!console(selector)) {
                 break;
             }
             int count = selector.select(1);
@@ -145,19 +148,23 @@ public class ServerApp {
                 }
                 if (selectionKey.isReadable()) {
                     try {
-                        readAndWrite(selectionKey, buf);
+                        System.out.println("isreadable");
+                        read(selectionKey);
                     } catch (ClassNotFoundException | IOException e) {
                         System.out.println("The client was unconnected" + selectionKey.channel());
                         selectionKey.cancel();
                     }
                 }
-                if(selectionKey.isWritable()){
-
+                if (selectionKey.isWritable()) {
+                    System.out.println("iswritable");
+                    if (!write(selectionKey)) {
+                        System.out.println("The client was unconnected" + selectionKey.channel());
+                        selectionKey.cancel();
+                    }
                 }
             }
         }
         selector.close();
         serverSocketChannel.close();
     }
-
 }

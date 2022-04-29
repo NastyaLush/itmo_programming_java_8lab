@@ -4,6 +4,7 @@ import test.laba.common.responses.Response;
 import test.laba.common.IO.ObjectWrapper;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.ByteBuffer;
@@ -14,10 +15,12 @@ public class Wrapper {
     private final int capaciti = 10000;
     private ByteBuffer byteBuffer = ByteBuffer.allocate(capaciti);
     private OutputStream out;
+    private InputStream in;
 
     public Wrapper(Socket socket) throws IOException {
         this.socket = socket;
         out = socket.getOutputStream();
+        in = socket.getInputStream();
     }
 
     public void sent(Response response) throws IOException {
@@ -30,7 +33,7 @@ public class Wrapper {
 
 
     public Response readResponse() throws IOException {
-        socket.getInputStream().read(byteBuffer.array());
+        in.read(byteBuffer.array());
         return ObjectWrapper.deserialize(byteBuffer);
     }
 

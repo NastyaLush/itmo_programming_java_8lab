@@ -45,7 +45,7 @@ public final class Console {
      * @param object object for printing with red text
      */
     public static void printError(Object object) {
-        System.out.println(Util.toColor(object.toString(), Colors.RED));
+      Util.toColor(object.toString(), Colors.RED);
     }
 
     /**
