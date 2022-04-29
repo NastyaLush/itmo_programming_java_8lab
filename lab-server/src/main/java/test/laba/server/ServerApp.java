@@ -25,7 +25,7 @@ public class ServerApp {
     private int port;
     private final CommandsManager commandsManager;
     private final BufferedReader in;
-    private final int capacity = 10000;
+    private final int capacity = 1000;
 
 
     public ServerApp(int port, CommandsManager commandsManager) {
@@ -60,22 +60,24 @@ public class ServerApp {
 
     public void read(SelectionKey selectionKey) throws IOException, ClassNotFoundException {
         SocketChannel socketChannel = (SocketChannel) selectionKey.channel();
-        ByteBuffer buf = ByteBuffer.allocate(capacity);
-        socketChannel.read(buf);
+        ByteBuffer buf = readInBuf(socketChannel);
         Response response = executeCommand(buf);
         selectionKey.attach(response);
         selectionKey.interestOps(SelectionKey.OP_WRITE);
         buf.clear();
     }
-    /*private void readInBuf(SocketChannel socketChannel) throws IOException {
+
+    private ByteBuffer readInBuf(SocketChannel socketChannel) throws IOException {
         int newCapacity = capacity;
         ByteBuffer buf = ByteBuffer.allocate(capacity);
-        while(socketChannel.read(buf)>0){
-            newCapacity = newCapacity*2;
+        while (socketChannel.read(buf) > 0) {
+            newCapacity = newCapacity * 2;
             ByteBuffer byteBuffer = ByteBuffer.allocate(newCapacity);
-
+            byteBuffer.put(buf.array());
+            buf = byteBuffer.slice();
         }
-    }*/
+        return buf;
+    }
 
     public boolean write(SelectionKey selectionKey) throws IOException {
         Response response = (Response) selectionKey.attachment();

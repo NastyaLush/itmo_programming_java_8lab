@@ -1,7 +1,6 @@
 package test.laba.server.mycommands;
 
 import test.laba.server.mycommands.commands.AbstractCommand;
-import test.laba.server.Root;
 import test.laba.common.dataClasses.Product;
 import test.laba.common.responses.Response;
 import test.laba.common.responses.ResponseWithError;

@@ -1,6 +1,7 @@
-package test.laba.server;
+package test.laba.server.mycommands;
 
 import test.laba.common.IO.Colors;
+
 import test.laba.common.dataClasses.Product;
 import test.laba.common.dataClasses.UnitOfMeasure;
 import test.laba.common.exception.AlreadyHaveTheseProduct;
@@ -20,7 +21,6 @@ import java.util.stream.Collectors;
 public class Root {
     @XmlTransient
     private ZonedDateTime dateOfCreation;
-
     private HashMap<Long, Product> products = new HashMap<>();
 
     /**
@@ -36,6 +36,11 @@ public class Root {
      * @param products argument for adding
      */
     public Root(HashMap<Long, Product> products) {
+        this.products = products;
+    }
+
+    //don't delete, using for parsing
+    public void setProducts(HashMap<Long, Product> products) {
         this.products = products;
     }
 

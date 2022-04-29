@@ -1,6 +1,6 @@
 package test.laba.server.workwithfile;
 
-import test.laba.server.Root;
+import test.laba.server.mycommands.Root;
 import test.laba.server.mycommands.commands.Variable;
 
 import javax.xml.bind.JAXBContext;
@@ -43,6 +43,7 @@ public class ParsingXML  {
         }
         return new Root();
     }
+
 
     /**
      * close file reader
