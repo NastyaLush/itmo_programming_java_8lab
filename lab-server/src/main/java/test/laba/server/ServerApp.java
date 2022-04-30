@@ -4,6 +4,7 @@ import test.laba.common.IO.Colors;
 import test.laba.common.responses.Response;
 import test.laba.common.responses.ResponseWithCollection;
 import test.laba.common.IO.ObjectWrapper;
+import test.laba.common.responses.ResponseWithError;
 import test.laba.common.util.Util;
 import test.laba.common.util.Values;
 import test.laba.server.mycommands.CommandsManager;
@@ -49,12 +50,16 @@ public class ServerApp {
 
     public Response executeCommand(ByteBuffer byteBuffer) throws IOException, ClassNotFoundException {
 
-        Response response = ObjectWrapper.deserialize(byteBuffer);
-        if (!response.getCommand().equals(Values.COLLECTION.toString())) {
-            return commandsManager.chooseCommand(response);
+        try {
+            Response response = ObjectWrapper.deserialize(byteBuffer);
+            if (!response.getCommand().equals(Values.COLLECTION.toString())) {
+                return commandsManager.chooseCommand(response);
+            }
+            response = new ResponseWithCollection(commandsManager.getCommandValues());
+            return response;
+        } catch (NullPointerException e) {
+            return new ResponseWithError("вы ввели null!!, the command can't be execute, repeate");
         }
-        response = new ResponseWithCollection(commandsManager.getCommandValues());
-        return response;
     }
 
     public void read(SelectionKey selectionKey) throws IOException, ClassNotFoundException {
