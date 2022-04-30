@@ -28,12 +28,11 @@ import java.util.Map;
 
 public class ClientApp {
     private final Console console = new Console();
-    /* private final ConsoleParsing consoleParsing = new ConsoleParsing();
-     private final UpdateId updateId = new UpdateId(consoleParsing, console);*/
     private Map valuesOfCommands = null;
     private Wrapper wrapper;
     private boolean isNormalUpdateID = true;
     private HashSet<String> executeScriptFiles = new HashSet<>();
+    private boolean isExitInExecuteScript = false;
 
     public void interactivelyMode() {
         try {
@@ -55,7 +54,8 @@ public class ClientApp {
                 } catch (CycleInTheScript | ClassNotFoundException e) {
                     console.printError(e.getMessage());
                 }
-                if ("exit".equals(answer)) {
+                if (ifReadyToClose(answer) || isExitInExecuteScript) {
+                    wrapper.close();
                     Util.toColor(Colors.GREEN, "see you soon :)");
                     break;
                 }
@@ -63,7 +63,7 @@ public class ClientApp {
             }
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
-            console.printError("Can not give collection: " + e.getMessage());
+            console.printError("The client can't exist because of: " + e.getMessage());
         }
 
     }
@@ -115,6 +115,7 @@ public class ClientApp {
                 }
             } catch (VariableException | IllegalArgumentException | CreateError | ClassNotFoundException e) {
                 console2.printError("repeat writing, create error\n" + e.getMessage());
+                isWrongArguments = true;
                 command[1] = console2.read();
             }
         }
@@ -129,11 +130,11 @@ public class ClientApp {
             response = new Response(command[0], command[1]);
         }
 
-
         if (isNormalUpdateID) {
             wrapper.sent(response);
             response = wrapper.readResponse();
             console.print(response.getCommand());
+            isExitInExecuteScript = ifReadyToClose(response.getCommand());
             if (response.getCommand().equals(Values.SCRIPT.toString())) {
                 readScript(response);
             }
@@ -160,15 +161,16 @@ public class ClientApp {
         String fileName = response.getMessage().trim();
         try (FileReader fr = new FileReader(fileName)) {
             addToStack(fileName);
-            BufferedReader reader = new BufferedReader(fr);
-            ScriptConsole scriptConsole = new ScriptConsole(reader, fr);
-            Util.toColor(Colors.BlUE, "Start executing script: " + fileName);
-            while (reader.ready()) {
-                String[] command = (reader.readLine().trim() + " ").split(" ", 2);
-                if (command.length < 2) {
-                    command = new String[]{command[0], ""};
+            try (BufferedReader reader = new BufferedReader(fr)) {
+                ScriptConsole scriptConsole = new ScriptConsole(reader, fr);
+                Util.toColor(Colors.BlUE, "Start executing script: " + fileName);
+                while (reader.ready()) {
+                    String[] command = (reader.readLine().trim() + " ").split(" ", 2);
+                    if (command.length < 2) {
+                        command = new String[]{command[0], ""};
+                    }
+                    sendAndReceiveCommand(command, scriptConsole);
                 }
-                sendAndReceiveCommand(command, scriptConsole);
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -203,6 +205,10 @@ public class ClientApp {
 
     public boolean containsInStack(String fileName) {
         return executeScriptFiles.stream().anyMatch(x -> x.equals(fileName));
+    }
+
+    private boolean ifReadyToClose(String answer) {
+        return "exit".equals(answer.trim());
     }
 
 }

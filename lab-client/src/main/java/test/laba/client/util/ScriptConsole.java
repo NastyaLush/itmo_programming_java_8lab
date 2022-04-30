@@ -89,7 +89,6 @@ public class ScriptConsole extends Console {
         String answer;
         ask(question);
         answer = scanner().toLowerCase().trim();
-        System.out.println(answer);
         if ("да".equals(answer) || "yes".equals(answer)) {
             return true;
         }

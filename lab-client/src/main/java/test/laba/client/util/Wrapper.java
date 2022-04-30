@@ -40,4 +40,8 @@ public class Wrapper {
         return readResponse().getCollection();
     }
 
+    public void close() throws IOException {
+        out.close();
+        in.close();
+    }
 }
