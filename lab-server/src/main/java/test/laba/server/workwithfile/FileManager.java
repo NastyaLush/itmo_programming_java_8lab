@@ -37,7 +37,7 @@ public class FileManager implements Variable {
 
     }
     public void save(Root root) throws IOException, ParsException {
-        try (FileWriter fileWriter = new FileWriter(Variable.ENV_VARIBLE)) {
+        try (FileWriter fileWriter = new FileWriter(Variable.ENV_VARIABLE)) {
             fileWriter.write(saveCollection(root));
         }
     }

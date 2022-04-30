@@ -22,7 +22,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 public class ServerApp {
-    private int port;
+    private final int port;
     private final CommandsManager commandsManager;
     private final BufferedReader in;
     private final int capacity = 1000;
@@ -35,16 +35,16 @@ public class ServerApp {
     }
 
     public void run() throws IOException {
-        SocketAddress addr = new InetSocketAddress(port);
+        SocketAddress address = new InetSocketAddress(port);
         ServerSocketChannel serverSocketChannel;
         serverSocketChannel = ServerSocketChannel.open();
-        serverSocketChannel.bind(addr);
+        serverSocketChannel.bind(address);
         serverSocketChannel.configureBlocking(false);
 
         Selector selector = Selector.open();
         serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
         Util.toColor(Colors.GREEN, "server works");
-        interectiveModule(selector, serverSocketChannel);
+        interactivelyModule(selector, serverSocketChannel);
     }
 
     public Response executeCommand(ByteBuffer byteBuffer) throws IOException, ClassNotFoundException {
@@ -104,7 +104,7 @@ public class ServerApp {
 
     private boolean consoleInput() throws IOException {
         boolean flag = false;
-        String command = null;
+        String command;
         int isReadyConsole = System.in.available();
         if (isReadyConsole > 0) {
             try {
@@ -145,19 +145,16 @@ public class ServerApp {
         return true;
     }
 
-    private void interectiveModule(Selector selector, ServerSocketChannel serverSocketChannel) throws IOException {
-        while (true) {
-            if (!console(selector)) {
-                break;
-            }
+    private void interactivelyModule(Selector selector, ServerSocketChannel serverSocketChannel) throws IOException {
+        while (console(selector)) {
             int count = selector.select(1);
             if (count == 0) {
                 continue;
             }
-            Set keySet = selector.selectedKeys();
-            Iterator iterator = keySet.iterator();
+            Set<SelectionKey> keySet = selector.selectedKeys();
+            Iterator<SelectionKey> iterator = keySet.iterator();
             while (iterator.hasNext()) {
-                SelectionKey selectionKey = (SelectionKey) iterator.next();
+                SelectionKey selectionKey = iterator.next();
                 iterator.remove();
                 if (selectionKey.isAcceptable() && selectionKey.isValid()) {
                     accept(serverSocketChannel, selector, selectionKey);

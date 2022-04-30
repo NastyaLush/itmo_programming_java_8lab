@@ -55,7 +55,7 @@ public class ParsingXML  {
         }
     }
     private String getEnvVariable() {
-        return Variable.ENV_VARIBLE;
+        return Variable.ENV_VARIABLE;
     }
 
 }

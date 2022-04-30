@@ -15,7 +15,7 @@ public abstract class AbstractCommand implements AbstractCommandInterface {
     }
     @Override
     public String toString() {
-        return "AbstructCommand{"
+        return "AbstractCommand{"
                 + "description='" + description + '\''
                 + ", name='" + name + '\''
                 + '}';

@@ -6,12 +6,14 @@ import test.laba.client.productFillers.UpdateId;
 import test.laba.client.util.Console;
 import test.laba.client.util.VariableParsing;
 import test.laba.client.util.Wrapper;
+import test.laba.common.IO.Colors;
 import test.laba.common.dataClasses.Product;
 import test.laba.common.exception.CreateError;
 import test.laba.common.exception.VariableException;
 import test.laba.common.exception.CycleInTheScript;
 import test.laba.common.responses.Response;
 import test.laba.common.responses.ResponseWithError;
+import test.laba.common.util.Util;
 import test.laba.common.util.Values;
 
 import java.io.BufferedReader;
@@ -34,36 +36,33 @@ public class ClientApp {
         try {
             wrapper.sent(new Response(Values.COLLECTION.toString()));
             valuesOfCommands = wrapper.readWithMap();
+            Util.toColor(Colors.GREEN, "Программа в интерактивном режиме, для получения информации о возможностях, введите help");
+            String answer;
+            while ((answer = Console.read()) != null) {
+                try {
+                    String[] command = answer.split(" ", 2);
+                    if (command.length < 2) {
+                        command = new String[]{command[0], ""};
+                    }
+                   sendAndReceiveCommand(command);
+
+                } catch (IOException e) {
+                    Util.toColor(Colors.GREEN, "server was closed, app is finishing work :) \nSee you soon!");
+                    break;
+                } catch (CycleInTheScript | ClassNotFoundException e) {
+                    Console.printError(e.getMessage());
+                }
+                if ("exit".equals(answer)) {
+                    Util.toColor(Colors.GREEN, "see you soon :)");
+                    break;
+                }
+
+            }
         } catch (IOException | ClassNotFoundException e) {
-            //e.printStackTrace();
+            e.printStackTrace();
             Console.printError("Can not give collection: " + e.getMessage());
         }
-        Console.print("Программа в интерактивном режиме, для получения информации о возможностях, введите help");
-        String answer;
-        while ((answer = Console.read()) != null) {
-            try {
-                String[] command = answer.split(" ", 2);
-                if (command.length < 2) {
-                    command = new String[]{command[0], ""};
-                }
-                try {
-                    sendAndReceiveCommand(command);
-                    // need fix
-                } catch (CycleInTheScript e) {
-                    Console.printError(e.getMessage());
-                } catch (ClassNotFoundException e) {
-                    Console.printError(e.getMessage());
-                }
-            } catch (IOException e) {
-                Console.print("server was closed, app is finishing work :) \nSee you soon!");
-                break;
-            }
-            if ("exit".equals(answer)) {
-                Console.print("see you soon :)");
-                break;
-            }
 
-        }
     }
 
     public Response updateID(String[] command) throws VariableException, IOException, ClassNotFoundException {
@@ -143,11 +142,11 @@ public class ClientApp {
 
         try (Socket socket = new Socket(host, port)) {
             wrapper = new Wrapper(socket);
-            Console.print("client was connected");
+            Util.toColor(Colors.GREEN, "client was connected");
             interactivelyMode();
 
         }
-        Console.print("goodbye");
+        Util.toColor(Colors.GREEN, "goodbye");
 
     }
 
@@ -158,7 +157,7 @@ public class ClientApp {
         try (FileReader fr = new FileReader(fileName.trim())) {
             addToStack(fileName);
             BufferedReader reader = new BufferedReader(fr);
-            Console.print("Start executing script: " + fileName);
+            Util.toColor(Colors.BlUE, "Start executing script: " + fileName);
             while (reader.ready()) {
                 String[] command = (reader.readLine().trim() + " ").split(" ", 2);
                 if (command.length < 2) {

@@ -14,9 +14,6 @@ import java.util.Objects;
 
 @XmlRootElement(name = "product")
 @XmlType(propOrder = {"id", "name", "coordinates", "price", "manufactureCost", "unitOfMeasure", "owner" })
-/**
- * main data class
- */
 public class  Product implements Comparable<Product>, Serializable {
     private long id; //Значение поля должно быть больше 0, Значение этого поля должно быть уникальным, Значение этого поля должно генерироваться автоматически
     private String name; //Поле не может быть null, Строка не может быть пустой

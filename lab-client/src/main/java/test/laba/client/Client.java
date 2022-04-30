@@ -19,10 +19,10 @@ public final class Client {
      */
     public static void main(String[] args) {
         ClientApp clientApp = new ClientApp();
-        int lenght = args.length;
+        int length = args.length;
         String port = null;
         String host = "localhost";
-        switch (lenght) {
+        switch (length) {
             case 1:
                 port = args[0];
                 break;

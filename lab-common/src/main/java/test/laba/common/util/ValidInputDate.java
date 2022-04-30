@@ -15,10 +15,7 @@ public final class ValidInputDate {
     public static boolean checkPort(String argument) {
         try {
             int port = getPort(argument);
-            if (!(MIN_PORT <= port) || !(port <= MAX_PORT)) {
-                return false;
-            }
-            return true;
+            return MIN_PORT <= port && port <= MAX_PORT;
         } catch (NumberFormatException e) {
             return false;
         }
@@ -28,12 +25,8 @@ public final class ValidInputDate {
     }
 
     public static boolean checkHost(String argument) throws IOException {
-        String ip = argument;
-        InetAddress inet = InetAddress.getByName(ip);
-        if (inet.isReachable(TIME_OUT)) {
-            return true;
-        }
-        return false;
+        InetAddress inet = InetAddress.getByName(argument);
+        return inet.isReachable(TIME_OUT);
     }
 
 }

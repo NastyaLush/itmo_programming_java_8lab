@@ -30,11 +30,11 @@ public class Person implements Comparable<Person>, Serializable {
     }
 
     /**
-     * the consrtructo create object person
+     * the constructor create object person
      * @param name person name, not null
      * @param birthday person birthday, not null
      * @param height person height, not null and more than zero
-     * @param location person losation, not null
+     * @param location person location, not null
      * @throws CreateError throws if fields do not match the criteria
      */
     public Person(String name, ZonedDateTime birthday, Integer height, Location location) throws CreateError {
