@@ -1,6 +1,7 @@
 package test.laba.client.util;
 
 import test.laba.common.IO.Colors;
+import test.laba.common.exception.ScriptError;
 import test.laba.common.util.Util;
 
 import java.io.BufferedReader;
@@ -10,18 +11,16 @@ import java.io.InputStreamReader;
 /**
  * the class is responsible for work with console and choose command for run
  */
-public final class Console {
+public class Console {
     private static final BufferedReader USER_SCANNER = new BufferedReader(new InputStreamReader(System.in));
 
-    private Console() {
-    }
 
     /**
      * scan line from console
      *
      * @return scanning string
      */
-    public static String scanner() {
+    public String scanner() {
         try {
             return USER_SCANNER.readLine();
         } catch (IOException e) {
@@ -35,7 +34,7 @@ public final class Console {
      *
      * @param object object for printing
      */
-    public static void print(Object object) {
+    public void print(Object object) {
         System.out.println(object);
     }
 
@@ -44,8 +43,8 @@ public final class Console {
      *
      * @param object object for printing with red text
      */
-    public static void printError(Object object) {
-      Util.toColor(object.toString(), Colors.RED);
+    public void printError(Object object) throws ScriptError {
+        Util.toColor(object.toString(), Colors.RED);
     }
 
     /**
@@ -53,11 +52,11 @@ public final class Console {
      *
      * @param object object for printing
      */
-    public static void ask(Object object) {
+    public void ask(Object object) {
         System.out.println(object);
     }
 
-    public static String read() {
+    public String read() {
         try {
             return USER_SCANNER.readLine().trim().toLowerCase();
         } catch (IOException | NullPointerException e) {
@@ -72,10 +71,14 @@ public final class Console {
      * @param question question for answering
      * @return true if answer yes, false if answer no
      */
-    public static boolean askQuestion(String question) {
-        String answer;
+    public boolean askQuestion(String question) {
+        String answer = null;
         ask(question);
-        answer = scanner().toLowerCase().trim();
+        try {
+            answer = scanner().toLowerCase().trim();
+        } catch (NullPointerException e) {
+            printError("Вы не можете ввести null!!!!!!!!");
+        }
         if ("да".equals(answer) || "yes".equals(answer)) {
             return true;
         }
@@ -92,7 +95,7 @@ public final class Console {
      * @param question question for answering
      * @return answer
      */
-    public static String askFullQuestion(String question) {
+    public String askFullQuestion(String question) {
         ask(question);
         return scanner();
     }

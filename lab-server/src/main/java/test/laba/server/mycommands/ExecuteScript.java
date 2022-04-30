@@ -18,7 +18,7 @@ public class ExecuteScript extends AbstractCommand {
 
     @Override
     public Response execute(String arguments, Root root) {
-        return new Response(Values.SCRIPT.toString(), arguments);
+        return new Response(Values.SCRIPT.toString(), arguments.trim());
     }
 
 

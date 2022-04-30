@@ -17,6 +17,11 @@ import java.time.ZonedDateTime;
  * the class is responsible for work with creating products from console
  */
 public class ConsoleParsing implements Variable {
+    private Console console;
+
+    public ConsoleParsing(Console console) {
+        this.console = console;
+    }
 
     /**
      * create java object accept data from console
@@ -30,7 +35,7 @@ public class ConsoleParsing implements Variable {
         Long price = parsField("Введите цену продукта, price: ", VariableParsing::toRightPrice);
         Integer manufactureCost = parsField("Введите поле manufactureCost: ", VariableParsing::toRightNumberInt);
         UnitOfMeasure unitOfMeasure = parsField("Введите unitOfMeasure, возможные варианты:PCS, MILLILITERS, GRAMS", VariableParsing::toRightUnitOfMeasure);
-        if (Console.askQuestion("Хотите добавить владельца?(yes/no/да/нет)")) {
+        if (console.askQuestion("Хотите добавить владельца?(yes/no/да/нет)")) {
             owner = parsPersonFromConsole();
         }
         Product product;
@@ -47,7 +52,7 @@ public class ConsoleParsing implements Variable {
         try {
             return new Location(x, y, name);
         } catch (VariableException e) {
-            Console.printError(e.getMessage());
+            console.printError(e.getMessage());
             return null;
         }
     }
@@ -77,8 +82,8 @@ public class ConsoleParsing implements Variable {
         T value;
         String simpleField;
         try {
-            Console.ask(question);
-            simpleField = Console.scanner();
+            console.ask(question);
+            simpleField = console.scanner();
             if (simpleField != null) {
                 value = (T) pars.function(simpleField);
             } else {
@@ -88,7 +93,7 @@ public class ConsoleParsing implements Variable {
                 throw new VariableException("не может быть null");
             }
         } catch (VariableException e) {
-            Console.printError("Не правильный тип данных," + e.getMessage());
+            console.printError("Не правильный тип данных," + e.getMessage());
             value = parsField(question, pars);
         }
         return value;
