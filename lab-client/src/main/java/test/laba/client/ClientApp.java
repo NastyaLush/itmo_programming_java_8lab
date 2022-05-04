@@ -1,6 +1,8 @@
 package test.laba.client;
 
 
+import java.util.logging.Logger;
+
 import test.laba.client.productFillers.ConsoleParsing;
 import test.laba.client.productFillers.UpdateId;
 import test.laba.client.util.Console;
@@ -25,8 +27,10 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.logging.Level;
 
 public class ClientApp {
+    public static final Logger LOGGER = Logger.getLogger(ClientApp.class.getName());
     private final Console console = new Console();
     private Map valuesOfCommands = null;
     private Wrapper wrapper;
@@ -34,11 +38,16 @@ public class ClientApp {
     private HashSet<String> executeScriptFiles = new HashSet<>();
     private boolean isExitInExecuteScript = false;
 
+    ClientApp() {
+        LOGGER.setLevel(Level.INFO);
+    }
+
     public void interactivelyMode() {
+        LOGGER.log(Level.FINE, "The interactively Mode starts");
         try {
             wrapper.sent(new Response(Values.COLLECTION.toString()));
             valuesOfCommands = wrapper.readWithMap();
-            Util.toColor(Colors.GREEN, "Программа в интерактивном режиме, для получения информации о возможностях, введите help");
+            LOGGER.info(Util.giveColor(Colors.BlUE, "Program in an interactive module, for giving information about opportunities write help"));
             String answer;
             while ((answer = console.read()) != null) {
                 try {
@@ -49,10 +58,10 @@ public class ClientApp {
                     sendAndReceiveCommand(command, console);
 
                 } catch (IOException e) {
-                    Util.toColor(Colors.GREEN, "server was closed, app is finishing work :) \nSee you soon!");
+                    LOGGER.info(Util.giveColor(Colors.GREEN, "server was closed, app is finishing work :) \nSee you soon!"));
                     break;
                 } catch (CycleInTheScript | ClassNotFoundException e) {
-                    console.printError(e.getMessage());
+                    LOGGER.warning(e.getMessage());
                 }
                 if (ifReadyToClose(answer) || isExitInExecuteScript) {
                     wrapper.close();
@@ -63,12 +72,14 @@ public class ClientApp {
             }
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
-            console.printError("The client can't exist because of: " + e.getMessage());
+            LOGGER.warning(Util.giveColor(Colors.RED, "The client can't exist because of: " + e.getMessage()));
         }
+        LOGGER.fine("the method was closed");
 
     }
 
     public Response updateID(String[] command, Console console2) throws VariableException, IOException, ClassNotFoundException {
+        LOGGER.fine("update id is executing");
         long id = VariableParsing.toLongNumber(command[1]);
         Response response = new Response(command[0], id);
         response.setFlag(false);
@@ -82,11 +93,12 @@ public class ClientApp {
             response = new Response(Values.PRODUCT_WITH_QUESTIONS.toString(), id, new UpdateId(new ConsoleParsing(console2), console2).execute(product));
             response.setFlag(true);
         }
+        LOGGER.fine("update id was execute");
         return response;
     }
 
     public Response sendUniqCommand(String[] command, Console console2) throws IOException {
-
+        LOGGER.fine("sent unit command starts");
         Values value = (Values) valuesOfCommands.get(command[0]);
         Response response = null;
         boolean isWrongArguments = true;
@@ -113,16 +125,18 @@ public class ClientApp {
                     default:
                         break;
                 }
-            } catch (VariableException | IllegalArgumentException | CreateError | ClassNotFoundException e) {
+            } catch (VariableException | IllegalArgumentException | CreateError | NullPointerException | ClassNotFoundException e) {
                 console2.printError("repeat writing, create error\n" + e.getMessage());
                 isWrongArguments = true;
                 command[1] = console2.read();
             }
         }
+        LOGGER.fine("the unique command was send");
         return response;
     }
 
     public void sendAndReceiveCommand(String[] command, Console console2) throws IOException, CycleInTheScript, ClassNotFoundException {
+        LOGGER.fine("send and receive starts ");
         Response response;
         if (valuesOfCommands.containsKey(command[0].trim().toLowerCase())) {
             response = sendUniqCommand(command, console2);
@@ -141,18 +155,20 @@ public class ClientApp {
         } else {
             isNormalUpdateID = true;
         }
+        LOGGER.fine("send and receive finishes");
     }
 
 
     public void run(String host, int port) throws IOException {
-
+        LOGGER.fine("server runs");
         try (Socket socket = new Socket(host, port)) {
             wrapper = new Wrapper(socket);
-            Util.toColor(Colors.GREEN, "client was connected");
+            LOGGER.info(Util.giveColor(Colors.GREEN, "client was connected"));
             interactivelyMode();
 
         }
         Util.toColor(Colors.GREEN, "goodbye");
+        LOGGER.fine("run was executed");
 
     }
 
@@ -173,15 +189,14 @@ public class ClientApp {
                 }
             }
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            console.printError("File not found, check out path or file rights: " + fileName + "567" + e.getMessage());
+            LOGGER.warning(Util.giveColor(Colors.RED, "File not found, check out path or file rights: " + e.getMessage()));
         } catch (IOException e) {
-            console.printError("failed to execute the script");
+            LOGGER.warning(Util.giveColor(Colors.RED, "failed to execute the script"));
             cleanStack();
         } catch (ClassNotFoundException e) {
-            console.printError("Can not sent command");
+            LOGGER.warning(Util.giveColor(Colors.RED, "Can not sent command"));
         } catch (ScriptError e) {
-            console.printError("the script was closed");
+            LOGGER.warning(Util.giveColor(Colors.RED, "the script was closed"));
         } finally {
             deleteFromStack(fileName);
         }

@@ -3,7 +3,10 @@ package test.laba.client;
 import test.laba.common.IO.Colors;
 import test.laba.common.util.Util;
 
+import java.util.logging.Logger;
+
 import java.io.IOException;
+import java.util.logging.Level;
 
 import static test.laba.common.util.ValidInputDate.checkHost;
 import static test.laba.common.util.ValidInputDate.checkPort;
@@ -18,6 +21,9 @@ public final class Client {
      * the main class create for run
      */
     public static void main(String[] args) {
+        final Logger logger = Logger.getLogger(Client.class.getName());
+        logger.setLevel(Level.CONFIG);
+        logger.info(Util.giveColor(Colors.BlUE, "the main method starts"));
         ClientApp clientApp = new ClientApp();
         int length = args.length;
         String port = null;
@@ -31,22 +37,20 @@ public final class Client {
                 host = args[1];
                 break;
             default:
-                Util.toColor(Colors.RED, "Please write port and host( default it's localhost)");
+                logger.severe(Util.giveColor(Colors.RED, "Please write port and host( default it's localhost)"));
         }
         if (port != null) {
             try {
                 if (checkPort(port) && checkHost(host)) {
                     clientApp.run(host, getPort(port));
                 } else {
-                    Util.toColor(Colors.RED, "Can't connect to the server, please check host address and port");
+                    logger.severe(Util.giveColor(Colors.RED, "Can't connect to the server, please check host address and port"));
                 }
             } catch (IOException e) {
-                Util.toColor(Colors.RED, "Can't connect to the server, check host address and port");
+                logger.severe(Util.giveColor(Colors.RED, "Can't connect to the server, check host address and port"));
             } catch (NumberFormatException e) {
-                Util.toColor(Colors.RED, "impossible pars host address and port ");
+                logger.severe(Util.giveColor(Colors.RED, "impossible pars host address and port "));
             }
-        } else {
-            Util.toColor(Colors.RED, "Can't connect to the server, check host address and port");
         }
     }
 }

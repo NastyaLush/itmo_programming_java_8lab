@@ -1,5 +1,6 @@
 package test.laba.server;
 
+import java.util.logging.Logger;
 import test.laba.common.IO.Colors;
 import test.laba.common.responses.Response;
 import test.laba.common.responses.ResponseWithCollection;
@@ -20,8 +21,10 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.logging.Level;
 
 public class ServerApp {
+    public static final Logger LOGGER = Logger.getLogger(ServerApp.class.getName());
     private final int port;
     private final CommandsManager commandsManager;
     private final BufferedReader in;
@@ -29,6 +32,7 @@ public class ServerApp {
 
 
     public ServerApp(int port, CommandsManager commandsManager) {
+        LOGGER.setLevel(Level.CONFIG);
         this.commandsManager = commandsManager;
         this.port = port;
         this.in = new BufferedReader(new InputStreamReader(System.in));
@@ -43,7 +47,7 @@ public class ServerApp {
 
         Selector selector = Selector.open();
         serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
-        Util.toColor(Colors.GREEN, "server works");
+        LOGGER.info("server works");
         interactivelyModule(selector, serverSocketChannel);
     }
 
@@ -93,9 +97,9 @@ public class ServerApp {
             SocketChannel socket = serverSocketChannel.accept();
             socket.configureBlocking(false);
             socket.register(selector, SelectionKey.OP_READ);
-            Util.toColor(Colors.GREEN, "Connection from: " + socket);
+            LOGGER.info("Connection from: " + socket);
         } catch (IOException e) {
-            Util.toColor(Colors.GREEN, "Unable to accept channel");
+            LOGGER.info("Unable to accept channel");
             //e.printStackTrace();
             selectionKey.cancel();
         }
@@ -114,14 +118,14 @@ public class ServerApp {
                         break;
                     case "save":
                         commandsManager.save();
-                        Util.toColor(Colors.GREEN, "Collection was saved");
+                        LOGGER.info("Collection was saved");
                         break;
 
                     default:
-                        Util.toColor(Colors.GREEN, "There is no so command");
+                        LOGGER.config("There is no so command");
                 }
             } catch (NullPointerException e) {
-                Util.toColor(Colors.RED, "you write null, please repeat input ");
+                LOGGER.warning("you write null, please repeat input ");
             }
 
         }
@@ -162,13 +166,13 @@ public class ServerApp {
                     try {
                         read(selectionKey);
                     } catch (ClassNotFoundException | IOException e) {
-                        Util.toColor(Colors.GREEN, "The client was unconnected" + selectionKey.channel());
+                        LOGGER.info("The client was unconnected" + selectionKey.channel());
                         selectionKey.cancel();
                     }
                 }
                 if (selectionKey.isValid() && selectionKey.isWritable()) {
                     if (!write(selectionKey)) {
-                        Util.toColor(Colors.GREEN, "The client was unconnected" + selectionKey.channel());
+                        LOGGER.info("The client was unconnected" + selectionKey.channel());
                         selectionKey.cancel();
                     }
                 }

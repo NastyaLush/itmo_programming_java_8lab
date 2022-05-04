@@ -1,5 +1,7 @@
 package test.laba.common.IO;
 
+import java.util.logging.Logger;
+
 import test.laba.common.responses.Response;
 
 import java.io.ByteArrayInputStream;
@@ -8,10 +10,13 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.nio.ByteBuffer;
+import java.util.logging.Level;
 
 public final class ObjectWrapper {
+    public static final Logger LOGGER = Logger.getLogger(ObjectWrapper.class.getName());
 
     private ObjectWrapper() {
+        LOGGER.setLevel(Level.WARNING);
     }
 
     public static ByteBuffer serialize(Object object) throws IOException {
@@ -25,6 +30,7 @@ public final class ObjectWrapper {
         objectOutputStream.flush();
         objectOutputStream.close();
         byteArrayOutputStream.close();
+        LOGGER.fine("object was serialized");
         return byteBuffer;
     }
 
@@ -34,6 +40,7 @@ public final class ObjectWrapper {
             ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
             Response response = (Response) objectInputStream.readObject();
             objectInputStream.close();
+            LOGGER.fine("object was deserialized");
             return response;
         }
     }
