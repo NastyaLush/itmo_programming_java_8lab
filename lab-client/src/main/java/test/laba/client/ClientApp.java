@@ -148,7 +148,7 @@ public class ClientApp {
             wrapper.sent(response);
             response = wrapper.readResponse();
             console.print(response.getCommand());
-            isExitInExecuteScript = ifReadyToClose(response.getCommand());
+            isExitInExecuteScript = ifReadyToClose(response.getCommand().trim());
             if (response.getCommand().equals(Values.SCRIPT.toString())) {
                 readScript(response);
             }
@@ -180,7 +180,7 @@ public class ClientApp {
             try (BufferedReader reader = new BufferedReader(fr)) {
                 ScriptConsole scriptConsole = new ScriptConsole(reader, fr);
                 Util.toColor(Colors.BlUE, "Start executing script: " + fileName);
-                while (reader.ready()) {
+                while (reader.ready() && !isExitInExecuteScript) {
                     String[] command = (reader.readLine().trim() + " ").split(" ", 2);
                     if (command.length < 2) {
                         command = new String[]{command[0], ""};
