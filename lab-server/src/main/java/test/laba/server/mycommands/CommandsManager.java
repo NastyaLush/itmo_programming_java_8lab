@@ -5,7 +5,6 @@ import test.laba.server.mycommands.commands.AbstractCommand;
 import test.laba.common.responses.Response;
 import test.laba.common.responses.ResponseWithError;
 import test.laba.common.util.Values;
-import test.laba.server.workwithfile.Save;
 
 import java.util.HashMap;
 
@@ -16,7 +15,6 @@ public class CommandsManager {
     private final Root root;
     private final HashMap<String, AbstractCommand> commands = new HashMap<>();
     private final HashMap<String, Values> commandValues = new HashMap<>();
-    private final Save save;
     private final History history;
     private final InsertNull insertNull;
     private final RemoveAnyByUnitOfMeasure removeAnyByUnitOfMeasure;
@@ -28,8 +26,7 @@ public class CommandsManager {
     /**
      * create command classes
      */
-    public CommandsManager(Root root, Save save) {
-        this.save = save;
+    public CommandsManager(Root root) {
         ExecuteScript executeScript = new ExecuteScript();
         commands.put(executeScript.getName().toLowerCase(), executeScript);
         Info info = new Info();
@@ -109,10 +106,14 @@ public class CommandsManager {
                     + "данных или введите help для получения списка команд,вы ввели " + response.getCommand().trim());
         }
     }
-
+/*
     public void save() {
         save.execute("", root);
     }
+    public void saveUsers(UsersHandler usersHandler) throws ParsException, IOException {
+        save.save(usersHandler);
+    }*/
+
 
     public HashMap<String, Values> getCommandValues() {
         return commandValues;

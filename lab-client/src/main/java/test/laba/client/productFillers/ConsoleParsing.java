@@ -78,7 +78,7 @@ public class ConsoleParsing implements Variable {
 
     }
 
-    private <T> T parsField(String question, IFunction pars) {
+    public <T> T parsField(String question, IFunction pars) {
         T value;
         String simpleField;
         try {
@@ -99,7 +99,7 @@ public class ConsoleParsing implements Variable {
         return value;
     }
 
-    private interface IFunction<T> {
+    public interface IFunction<T> {
         T function(String oldField) throws VariableException;
     }
 }

@@ -4,13 +4,11 @@ import test.laba.common.dataClasses.Product;
 import test.laba.common.dataClasses.UnitOfMeasure;
 import test.laba.common.util.Values;
 
-import java.io.Serializable;
 import java.util.Map;
 
-public class Response implements Serializable {
+public class Response extends RegisterResponse {
     private static final long serialVersionUID = 11;
     private Map<String, Values> collection = null;
-    private String command;
     private Product product;
     private UnitOfMeasure unitOfMeasure;
     private Long key;
@@ -18,48 +16,62 @@ public class Response implements Serializable {
     private boolean flag;
 
 
-    public Response(String command) {
-        this.command = command;
-    }
 
-    public Response(String command, UnitOfMeasure unitOfMeasure) {
-        this.command = command;
+    public Response(String login, String password, String command, UnitOfMeasure unitOfMeasure) {
+        super(login, password, command);
         this.unitOfMeasure = unitOfMeasure;
     }
 
-    public Response(String command, Long key) {
-        this.command = command;
+    public Response(String login, String password, String command, Long key) {
+        super(login, password, command);
         this.key = key;
     }
 
-    public Response(String command, Product product) {
-        this.command = command;
+
+    public Response(String login, String password, String command, Product product) {
+        super(login, password, command);
         this.product = product;
     }
 
-    public Response(String command, Long key, Product product) {
-        this.command = command;
+    public Response(String login, String password, String command, Long key, Product product) {
+        super(login, password, command);
         this.product = product;
         this.key = key;
     }
 
-    public Response(String command, String fileName) {
-        this.command = command;
+    public Response(String login, String password, String command, String fileName) {
+        super(login, password, command);
         this.message = fileName;
     }
 
     public Response(Product product) {
+        super("sent product");
         this.product = product;
     }
 
     public Response(Map<String, Values> collection, String command) {
+        super(command);
         this.collection = collection;
-        this.command = command;
     }
 
-    public String getCommand() {
-        return command;
+    public Response(String login, String password, String command) {
+        super(login, password, command);
     }
+
+    public Response(String command) {
+        super(command);
+    }
+
+    public Response(String message, Product product) {
+        super(message);
+        this.product = product;
+    }
+
+    public Response(String command, String arg) {
+        super(command);
+        this.message = arg;
+    }
+
 
     public Map<String, Values> getCollection() {
         return collection;
@@ -92,13 +104,15 @@ public class Response implements Serializable {
     @Override
     public String toString() {
         return "Response{"
-                  + "collection=" + collection
-                + ", command='" + command + '\''
+                + " login='" + login + '\''
+                + ", password='" + password + '\''
+                + ", collection=" + collection
                 + ", product=" + product
                 + ", unitOfMeasure=" + unitOfMeasure
                 + ", key=" + key
                 + ", message='" + message + '\''
                 + ", flag=" + flag
+                + ", command='" + getCommand() + '\''
                 + '}';
     }
 }

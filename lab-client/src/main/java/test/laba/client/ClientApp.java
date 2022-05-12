@@ -15,6 +15,7 @@ import test.laba.common.exception.CreateError;
 import test.laba.common.exception.ScriptError;
 import test.laba.common.exception.VariableException;
 import test.laba.common.exception.CycleInTheScript;
+import test.laba.common.responses.RegisterResponse;
 import test.laba.common.responses.Response;
 import test.laba.common.responses.ResponseWithError;
 import test.laba.common.util.Util;
@@ -37,6 +38,8 @@ public class ClientApp {
     private boolean isNormalUpdateID = true;
     private HashSet<String> executeScriptFiles = new HashSet<>();
     private boolean isExitInExecuteScript = false;
+    private String login;
+    private String password;
 
     ClientApp() {
         LOGGER.setLevel(Level.INFO);
@@ -45,7 +48,8 @@ public class ClientApp {
     public void interactivelyMode() {
         LOGGER.log(Level.FINE, "The interactively Mode starts");
         try {
-            wrapper.sent(new Response(Values.COLLECTION.toString()));
+            registeringUser();
+            wrapper.sent(new Response(login, password, Values.COLLECTION.toString()));
             valuesOfCommands = wrapper.readWithMap();
             LOGGER.info(Util.giveColor(Colors.BlUE, "Program in an interactive module, for giving information about opportunities write help"));
             String answer;
@@ -71,7 +75,6 @@ public class ClientApp {
 
             }
         } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
             LOGGER.warning(Util.giveColor(Colors.RED, "The client can't exist because of: " + e.getMessage()));
         }
         LOGGER.fine("the method was closed");
@@ -81,7 +84,7 @@ public class ClientApp {
     public Response updateID(String[] command, Console console2) throws VariableException, IOException, ClassNotFoundException {
         LOGGER.fine("update id is executing");
         long id = VariableParsing.toLongNumber(command[1]);
-        Response response = new Response(command[0], id);
+        Response response = new Response(login, password, command[0], id);
         response.setFlag(false);
         wrapper.sent(response);
         response = wrapper.readResponse();
@@ -90,7 +93,7 @@ public class ClientApp {
             isNormalUpdateID = false;
         } else {
             Product product = response.getProduct();
-            response = new Response(Values.PRODUCT_WITH_QUESTIONS.toString(), id, new UpdateId(new ConsoleParsing(console2), console2).execute(product));
+            response = new Response(login, password, Values.PRODUCT_WITH_QUESTIONS.toString(), id, new UpdateId(new ConsoleParsing(console2), console2).execute(product));
             response.setFlag(true);
         }
         LOGGER.fine("update id was execute");
@@ -107,20 +110,20 @@ public class ClientApp {
                 isWrongArguments = false;
                 switch (value) {
                     case PRODUCT:
-                        response = new Response(command[0], VariableParsing.toLongNumber(command[1]), new ConsoleParsing(console2).parsProductFromConsole());
+                        response = new Response(login, password, command[0], VariableParsing.toLongNumber(command[1]), new ConsoleParsing(console2).parsProductFromConsole());
                         break;
                     case UNIT_OF_MEASURE:
-                        response = new Response(command[0], VariableParsing.toRightUnitOfMeasure(command[1]));
+                        response = new Response(login, password, command[0], VariableParsing.toRightUnitOfMeasure(command[1]));
                         break;
                     case KEY:
-                        response = new Response(command[0], VariableParsing.toLongNumber(command[1]));
+                        response = new Response(login, password, command[0], VariableParsing.toLongNumber(command[1]));
                         break;
                     case PRODUCT_WITH_QUESTIONS:
                         response = updateID(command, console2);
                         break;
 
                     case PRODUCT_WITHOUT_KEY:
-                        response = new Response(command[0], new ConsoleParsing(console2).parsProductFromConsole());
+                        response = new Response(login, password, command[0], new ConsoleParsing(console2).parsProductFromConsole());
                         break;
                     default:
                         break;
@@ -141,7 +144,7 @@ public class ClientApp {
         if (valuesOfCommands.containsKey(command[0].trim().toLowerCase())) {
             response = sendUniqCommand(command, console2);
         } else {
-            response = new Response(command[0], command[1]);
+            response = new Response(login, password, command[0], command[1]);
         }
 
         if (isNormalUpdateID) {
@@ -225,5 +228,29 @@ public class ClientApp {
     private boolean ifReadyToClose(String answer) {
         return "exit".equals(answer.trim());
     }
+
+    private void registeringUser() throws IOException, ClassNotFoundException {
+        String answer = console.askFullQuestion(Util.giveColor(Colors.BlUE, "Would you like to create new login and password or you are registering first?(print yes or else if your answer no)"));
+        login = new ConsoleParsing(console).parsField(Util.giveColor(Colors.BlUE, "Enter your login"), VariableParsing::toRightName);
+        password = new ConsoleParsing(console).parsField(Util.giveColor(Colors.BlUE, "Enter your password"), VariableParsing::toRightName);
+        if ("yes".equals(answer.trim())) {
+                RegisterResponse response1 = new RegisterResponse(login, password, Values.REGISTRATION.toString());
+                wrapper.sent(response1);
+                Response response = wrapper.readResponse();
+                LOGGER.info(response.getCommand());
+        } else {
+                RegisterResponse response1 = new RegisterResponse(login, password, Values.AUTHORISATION.toString());
+                wrapper.sent(response1);
+                Response response = wrapper.readResponse();
+                if (response instanceof ResponseWithError) {
+                    LOGGER.info(response.getCommand());
+                    registeringUser();
+                } else {
+                    LOGGER.info(response.getCommand());
+                }
+        }
+        LOGGER.info("the registration is finished ");
+    }
+
 
 }

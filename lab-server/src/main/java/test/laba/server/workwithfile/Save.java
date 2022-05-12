@@ -1,3 +1,4 @@
+/*
 package test.laba.server.workwithfile;
 
 
@@ -7,12 +8,15 @@ import test.laba.server.mycommands.commands.AbstractCommand;
 import test.laba.server.mycommands.Root;
 import test.laba.common.exception.ParsException;
 import test.laba.common.responses.Response;
+import test.laba.server.mycommands.UsersHandler;
 
 import java.io.IOException;
 
+*/
 /**
  * save command
- */
+ *//*
+
 public class Save extends AbstractCommand {
     private final FileManager fileManager;
     public Save(FileManager fileManager) {
@@ -20,10 +24,12 @@ public class Save extends AbstractCommand {
         this.fileManager = fileManager;
     }
 
-    /**
+    */
+/**
      * save collection in file
      * @param root object contained collection values
-     */
+     *//*
+
     public Response execute(String arg, Root root) {
         try {
             fileManager.save(root);
@@ -34,6 +40,10 @@ public class Save extends AbstractCommand {
         }
         return new Response("collection was saved");
     }
+    public void save(UsersHandler usersHandler) throws IOException, ParsException {
+        fileManager.saveUsers(usersHandler);
+    }
 
 
 }
+*/

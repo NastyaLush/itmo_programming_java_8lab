@@ -2,6 +2,8 @@ package test.laba.common.util;
 
 public enum Values {
     PRODUCT("product"),
+    REGISTRATION("registration"),
+    AUTHORISATION("authorisation"),
     UNIT_OF_MEASURE("unit of measure"),
     KEY("key"),
     PRODUCT_WITH_QUESTIONS("update_id"),

@@ -4,6 +4,7 @@ import java.util.logging.Logger;
 
 import test.laba.common.responses.Response;
 import test.laba.common.IO.ObjectWrapper;
+import test.laba.common.responses.Responses;
 import test.laba.common.util.Values;
 
 import java.io.IOException;
@@ -26,7 +27,7 @@ public class Wrapper {
         in = socket.getInputStream();
     }
 
-    public void sent(Response response) throws IOException {
+    public void sent(Responses response) throws IOException {
         ByteBuffer oute = ObjectWrapper.serialize(response);
         out.write(oute.array());
         LOGGER.info("response was sent");

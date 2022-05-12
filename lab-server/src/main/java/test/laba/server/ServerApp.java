@@ -1,12 +1,22 @@
 package test.laba.server;
 
+import java.sql.SQLException;
 import java.util.logging.Logger;
+
 import test.laba.common.IO.Colors;
+import test.laba.common.exception.CreateError;
+import test.laba.common.exception.VariableException;
+import test.laba.common.exception.WrongUsersData;
+import test.laba.common.responses.RegisterResponse;
 import test.laba.common.responses.Response;
 import test.laba.common.responses.ResponseWithCollection;
 import test.laba.common.IO.ObjectWrapper;
+import test.laba.common.responses.ResponseWithError;
+import test.laba.common.responses.Responses;
 import test.laba.common.util.Util;
 import test.laba.common.util.Values;
+import test.laba.server.BD.BDManager;
+import test.laba.server.BD.BDUsersManager;
 import test.laba.server.mycommands.CommandsManager;
 
 import java.io.BufferedReader;
@@ -26,14 +36,15 @@ import java.util.logging.Level;
 public class ServerApp {
     public static final Logger LOGGER = Logger.getLogger(ServerApp.class.getName());
     private final int port;
-    private final CommandsManager commandsManager;
+    private CommandsManager commandsManager;
     private final BufferedReader in;
     private final int capacity = 1000;
+    private BDManager bdManager;
+    private BDUsersManager bdUsersManager;
 
 
-    public ServerApp(int port, CommandsManager commandsManager) {
-        LOGGER.setLevel(Level.CONFIG);
-        this.commandsManager = commandsManager;
+    public ServerApp(int port) {
+        LOGGER.setLevel(Level.ALL);
         this.port = port;
         this.in = new BufferedReader(new InputStreamReader(System.in));
     }
@@ -48,25 +59,76 @@ public class ServerApp {
         Selector selector = Selector.open();
         serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
         LOGGER.info("server works");
+        bdstart();
         interactivelyModule(selector, serverSocketChannel);
     }
 
-    public Response executeCommand(ByteBuffer byteBuffer) throws IOException, ClassNotFoundException {
-            Response response = ObjectWrapper.deserialize(byteBuffer);
-            if (!response.getCommand().equals(Values.COLLECTION.toString())) {
-                return commandsManager.chooseCommand(response);
+    public Responses executeCommand(ByteBuffer byteBuffer) throws IOException, ClassNotFoundException {
+        Responses response = ObjectWrapper.serverDeserialize(byteBuffer);
+
+        Responses answer = authorisation(response);
+        if (response.getCommand().equals(Values.REGISTRATION.toString())) {
+            LOGGER.fine("registration method");
+            try {
+                bdUsersManager.add((RegisterResponse) response);
+                LOGGER.info(Util.giveColor(Colors.BlUE, "the user was successfully authorized"));
+                return new Response(Util.giveColor(Colors.BlUE, "the user was successfully authorized"));
+            } catch (SQLException e) {
+                e.printStackTrace();
+                LOGGER.warning(Util.giveColor("the user wasn't added, because of " + e.getCause(), Colors.RED));
+                return new ResponseWithError("the user wasn't authorized because of " + e.getMessage());
             }
-            response = new ResponseWithCollection(commandsManager.getCommandValues());
-            return response;
+        }
+        try {
+            if (isAuothorisated(response.getLogin(), response.getPassword())) {
+                if (!response.getCommand().equals(Values.COLLECTION.toString()) && response instanceof Response) {
+                    LOGGER.fine("execute method: " + response);
+                    return commandsManager.chooseCommand((Response) response);
+                }
+                answer = new ResponseWithCollection(commandsManager.getCommandValues());
+            } else {
+                answer = new ResponseWithError("the user wasn't authorised");
+            }
+        } catch (SQLException | WrongUsersData e) {
+            // TODoO: 12.05.2022
+            e.printStackTrace();
+            answer = new ResponseWithError("the user wasn't authorised: " + e.getMessage());
+        }
+        return answer;
     }
 
     public void read(SelectionKey selectionKey) throws IOException, ClassNotFoundException {
         SocketChannel socketChannel = (SocketChannel) selectionKey.channel();
         ByteBuffer buf = readInBuf(socketChannel);
-        Response response = executeCommand(buf);
+        Responses response = executeCommand(buf);
         selectionKey.attach(response);
         selectionKey.interestOps(SelectionKey.OP_WRITE);
         buf.clear();
+    }
+
+    //private void BDstart(String dbHost, String dbName, String dbUser, String dbPassword){
+    private void bdstart() {
+        String dbHost = "pg";
+        String dbName = "studs";
+        String dbUser = "s336767";
+        String dbPassword = "azi261";
+
+        try {
+            LOGGER.info("BD was connected");
+            bdManager = new BDManager("products", dbHost, dbName, dbUser, dbPassword);
+            bdUsersManager = new BDUsersManager("users", dbHost, dbName, dbUser, dbPassword);
+            commandsManager = new CommandsManager(bdManager.getProducts());
+
+        } catch (SQLException throwables) {
+            // TODOoo: 11.05.2022
+            throwables.printStackTrace();
+        } catch (VariableException e) {
+            e.printStackTrace();
+            // TODO0: 11.05.2022
+        } catch (CreateError createError) {
+            // TODO0: 11.05.2022
+            createError.printStackTrace();
+        }
     }
 
     private ByteBuffer readInBuf(SocketChannel socketChannel) throws IOException {
@@ -82,7 +144,7 @@ public class ServerApp {
     }
 
     public boolean write(SelectionKey selectionKey) throws IOException {
-        Response response = (Response) selectionKey.attachment();
+        Responses response = (Responses) selectionKey.attachment();
         String answer = response.getCommand();
         ByteBuffer byteBuffer = ObjectWrapper.serialize(selectionKey.attachment());
         SocketChannel socketChannel = (SocketChannel) selectionKey.channel();
@@ -117,7 +179,7 @@ public class ServerApp {
                         flag = true;
                         break;
                     case "save":
-                        commandsManager.save();
+                        //commandsManager.save();
                         LOGGER.info("Collection was saved");
                         break;
 
@@ -141,7 +203,7 @@ public class ServerApp {
                 iterator.remove();
                 selectionKey.cancel();
             }
-            commandsManager.save();
+            //commandsManager.save();
             Util.toColor(Colors.GREEN, "Collection was saved\nThank you for using, goodbye");
             return false;
         }
@@ -183,5 +245,30 @@ public class ServerApp {
         }
         selector.close();
         serverSocketChannel.close();
+    }
+
+    private boolean isAuothorisated(String login, String password) throws SQLException, WrongUsersData {
+        return bdUsersManager.isAuthorisated(login, password);
+
+    }
+
+    private Responses authorisation(Responses response) {
+        Responses response1 = response;
+        if (response.getCommand().equals(Values.AUTHORISATION.toString())) {
+            LOGGER.fine("authorisation method");
+            try {
+                if (isAuothorisated(response.getLogin(), response.getPassword())) {
+                    response1 = new Response("the user successfully authorised");
+                }
+            } catch (SQLException e) {
+                // TODOo: 12.05.2022
+                response1 = new ResponseWithError("the user wasn't authorised, because of " + e.getMessage());
+                e.printStackTrace();
+            } catch (WrongUsersData wrongUsersData) {
+                response1 = new ResponseWithError(wrongUsersData.getMessage());
+            }
+
+        }
+        return response1;
     }
 }

@@ -97,7 +97,12 @@ public class Console {
      */
     public String askFullQuestion(String question) {
         ask(question);
-        return scanner();
+        try {
+            return scanner().toLowerCase().trim();
+        } catch (NullPointerException e) {
+            printError("Вы не можете ввести null!");
+        }
+        return askFullQuestion(question);
     }
 
 }
