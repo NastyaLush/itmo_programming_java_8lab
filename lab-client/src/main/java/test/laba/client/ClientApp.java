@@ -230,24 +230,30 @@ public class ClientApp {
     }
 
     private void registeringUser() throws IOException, ClassNotFoundException {
+        LOGGER.info("the registration is started ");
         String answer = console.askFullQuestion(Util.giveColor(Colors.BlUE, "Would you like to create new login and password or you are registering first?(print yes or else if your answer no)"));
         login = new ConsoleParsing(console).parsField(Util.giveColor(Colors.BlUE, "Enter your login"), VariableParsing::toRightName);
         password = new ConsoleParsing(console).parsField(Util.giveColor(Colors.BlUE, "Enter your password"), VariableParsing::toRightName);
         if ("yes".equals(answer.trim())) {
-                RegisterResponse response1 = new RegisterResponse(login, password, Values.REGISTRATION.toString());
-                wrapper.sent(response1);
-                Response response = wrapper.readResponse();
+            RegisterResponse response1 = new RegisterResponse(login, password, Values.REGISTRATION.toString());
+            wrapper.sent(response1);
+            Response response = wrapper.readResponse();
+            if (response instanceof ResponseWithError) {
                 LOGGER.info(response.getCommand());
+                registeringUser();
+            } else {
+                LOGGER.info(response.getCommand());
+            }
         } else {
-                RegisterResponse response1 = new RegisterResponse(login, password, Values.AUTHORISATION.toString());
-                wrapper.sent(response1);
-                Response response = wrapper.readResponse();
-                if (response instanceof ResponseWithError) {
-                    LOGGER.info(response.getCommand());
-                    registeringUser();
-                } else {
-                    LOGGER.info(response.getCommand());
-                }
+            RegisterResponse response1 = new RegisterResponse(login, password, Values.AUTHORISATION.toString());
+            wrapper.sent(response1);
+            Response response = wrapper.readResponse();
+            if (response instanceof ResponseWithError) {
+                LOGGER.info(response.getCommand());
+                registeringUser();
+            } else {
+                LOGGER.info(response.getCommand());
+            }
         }
         LOGGER.info("the registration is finished ");
     }

@@ -1,9 +1,11 @@
 package test.laba.server.BD;
 
+import test.laba.common.exception.AlreadyExistLogin;
 import test.laba.common.exception.WrongUsersData;
 import test.laba.common.responses.RegisterResponse;
-import test.laba.common.util.Encryption;
+import test.laba.server.Encryption;
 
+import java.security.NoSuchAlgorithmException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -34,14 +36,20 @@ public class BDUsersManager extends TableOperations {
     }
 
 
-    public void add(RegisterResponse registerResponse) throws SQLException {
+    public void add(RegisterResponse registerResponse) throws SQLException, NoSuchAlgorithmException, AlreadyExistLogin {
         reOpenConnection();
         Statement statement = getConnection().createStatement();
-        statement.execute("INSERT INTO " + this.name + " VALUES ('" + registerResponse.getLogin() + "','" + Encryption.coding(registerResponse.getPassword()) + "')");
+        statement.execute("SELECT password FROM " + this.name + " WHERE login = '" + registerResponse.getLogin() + "'" + "LIMIT 1");
+        ResultSet resultSet = statement.getResultSet();
+        if (!resultSet.next()) {
+            statement.execute("INSERT INTO " + this.name + " VALUES ('" + registerResponse.getLogin() + "','" + Encryption.coding(registerResponse.getPassword()) + "')");
+        } else {
+            throw new AlreadyExistLogin("this login is exist");
+        }
         statement.close();
     }
 
-    public boolean isAuthorisated(String login, String password) throws SQLException, WrongUsersData {
+    public boolean isAuthorized(String login, String password) throws SQLException, WrongUsersData, NoSuchAlgorithmException {
         LOGGER.fine("the authorised method started");
         reOpenConnection();
         Statement statement = getConnection().createStatement();
@@ -50,7 +58,6 @@ public class BDUsersManager extends TableOperations {
             ResultSet resultSet = statement.getResultSet();
             //write(resultSet);
             if (resultSet.next()) {
-                LOGGER.finest("the user authorised: " + resultSet.getString("password").equals(Encryption.coding(password)));
                 if (resultSet.getString(1).trim().equals(Encryption.coding(password))) {
                     return true;
                 } else {

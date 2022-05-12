@@ -1,9 +1,11 @@
 package test.laba.server;
 
+import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.util.logging.Logger;
 
 import test.laba.common.IO.Colors;
+import test.laba.common.exception.AlreadyExistLogin;
 import test.laba.common.exception.CreateError;
 import test.laba.common.exception.VariableException;
 import test.laba.common.exception.WrongUsersData;
@@ -49,7 +51,7 @@ public class ServerApp {
         this.in = new BufferedReader(new InputStreamReader(System.in));
     }
 
-    public void run() throws IOException {
+    public void run() throws IOException, VariableException, CreateError, SQLException, NoSuchAlgorithmException {
         SocketAddress address = new InetSocketAddress(port);
         ServerSocketChannel serverSocketChannel;
         serverSocketChannel = ServerSocketChannel.open();
@@ -63,41 +65,36 @@ public class ServerApp {
         interactivelyModule(selector, serverSocketChannel);
     }
 
-    public BasicResponse executeCommand(ByteBuffer byteBuffer) throws IOException, ClassNotFoundException {
+    public BasicResponse executeCommand(ByteBuffer byteBuffer) throws IOException, ClassNotFoundException, NoSuchAlgorithmException {
         BasicResponse response = ObjectWrapper.serverDeserialize(byteBuffer);
+        //check authorisation
+        Authorisation authorisation = new Authorisation();
+        if (!authorisation.authorisation(response)) {
+            return authorisation.getResponse();
+        }
 
-        BasicResponse answer = authorisation(response);
-        if (response.getCommand().equals(Values.REGISTRATION.toString())) {
-            LOGGER.fine("registration method");
+        Registration registration = new Registration();
+        if (!registration.registration(response)) {
+            return registration.getBasicResponse();
+        } else {
             try {
-                bdUsersManager.add((RegisterResponse) response);
-                LOGGER.info(Util.giveColor(Colors.BlUE, "the user was successfully authorized"));
-                return new Response(Util.giveColor(Colors.BlUE, "the user was successfully authorized"));
-            } catch (SQLException e) {
-                e.printStackTrace();
-                LOGGER.warning(Util.giveColor("the user wasn't added, because of " + e.getCause(), Colors.RED));
-                return new ResponseWithError("the user wasn't authorized because of " + e.getMessage());
-            }
-        }
-        try {
-            if (isAuothorisated(response.getLogin(), response.getPassword())) {
-                if (!response.getCommand().equals(Values.COLLECTION.toString()) && response instanceof Response) {
-                    LOGGER.fine("execute method: " + response);
-                    return commandsManager.chooseCommand((Response) response);
+                if (isAuthorised(response.getLogin(), response.getPassword())) {
+                    if (!response.getCommand().equals(Values.COLLECTION.toString()) && response instanceof Response) {
+                        LOGGER.fine("execute method: " + response);
+                        return commandsManager.chooseCommand((Response) response);
+                    }
+                    response = new ResponseWithCollection(commandsManager.getCommandValues());
+                } else {
+                    response = new ResponseWithError("the user wasn't authorised");
                 }
-                answer = new ResponseWithCollection(commandsManager.getCommandValues());
-            } else {
-                answer = new ResponseWithError("the user wasn't authorised");
+            } catch (SQLException | WrongUsersData e) {
+                response = new ResponseWithError("the user wasn't authorised: " + e.getMessage());
             }
-        } catch (SQLException | WrongUsersData e) {
-            // TODoO: 12.05.2022
-            e.printStackTrace();
-            answer = new ResponseWithError("the user wasn't authorised: " + e.getMessage());
+            return response;
         }
-        return answer;
     }
 
-    public void read(SelectionKey selectionKey) throws IOException, ClassNotFoundException {
+    public void read(SelectionKey selectionKey) throws IOException, ClassNotFoundException, NoSuchAlgorithmException {
         SocketChannel socketChannel = (SocketChannel) selectionKey.channel();
         ByteBuffer buf = readInBuf(socketChannel);
         BasicResponse response = executeCommand(buf);
@@ -107,28 +104,16 @@ public class ServerApp {
     }
 
     //private void BDstart(String dbHost, String dbName, String dbUser, String dbPassword){
-    private void bdstart() {
+    private void bdstart() throws SQLException, VariableException, CreateError {
         String dbHost = "pg";
         String dbName = "studs";
         String dbUser = "s336767";
         String dbPassword = "azi261";
+        LOGGER.info("BD was connected");
+        bdManager = new BDManager("products", dbHost, dbName, dbUser, dbPassword);
+        bdUsersManager = new BDUsersManager("users", dbHost, dbName, dbUser, dbPassword);
+        commandsManager = new CommandsManager(bdManager.getProducts());
 
-        try {
-            LOGGER.info("BD was connected");
-            bdManager = new BDManager("products", dbHost, dbName, dbUser, dbPassword);
-            bdUsersManager = new BDUsersManager("users", dbHost, dbName, dbUser, dbPassword);
-            commandsManager = new CommandsManager(bdManager.getProducts());
-
-        } catch (SQLException throwables) {
-            // TODOoo: 11.05.2022
-            throwables.printStackTrace();
-        } catch (VariableException e) {
-            e.printStackTrace();
-            // TODO0: 11.05.2022
-        } catch (CreateError createError) {
-            // TODO0: 11.05.2022
-            createError.printStackTrace();
-        }
     }
 
     private ByteBuffer readInBuf(SocketChannel socketChannel) throws IOException {
@@ -210,7 +195,7 @@ public class ServerApp {
         return true;
     }
 
-    private void interactivelyModule(Selector selector, ServerSocketChannel serverSocketChannel) throws IOException {
+    private void interactivelyModule(Selector selector, ServerSocketChannel serverSocketChannel) throws IOException, NoSuchAlgorithmException {
         while (console(selector)) {
             int count = selector.select(1);
             if (count == 0) {
@@ -247,28 +232,60 @@ public class ServerApp {
         serverSocketChannel.close();
     }
 
-    private boolean isAuothorisated(String login, String password) throws SQLException, WrongUsersData {
-        return bdUsersManager.isAuthorisated(login, password);
+    private boolean isAuthorised(String login, String password) throws SQLException, WrongUsersData, NoSuchAlgorithmException {
+        return bdUsersManager.isAuthorized(login, password);
 
     }
 
-    private BasicResponse authorisation(BasicResponse response) {
-        BasicResponse response1 = response;
-        if (response.getCommand().equals(Values.AUTHORISATION.toString())) {
-            LOGGER.fine("authorisation method");
-            try {
-                if (isAuothorisated(response.getLogin(), response.getPassword())) {
-                    response1 = new Response("the user successfully authorised");
-                }
-            } catch (SQLException e) {
-                // TODOo: 12.05.2022
-                response1 = new ResponseWithError("the user wasn't authorised, because of " + e.getMessage());
-                e.printStackTrace();
-            } catch (WrongUsersData wrongUsersData) {
-                response1 = new ResponseWithError(wrongUsersData.getMessage());
-            }
 
+    private class Authorisation {
+        private BasicResponse basicResponse;
+
+        private boolean authorisation(BasicResponse response) throws NoSuchAlgorithmException {
+            if (response.getCommand().equals(Values.AUTHORISATION.toString())) {
+                LOGGER.fine("authorisation method");
+                try {
+                    if (isAuthorised(response.getLogin(), response.getPassword())) {
+                        basicResponse = new Response("the user successfully authorised");
+                        return true;
+                    }
+                } catch (SQLException e) {
+                    basicResponse = new ResponseWithError("the user wasn't authorised, because of " + e.getMessage());
+                } catch (WrongUsersData wrongUsersData) {
+                    basicResponse = new ResponseWithError(wrongUsersData.getMessage());
+                }
+                return false;
+            }
+            return true;
         }
-        return response1;
+
+        public BasicResponse getResponse() {
+            return basicResponse;
+        }
+    }
+
+    private class Registration {
+        private BasicResponse basicResponse;
+
+        public boolean registration(BasicResponse response) throws NoSuchAlgorithmException {
+            if (response.getCommand().equals(Values.REGISTRATION.toString())) {
+                LOGGER.fine("registration method");
+                try {
+                    bdUsersManager.add((RegisterResponse) response);
+                    LOGGER.info(Util.giveColor(Colors.BlUE, "the user was successfully authorized"));
+                    basicResponse = new Response(Util.giveColor(Colors.BlUE, "the user was successfully authorized"));
+                    return true;
+                } catch (SQLException | AlreadyExistLogin e) {
+                    LOGGER.warning(Util.giveColor("the user wasn't added, because of " + e.getCause(), Colors.RED));
+                    basicResponse = new ResponseWithError("the user wasn't authorized because of " + e.getMessage());
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public BasicResponse getBasicResponse() {
+            return basicResponse;
+        }
     }
 }
