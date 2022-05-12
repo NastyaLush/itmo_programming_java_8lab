@@ -7,7 +7,6 @@ import test.laba.common.exception.CreateError;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.Comparator;
 import java.util.Objects;
@@ -23,6 +22,7 @@ public class  Product implements Comparable<Product>, Serializable {
     private Integer manufactureCost;
     private UnitOfMeasure unitOfMeasure; //Поле не может быть null
     private Person owner; //Поле может быть null
+    private Long ownerID;
 
     @SuppressWarnings("all")
     /**
@@ -104,7 +104,35 @@ public class  Product implements Comparable<Product>, Serializable {
             this.manufactureCost = manufactureCost;
             this.unitOfMeasure = unitOfMeasure;
             this.owner = owner;
+            this.creationDate = ZonedDateTime.now();
         }
+    }
+
+    public Product(long id, String name, Coordinates coordinates, Long price, Integer manufactureCost, UnitOfMeasure unitOfMeasure) throws CreateError {
+        if (name == null || name.isEmpty() || coordinates == null || price == null || price <= 0  || unitOfMeasure == null) {
+            throw new CreateError("Ошибка при создании объекта Product, обратите внимание:\n"
+                    + "    Поле name может быть null и не может быть пустым\n"
+                    + "    Поле coordinates не может быть null\n"
+                    + "    Поле price не может быть null и значение поля должно быть больше 0\n"
+                    + "    Поле unitOfMeasure не может быть null\n"
+                    + "    Поле owner может быть null\n");
+        } else {
+            this.id = id;
+            this.name = name;
+            this.coordinates = coordinates;
+            this.price = price;
+            this.manufactureCost = manufactureCost;
+            this.unitOfMeasure = unitOfMeasure;
+            this.creationDate = ZonedDateTime.now();
+        }
+    }
+
+    public Long getOwnerID() {
+        return ownerID;
+    }
+
+    public void setOwnerID(Long ownerID) {
+        this.ownerID = ownerID;
     }
 
     @Override
@@ -160,8 +188,8 @@ public class  Product implements Comparable<Product>, Serializable {
         return coordinates;
     }
 
-    public LocalDate getCreationDate() {
-        return creationDate.toLocalDate();
+    public ZonedDateTime getCreationDate() {
+        return creationDate;
     }
 
     public Long getPrice() {

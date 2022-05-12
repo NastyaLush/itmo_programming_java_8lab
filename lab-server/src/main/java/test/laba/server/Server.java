@@ -40,6 +40,7 @@ public final class Server {
                 } catch (VariableException | CreateError e) {
                     LOGGER.warning(Util.giveColor(Colors.RED, "impossible to run server because of mistake while downland products: " + e.getMessage()));
                 } catch (SQLException e) {
+                    e.printStackTrace();
                     LOGGER.warning(Util.giveColor(Colors.RED, "impossible to run server because of troubles with BD: " + e.getMessage()));
                 } catch (NoSuchAlgorithmException e) {
                     LOGGER.warning(Util.giveColor(Colors.RED, "impossible to run server because of impossible to execute an encryption : " + e.getMessage()));

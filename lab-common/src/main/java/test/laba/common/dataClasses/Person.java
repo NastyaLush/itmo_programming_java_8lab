@@ -55,10 +55,15 @@ public class Person implements Comparable<Person>, Serializable {
     public String getName() {
         return name;
     }
-    public String getBirthday() {
+    public String getBirthdayString() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
         return birthday.format(formatter);
     }
+
+    public ZonedDateTime getBirthday() {
+        return birthday;
+    }
+
     public Integer getHeight() {
         return height;
     }
@@ -105,7 +110,7 @@ public class Person implements Comparable<Person>, Serializable {
         if (name != null) {
             return "Person: "
                     + "name=" + name
-                    + ", birthday=" + getBirthday()
+                    + ", birthday=" + getBirthdayString()
                     + ", height=" + height
                     + ", location=" + location;
         } else {
@@ -116,7 +121,7 @@ public class Person implements Comparable<Person>, Serializable {
     @Override
     public int compareTo(Person o) {
         return Comparator.comparing(Person :: getName).
-                thenComparing(Person :: getBirthday).
+                thenComparing(Person ::getBirthdayString).
                 thenComparing(Person :: getHeight).
                 thenComparing(Person :: getLocation).compare(this, o);
     }

@@ -1,32 +1,39 @@
 package test.laba.server.mycommands;
 
+import test.laba.common.exception.CreateError;
+import test.laba.common.exception.VariableException;
+import test.laba.server.BD.BDManager;
+import test.laba.server.BD.BDUsersManager;
 import test.laba.server.mycommands.commands.AbstractCommand;
 
 import test.laba.common.responses.Response;
 import test.laba.common.responses.ResponseWithError;
 import test.laba.common.util.Values;
 
+import java.sql.SQLException;
 import java.util.HashMap;
 
 /**
  * class is responsible for implementation commands
  */
 public class CommandsManager {
-    private final Root root;
+    private Root root;
     private final HashMap<String, AbstractCommand> commands = new HashMap<>();
     private final HashMap<String, Values> commandValues = new HashMap<>();
-    private final History history;
-    private final InsertNull insertNull;
-    private final RemoveAnyByUnitOfMeasure removeAnyByUnitOfMeasure;
-    private final RemoveKey removeKey;
-    private final RemoveLower removeLower;
-    private final RemoveLowerKey removeLowerKey;
-    private final UpdateID updateID;
+    private History history;
+    private InsertNull insertNull;
+    private RemoveAnyByUnitOfMeasure removeAnyByUnitOfMeasure;
+    private RemoveKey removeKey;
+    private RemoveLower removeLower;
+    private RemoveLowerKey removeLowerKey;
+    private UpdateID updateID;
+    private BDManager bdManager;
+    private BDUsersManager bdUsersManager;
 
     /**
      * create command classes
      */
-    public CommandsManager(Root root) {
+    public CommandsManager() {
         ExecuteScript executeScript = new ExecuteScript();
         commands.put(executeScript.getName().toLowerCase(), executeScript);
         Info info = new Info();
@@ -39,6 +46,12 @@ public class CommandsManager {
         commands.put(exit.getName().toLowerCase(), exit);
         GroupCountingByPrice groupCountingByPrice = new GroupCountingByPrice();
         commands.put(groupCountingByPrice.getName().toLowerCase(), groupCountingByPrice);
+    }
+
+    public CommandsManager(BDManager bdManager, BDUsersManager bdUsersManager) throws VariableException, CreateError, SQLException {
+        new CommandsManager();
+        this.bdUsersManager = bdUsersManager;
+        this.bdManager = bdManager;
         Help help = new Help(commands.values());
         commands.put(help.getName().toLowerCase(), help);
         this.history = new History();
@@ -63,7 +76,7 @@ public class CommandsManager {
         this.updateID = new UpdateID();
         commandValues.put(updateID.getName().toLowerCase(), Values.PRODUCT_WITH_QUESTIONS);
         commands.put(updateID.getName().toLowerCase(), updateID);
-        this.root = root;
+        this.root = bdManager.getProducts();
     }
 
     public HashMap<String, AbstractCommand> getCommands() {
@@ -90,7 +103,7 @@ public class CommandsManager {
                         response1 = removeAnyByUnitOfMeasure.execute(response.getUnitOfMeasure(), root);
                         break;
                     case "Insert_Null":
-                        response1 = insertNull.execute(response.getKey(), response.getProduct(), root);
+                        response1 = insertNull.execute(response.getKey(), response, root, bdManager, bdUsersManager);
                         break;
                     case "Update_ID":
                         response1 = updateID.execute(response, root);

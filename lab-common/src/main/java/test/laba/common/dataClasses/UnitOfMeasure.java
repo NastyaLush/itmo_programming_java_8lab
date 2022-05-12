@@ -7,8 +7,13 @@ import java.io.Serializable;
  * the enum class wish contains possible unit of measure of products
  */
 public enum UnitOfMeasure implements Serializable {
-    PCS,
-    MILLILITERS,
-    GRAMS
+    PCS("PCS"),
+    MILLILITERS("MILLILITERS"),
+    GRAMS("GRAMS");
 
+    private String message;
+
+    UnitOfMeasure(String message) {
+        this.message = message;
+    }
 }

@@ -102,7 +102,7 @@ public class UpdateId {
 
     private void changeBirthday(Product product) {
         if (console.askQuestion("Хотите изменить дату рождения владельца?(yes/no/да/нет)")) {
-            ZonedDateTime birthday = parsFieldFromConsole(VariableParsing::toRightBirthday, product.getOwner()::getBirthday, "Введите дату рождения владельца в формате ДД-MM-ГГГГ или ДД-ММ-ГГГГ ЧЧ:ММ:СС: ");
+            ZonedDateTime birthday = parsFieldFromConsole(VariableParsing::toRightBirthday, product.getOwner()::getBirthdayString, "Введите дату рождения владельца в формате ДД-MM-ГГГГ или ДД-ММ-ГГГГ ЧЧ:ММ:СС: ");
             product.getOwner().setBirthday(birthday);
         }
     }

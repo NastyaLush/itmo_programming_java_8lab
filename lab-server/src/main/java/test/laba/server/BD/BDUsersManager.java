@@ -18,6 +18,7 @@ public class BDUsersManager extends TableOperations {
 
     public BDUsersManager(String name, String dbHost, String dbName, String dbUser, String dbPassword) throws SQLException {
         super(name, dbHost, dbName, dbUser, dbPassword);
+        createTable();
         LOGGER.setLevel(Level.FINEST);
     }
 
@@ -26,6 +27,7 @@ public class BDUsersManager extends TableOperations {
     public void createTable() throws SQLException {
         Statement statement = getConnection().createStatement();
         statement.execute("CREATE TABLE IF NOT EXISTS " + this.name + " ("
+                + "id serial PRIMARY KEY,"
                 + "login varchar(100) UNIQUE NOT NULL,"
                 + "password varchar(50) NOT NULL )"
 
@@ -42,10 +44,11 @@ public class BDUsersManager extends TableOperations {
         statement.execute("SELECT password FROM " + this.name + " WHERE login = '" + registerResponse.getLogin() + "'" + "LIMIT 1");
         ResultSet resultSet = statement.getResultSet();
         if (!resultSet.next()) {
-            statement.execute("INSERT INTO " + this.name + " VALUES ('" + registerResponse.getLogin() + "','" + Encryption.coding(registerResponse.getPassword()) + "')");
+            statement.execute("INSERT INTO " + this.name + "(login,password)" + " VALUES ('" + registerResponse.getLogin() + "','" + Encryption.coding(registerResponse.getPassword()) + "')" + " RETURNING id");
         } else {
             throw new AlreadyExistLogin("this login is exist");
         }
+        writeContains();
         statement.close();
     }
 
@@ -72,5 +75,13 @@ public class BDUsersManager extends TableOperations {
 
     }
 
+    public Long getId(RegisterResponse registerResponse) throws SQLException {
+        reOpenConnection();
+        Statement statement = getConnection().createStatement();
+        statement.execute("SELECT * FROM " + this.name + " WHERE login = '" + registerResponse.getLogin() + "'" + "LIMIT 1");
+        ResultSet resultSet = statement.getResultSet();
+        resultSet.next();
+        return  resultSet.getLong(1);
+    }
 
 }

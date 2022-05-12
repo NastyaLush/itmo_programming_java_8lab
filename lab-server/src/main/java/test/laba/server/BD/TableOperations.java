@@ -1,5 +1,9 @@
 package test.laba.server.BD;
 
+import test.laba.common.exception.AlreadyExistLogin;
+import test.laba.common.responses.RegisterResponse;
+
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -70,4 +74,5 @@ public abstract class TableOperations {
         statement.execute("DELETE * FROM " + name);
         statement.close();
     }
+    public abstract void add(RegisterResponse registerResponse) throws SQLException, NoSuchAlgorithmException, AlreadyExistLogin;
 }

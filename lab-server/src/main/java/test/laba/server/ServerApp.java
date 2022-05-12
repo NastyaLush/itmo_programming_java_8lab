@@ -110,9 +110,9 @@ public class ServerApp {
         String dbUser = "s336767";
         String dbPassword = "azi261";
         LOGGER.info("BD was connected");
-        bdManager = new BDManager("products", dbHost, dbName, dbUser, dbPassword);
         bdUsersManager = new BDUsersManager("users", dbHost, dbName, dbUser, dbPassword);
-        commandsManager = new CommandsManager(bdManager.getProducts());
+        bdManager = new BDManager("products", dbHost, dbName, dbUser, dbPassword);
+        commandsManager = new CommandsManager(bdManager, bdUsersManager);
 
     }
 
@@ -163,10 +163,6 @@ public class ServerApp {
                     case "exit":
                         flag = true;
                         break;
-                    case "save":
-                        //commandsManager.save();
-                        LOGGER.info("Collection was saved");
-                        break;
 
                     default:
                         LOGGER.config("There is no so command");
@@ -189,7 +185,7 @@ public class ServerApp {
                 selectionKey.cancel();
             }
             //commandsManager.save();
-            Util.toColor(Colors.GREEN, "Collection was saved\nThank you for using, goodbye");
+            Util.toColor(Colors.GREEN, "Thank you for using, goodbye");
             return false;
         }
         return true;

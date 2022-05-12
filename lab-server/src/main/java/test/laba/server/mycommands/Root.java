@@ -70,24 +70,11 @@ public class Root {
         return answer.get();
     }
 
-    public void setProduct(Product product) {
-        products.put(createKey(), product);
+    public void setProduct(Product product, Long key) {
+        products.put(key, product);
         dateOfCreation = ZonedDateTime.now();
     }
-    public long createID() {
-        long rightID = 0;
-        final int constant = 9;
-        final int numberWithDegree = 10;
-        final int maxDegreeNumberOfLong = 18;
-        boolean flag = true;
-        while (flag) {
-            rightID = (long) (Math.random() * constant * Math.pow(numberWithDegree, maxDegreeNumberOfLong));
-            if (!products.containsKey(rightID)) {
-                flag = false;
-            }
-        }
-        return rightID;
-    }
+
 
     public void setProductWithKey(Long key, Product product) throws AlreadyHaveTheseProduct {
         if (!products.containsKey(key)) {
@@ -111,13 +98,6 @@ public class Root {
         return products.values().stream().anyMatch(e -> e.getId() == id);
     }
 
-    private Long createKey() {
-        long key = 0;
-        while (getProducts().containsKey(key)) {
-            key++;
-        }
-        return key;
-    }
 
     /**
      * the method which clear collection
