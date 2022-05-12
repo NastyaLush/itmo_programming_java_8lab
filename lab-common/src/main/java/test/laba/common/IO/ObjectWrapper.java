@@ -3,7 +3,7 @@ package test.laba.common.IO;
 import java.util.logging.Logger;
 
 import test.laba.common.responses.Response;
-import test.laba.common.responses.Responses;
+import test.laba.common.responses.BasicResponse;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -46,11 +46,11 @@ public final class ObjectWrapper {
         }
     }
 
-    public static Responses serverDeserialize(ByteBuffer byteBuffer) throws IOException, ClassNotFoundException {
+    public static BasicResponse serverDeserialize(ByteBuffer byteBuffer) throws IOException, ClassNotFoundException {
         byteBuffer.flip();
         try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteBuffer.array())) {
             ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
-            Responses response = (Responses) objectInputStream.readObject();
+            BasicResponse response = (BasicResponse) objectInputStream.readObject();
             objectInputStream.close();
             LOGGER.fine("object was deserialized");
             return response;

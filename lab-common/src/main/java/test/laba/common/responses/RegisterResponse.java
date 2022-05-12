@@ -1,7 +1,7 @@
 package test.laba.common.responses;
 
 
-public class RegisterResponse extends Responses {
+public class RegisterResponse extends BasicResponse {
     private static final long serialVersionUID = 11;
     protected final String login;
     protected final String password;

@@ -12,7 +12,7 @@ import test.laba.common.responses.Response;
 import test.laba.common.responses.ResponseWithCollection;
 import test.laba.common.IO.ObjectWrapper;
 import test.laba.common.responses.ResponseWithError;
-import test.laba.common.responses.Responses;
+import test.laba.common.responses.BasicResponse;
 import test.laba.common.util.Util;
 import test.laba.common.util.Values;
 import test.laba.server.BD.BDManager;
@@ -63,10 +63,10 @@ public class ServerApp {
         interactivelyModule(selector, serverSocketChannel);
     }
 
-    public Responses executeCommand(ByteBuffer byteBuffer) throws IOException, ClassNotFoundException {
-        Responses response = ObjectWrapper.serverDeserialize(byteBuffer);
+    public BasicResponse executeCommand(ByteBuffer byteBuffer) throws IOException, ClassNotFoundException {
+        BasicResponse response = ObjectWrapper.serverDeserialize(byteBuffer);
 
-        Responses answer = authorisation(response);
+        BasicResponse answer = authorisation(response);
         if (response.getCommand().equals(Values.REGISTRATION.toString())) {
             LOGGER.fine("registration method");
             try {
@@ -100,7 +100,7 @@ public class ServerApp {
     public void read(SelectionKey selectionKey) throws IOException, ClassNotFoundException {
         SocketChannel socketChannel = (SocketChannel) selectionKey.channel();
         ByteBuffer buf = readInBuf(socketChannel);
-        Responses response = executeCommand(buf);
+        BasicResponse response = executeCommand(buf);
         selectionKey.attach(response);
         selectionKey.interestOps(SelectionKey.OP_WRITE);
         buf.clear();
@@ -144,7 +144,7 @@ public class ServerApp {
     }
 
     public boolean write(SelectionKey selectionKey) throws IOException {
-        Responses response = (Responses) selectionKey.attachment();
+        BasicResponse response = (BasicResponse) selectionKey.attachment();
         String answer = response.getCommand();
         ByteBuffer byteBuffer = ObjectWrapper.serialize(selectionKey.attachment());
         SocketChannel socketChannel = (SocketChannel) selectionKey.channel();
@@ -252,8 +252,8 @@ public class ServerApp {
 
     }
 
-    private Responses authorisation(Responses response) {
-        Responses response1 = response;
+    private BasicResponse authorisation(BasicResponse response) {
+        BasicResponse response1 = response;
         if (response.getCommand().equals(Values.AUTHORISATION.toString())) {
             LOGGER.fine("authorisation method");
             try {
