@@ -6,16 +6,14 @@ import test.laba.common.dataClasses.Location;
 import test.laba.common.dataClasses.Person;
 import test.laba.common.dataClasses.Product;
 import test.laba.common.dataClasses.UnitOfMeasure;
-import test.laba.common.exception.AlreadyExistLogin;
 import test.laba.common.exception.CreateError;
 import test.laba.common.exception.VariableException;
+import test.laba.common.exception.WrongUsersData;
 import test.laba.common.responses.BasicResponse;
-import test.laba.common.responses.RegisterResponse;
 import test.laba.common.responses.Response;
 import test.laba.server.mycommands.Root;
 
 
-import java.security.NoSuchAlgorithmException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -26,6 +24,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Set;
 import java.util.logging.Logger;
 
 public class BDManager extends TableOperations {
@@ -65,32 +64,124 @@ public class BDManager extends TableOperations {
         LOGGER.info("the table with products was created");
     }
 
-    @Override
-    public void add(RegisterResponse registerResponse) throws SQLException, NoSuchAlgorithmException, AlreadyExistLogin {
+
+    public void clear() throws SQLException {
+        reOpenConnection();
+        Statement statement = getConnection().createStatement();
+        statement.execute("DELETE FROM " + name);
+        statement.close();
+    }
+
+    public void removeLower(String login, Set<Long> keys, Root root, BDUsersManager bdUsersManager) {
+        keys.stream().forEach(key -> {
+            try {
+                removeKey(login, key, root, bdUsersManager);
+            } catch (SQLException e) {
+                //hidden
+                //e.printStackTrace();
+            } catch (WrongUsersData e) {
+                //hidden
+                //e.printStackTrace();
+            }
+        });
+    }
+
+    public void removeKey(String login, Long key, Root root, BDUsersManager bdUsersManager) throws SQLException, WrongUsersData {
+        reOpenConnection();
+        if (root.isExistProductWithKey(key)) {
+            long id = bdUsersManager.getId(login);
+            System.out.println(id);
+            String query = "DELETE FROM " + this.name + " WHERE key = ? AND creatorID = ?";
+            String query1 = "SELECT * FROM " + this.name + " WHERE key = ? AND creatorID = ?";
+
+            try (PreparedStatement preparedStatement = getConnection().prepareStatement(query1)) {
+                preparedStatement.setLong(1, (key));
+                preparedStatement.setLong(2, id);
+                preparedStatement.execute();
+                if (preparedStatement.getResultSet().next()) {
+                    PreparedStatement ps = getConnection().prepareStatement(query);
+                    ps.setLong(1, (key));
+                    ps.setLong(2, id);
+                    ps.execute();
+                } else {
+                    throw new WrongUsersData("this object not belongs to you");
+                }
+            }
+        } else {
+            throw new WrongUsersData("this key is not exist");
+        }
 
     }
 
+    public boolean removeLowerKey(BasicResponse response, BDUsersManager bdUsersManager) throws SQLException {
+        reOpenConnection();
+        long id = bdUsersManager.getId(response.getLogin());
+        System.out.println(id);
+        String query = "DELETE FROM " + this.name + " WHERE key <= ? AND creatorID = ?";
+        String query1 = "SELECT * FROM " + this.name + " WHERE key <= ? AND creatorID = ?";
+
+        try (PreparedStatement preparedStatement = getConnection().prepareStatement(query1)) {
+            preparedStatement.setLong(1, ((Response) response).getKey());
+            preparedStatement.setLong(2, id);
+            preparedStatement.execute();
+            if (preparedStatement.getResultSet().next()) {
+                PreparedStatement ps = getConnection().prepareStatement(query);
+                ps.setLong(1, ((Response) response).getKey());
+                ps.setLong(2, id);
+                ps.execute();
+                ps.close();
+            } else {
+                return false;
+            }
+            return true;
+        }
+    }
+
+    public void updateID(Product product, Long key) throws SQLException {
+        reOpenConnection();
+        String query = "UPDATE products SET "
+                + "name = ?,"
+                + "coordinate_x = ?,"
+                + "coordinate_y = ?,"
+                + "creation_date = ?,"
+                + "price = ?,"
+                + "manufacture_cost = ?,"
+                + "unit_of_measure = ?,"
+                + "person_name = ?,"
+                + "person_birthday = ?,"
+                + "person_height = ?,"
+                + "location_x = ?,"
+                + "location_y = ?,"
+                + "location_name = ?"
+                + "WHERE key = ?";
+        try (PreparedStatement preparedStatement = getConnection().prepareStatement(query)) {
+            int column = preparing(preparedStatement, product, 1);
+            preparedStatement.setLong(column, key);
+            preparedStatement.execute();
+        }
+
+    }
 
     public long add(BasicResponse registerResponse, Long key) throws SQLException {
         reOpenConnection();
         String query = "INSERT INTO products VALUES ("
                 + "    default,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) RETURNING id";
-        PreparedStatement preparedStatement = getConnection().prepareStatement(query);
-        preparing(preparedStatement, (Response) registerResponse, key);
-        try (ResultSet resultSet = preparedStatement.executeQuery()) {
-            resultSet.next();
-            writeContains();
-            System.out.println("jkl;");
-            return resultSet.getLong("id");
+        try (PreparedStatement preparedStatement = getConnection().prepareStatement(query)) {
+            preparedStatement.setLong(1, key);
+            int column = preparing(preparedStatement, ((Response) registerResponse).getProduct(), 2);
+            preparedStatement.setLong(column, ((Response) registerResponse).getProduct().getOwnerID());
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                resultSet.next();
+                writeContains();
+                return resultSet.getLong("id");
+            }
         }
 
 
     }
 
-    public void preparing(PreparedStatement preparedStatement, Response response, Long key) throws SQLException {
-        Product product = response.getProduct();
-        int i = 1;
-        preparedStatement.setLong(i++, key);
+    public int preparing(PreparedStatement preparedStatement, Product product, int beginning) throws SQLException {
+        int i = beginning;
         preparedStatement.setString(i++, product.getName());
         preparedStatement.setInt(i++, product.getCoordinates().getX());
         preparedStatement.setFloat(i++, product.getCoordinates().getY());
@@ -117,7 +208,7 @@ public class BDManager extends TableOperations {
             preparedStatement.setNull(i++, Types.INTEGER);
             preparedStatement.setNull(i++, Types.VARCHAR);
         }
-        preparedStatement.setLong(i++, product.getOwnerID());
+        return i;
     }
 
     public Root getProducts() throws SQLException, VariableException, CreateError {
@@ -130,6 +221,7 @@ public class BDManager extends TableOperations {
             root.setProduct(getProduct(resultSet), resultSet.getLong("key"));
         }
         LOGGER.info("the products was added to the collection");
+        statement.close();
         return root;
     }
 
@@ -156,6 +248,7 @@ public class BDManager extends TableOperations {
         product.setCreationDate(ZonedDateTime.of(
                 LocalDateTime.parse(resultSet.getString("creation_date"), forrmater),
                 ZoneId.of("Europe/Berlin")));
+        product.setOwnerID(resultSet.getLong("creatorID"));
         return product;
     }
 

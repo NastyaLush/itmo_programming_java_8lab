@@ -11,10 +11,9 @@ import java.util.Collection;
  * help command
  */
 public class Help extends AbstractCommand implements Serializable {
-    private final Collection<AbstractCommand> commands;
-    public Help(Collection<AbstractCommand> commands) {
+    private Collection<AbstractCommand> commands;
+    public Help() {
         super("Help", "вывести справку по доступным командам");
-        this.commands = commands;
     }
 
     /**
@@ -26,5 +25,9 @@ public class Help extends AbstractCommand implements Serializable {
         commands.forEach(command -> s.append(Colors.BlUE).append(command.getName()).append(Colors.END)
                 .append(": ").append(command.getDescription()).append('\n'));
         return new Response(s.toString());
+    }
+
+    public void setCommands(Collection<AbstractCommand> commands) {
+        this.commands = commands;
     }
 }

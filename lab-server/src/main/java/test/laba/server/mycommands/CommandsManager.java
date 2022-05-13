@@ -18,7 +18,7 @@ import java.util.HashMap;
  */
 public class CommandsManager {
     private Root root;
-    private final HashMap<String, AbstractCommand> commands = new HashMap<>();
+    private HashMap<String, AbstractCommand> commands = new HashMap<>();
     private final HashMap<String, Values> commandValues = new HashMap<>();
     private History history;
     private InsertNull insertNull;
@@ -33,28 +33,17 @@ public class CommandsManager {
     /**
      * create command classes
      */
-    public CommandsManager() {
-        ExecuteScript executeScript = new ExecuteScript();
-        commands.put(executeScript.getName().toLowerCase(), executeScript);
-        Info info = new Info();
-        commands.put(info.getName().toLowerCase(), info);
-        AverageOfManufactureCost averageOfManufactureCost = new AverageOfManufactureCost();
-        commands.put(averageOfManufactureCost.getName().toLowerCase(), averageOfManufactureCost);
-        Clear clear = new Clear();
-        commands.put(clear.getName().toLowerCase(), clear);
-        Exit exit = new Exit();
-        commands.put(exit.getName().toLowerCase(), exit);
-        GroupCountingByPrice groupCountingByPrice = new GroupCountingByPrice();
-        commands.put(groupCountingByPrice.getName().toLowerCase(), groupCountingByPrice);
-    }
+
 
     public CommandsManager(BDManager bdManager, BDUsersManager bdUsersManager) throws VariableException, CreateError, SQLException {
-        new CommandsManager();
         this.bdUsersManager = bdUsersManager;
         this.bdManager = bdManager;
-        Help help = new Help(commands.values());
-        commands.put(help.getName().toLowerCase(), help);
         this.history = new History();
+        this.root = bdManager.getProducts();
+        initialization();
+    }
+
+    private void initialization() {
         commands.put(history.getName().toLowerCase(), history);
         this.insertNull = new InsertNull();
         commands.put(insertNull.getName().toLowerCase(), insertNull);
@@ -76,7 +65,21 @@ public class CommandsManager {
         this.updateID = new UpdateID();
         commandValues.put(updateID.getName().toLowerCase(), Values.PRODUCT_WITH_QUESTIONS);
         commands.put(updateID.getName().toLowerCase(), updateID);
-        this.root = bdManager.getProducts();
+        Help help = new Help();
+        commands.put(help.getName().toLowerCase(), help);
+        help.setCommands(commands.values());
+        Clear clear = new Clear(bdManager);
+        commands.put(clear.getName().toLowerCase(), clear);
+        ExecuteScript executeScript = new ExecuteScript();
+        commands.put(executeScript.getName().toLowerCase(), executeScript);
+        Info info = new Info();
+        commands.put(info.getName().toLowerCase(), info);
+        AverageOfManufactureCost averageOfManufactureCost = new AverageOfManufactureCost();
+        commands.put(averageOfManufactureCost.getName().toLowerCase(), averageOfManufactureCost);
+        Exit exit = new Exit();
+        commands.put(exit.getName().toLowerCase(), exit);
+        GroupCountingByPrice groupCountingByPrice = new GroupCountingByPrice();
+        commands.put(groupCountingByPrice.getName().toLowerCase(), groupCountingByPrice);
     }
 
     public HashMap<String, AbstractCommand> getCommands() {
@@ -91,22 +94,22 @@ public class CommandsManager {
             if (commandValues.containsKey(command.getName().toLowerCase())) {
                 switch (command.getName()) {
                     case "Remove_Lower_Key":
-                        response1 = removeLowerKey.execute(response.getKey(), root);
+                        response1 = removeLowerKey.execute(response, bdUsersManager, bdManager, root);
                         break;
                     case "Remove_Lower":
-                        response1 = removeLower.execute(response.getProduct(), root);
+                        response1 = removeLower.execute(response, bdUsersManager, bdManager, root);
                         break;
                     case "Remove_Key":
-                        response1 = removeKey.execute(response.getKey(), root);
+                        response1 = removeKey.execute(response, root, bdManager, bdUsersManager);
                         break;
                     case "Remove_any_by_unit_of_measure":
-                        response1 = removeAnyByUnitOfMeasure.execute(response.getUnitOfMeasure(), root);
+                        response1 = removeAnyByUnitOfMeasure.execute(response.getUnitOfMeasure(), root, bdManager, bdUsersManager, response.getLogin());
                         break;
                     case "Insert_Null":
                         response1 = insertNull.execute(response.getKey(), response, root, bdManager, bdUsersManager);
                         break;
                     case "Update_ID":
-                        response1 = updateID.execute(response, root);
+                        response1 = updateID.execute(response, root, bdUsersManager, response.getLogin(), bdManager);
                         break;
                     default:
                         break;

@@ -2,7 +2,6 @@ package test.laba.server.mycommands;
 
 
 import test.laba.common.responses.BasicResponse;
-import test.laba.common.responses.RegisterResponse;
 import test.laba.server.BD.BDManager;
 import test.laba.server.BD.BDUsersManager;
 import test.laba.server.mycommands.commands.AbstractCommand;
@@ -22,11 +21,12 @@ public class InsertNull extends AbstractCommand {
 
     /**
      * add new product with key to collection
+     *
      * @param root object contained collection values
      */
     public Response execute(Long key, BasicResponse basicResponse, Root root, BDManager bdManager, BDUsersManager bdUsersManager) {
         try {
-            ((Response) basicResponse).getProduct().setOwnerID(bdUsersManager.getId((RegisterResponse) basicResponse));
+            ((Response) basicResponse).getProduct().setOwnerID(bdUsersManager.getId(basicResponse.getLogin()));
             long id = bdManager.add(basicResponse, key);
             ((Response) basicResponse).getProduct().setId(id);
             root.setProductWithKey(key, ((Response) basicResponse).getProduct());
@@ -37,6 +37,7 @@ public class InsertNull extends AbstractCommand {
         }
         return new Response("insert null was executed");
     }
+
     public Response execute(String arg, Root root) {
         return new ResponseWithError("insert null can not be executed");
     }

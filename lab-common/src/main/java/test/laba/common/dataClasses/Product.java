@@ -137,15 +137,16 @@ public class  Product implements Comparable<Product>, Serializable {
 
     @Override
     public String toString() {
-        return "Product:"
-                + "id=" + id
-                + ", name=" + name
+        return "Product{"
+                + " id=" + id
+                + ", name='" + name + '\''
                 + ", coordinates=" + coordinates
-                + ", creationDate=" + creationDate.getYear() + "-" + creationDate.getMonthValue() + "-" + creationDate.getDayOfMonth()
                 + ", price=" + price
                 + ", manufactureCost=" + manufactureCost
                 + ", unitOfMeasure=" + unitOfMeasure
-                + ", owner=" + owner + '\n';
+                + ", owner=" + owner
+                + ", ownerID=" + ownerID
+                + '}';
     }
 
     public void setId(long id) {

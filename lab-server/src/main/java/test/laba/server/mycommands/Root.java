@@ -11,6 +11,8 @@ import javax.xml.bind.annotation.XmlTransient;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.PrimitiveIterator;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -60,13 +62,17 @@ public class Root {
         return products.get(key);
     }
 
+    public boolean isExistProductWithKey(Long key) {
+        return products.containsKey(key);
+    }
+
     /**
      * @param id id for searching
      * @return key of product by id
      */
-    public Long getKeyOnID(Long id) {
+    public Long getKeyOnIDIfBelongsToUser(Long id, Long ownerId) {
         AtomicReference<Long> answer = new AtomicReference<>();
-        products.entrySet().stream().filter(x -> x.getValue().getId() == id).limit(1).forEach(e -> answer.set(e.getKey()));
+        products.entrySet().stream().filter(x -> x.getValue().getId() == id && x.getValue().getOwnerID() == ownerId).limit(1).forEach(e -> answer.set(e.getKey()));
         return answer.get();
     }
 
@@ -94,8 +100,8 @@ public class Root {
      * @param id id for searching
      * @return true if product of collection contains this id and false in another case
      */
-    public boolean containsID(Long id) {
-        return products.values().stream().anyMatch(e -> e.getId() == id);
+    public boolean containsIDAndBelongsToUser(Long id, Long ownerID) {
+        return products.values().stream().anyMatch(e -> e.getId() == id && e.getOwnerID() == ownerID);
     }
 
 
@@ -122,11 +128,16 @@ public class Root {
      *
      * @param unitOfMeasure argument for removing
      */
-    public void removeAnyByUnitOfMeasure(UnitOfMeasure unitOfMeasure) {
-        products.entrySet()
+    public Long removeAnyByUnitOfMeasure(UnitOfMeasure unitOfMeasure, Long id) {
+        PrimitiveIterator.OfLong stream = products.entrySet()
                 .stream()
-                .filter(x -> x.getValue().getUnitOfMeasure() == unitOfMeasure)
-                .findFirst().map(e -> products.remove(e.getKey()));
+                .filter(x -> x.getValue().getUnitOfMeasure() == unitOfMeasure && x.getValue().getOwnerID() == id)
+                .limit(1).mapToLong(Map.Entry::getKey).iterator();
+        if (stream.hasNext()) {
+            return stream.next();
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -134,8 +145,14 @@ public class Root {
      *
      * @param product argument for comparing
      */
-    public void removeIfLess(Product product) {
-        products.entrySet().removeIf(entry -> product.compareTo(entry.getValue()) > 0);
+    public void removeIfLess(Product product, Long id) {
+        products.entrySet().removeIf(entry -> product.compareTo(entry.getValue()) < 0 && entry.getValue().getOwnerID() == id);
+    }
+
+    public Set<Long> getProductsKeysWhichLessAndBelongsUser(Product product, Long id) {
+        return products.entrySet().stream()
+                .filter(entry -> product.compareTo(entry.getValue()) < 0 && entry.getValue().getOwnerID() == id).map(Map.Entry::getKey)
+                .collect(Collectors.toSet());
     }
 
     /**
@@ -143,8 +160,8 @@ public class Root {
      *
      * @param key key for comparing
      */
-    public void removeIfKeyLess(Long key) {
-        products.entrySet().removeIf(entry -> key > entry.getKey());
+    public void removeIfKeyLess(Long key, Long id) {
+        products.entrySet().removeIf(entry -> key > entry.getKey() && id == entry.getValue().getOwnerID());
     }
 
     /**

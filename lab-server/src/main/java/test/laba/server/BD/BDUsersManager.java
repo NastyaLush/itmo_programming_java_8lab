@@ -75,10 +75,10 @@ public class BDUsersManager extends TableOperations {
 
     }
 
-    public Long getId(RegisterResponse registerResponse) throws SQLException {
+    public Long getId(String login) throws SQLException {
         reOpenConnection();
         Statement statement = getConnection().createStatement();
-        statement.execute("SELECT * FROM " + this.name + " WHERE login = '" + registerResponse.getLogin() + "'" + "LIMIT 1");
+        statement.execute("SELECT * FROM " + this.name + " WHERE login = '" + login + "'" + "LIMIT 1");
         ResultSet resultSet = statement.getResultSet();
         resultSet.next();
         return  resultSet.getLong(1);
