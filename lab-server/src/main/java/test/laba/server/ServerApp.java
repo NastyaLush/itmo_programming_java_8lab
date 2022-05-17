@@ -2,6 +2,8 @@ package test.laba.server;
 
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
 import test.laba.common.IO.Colors;
@@ -20,6 +22,7 @@ import test.laba.common.util.Values;
 import test.laba.server.BD.BDManager;
 import test.laba.server.BD.BDUsersManager;
 import test.laba.server.mycommands.CommandsManager;
+import test.laba.server.mycommands.commands.Variable;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -27,12 +30,8 @@ import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
-import java.util.Iterator;
-import java.util.Set;
 import java.util.logging.Level;
 
 public class ServerApp {
@@ -40,15 +39,22 @@ public class ServerApp {
     private final int port;
     private CommandsManager commandsManager;
     private final BufferedReader in;
-    private final int capacity = 1000;
+    private final int capacity = 300;
+    private final int countOfUsers = 100;
     private BDManager bdManager;
     private BDUsersManager bdUsersManager;
+    private final ExecutorService responseReaderPool;
+    private final ExecutorService responseExecutorPool;
+    private final ExecutorService responseSenderPool;
 
 
     public ServerApp(int port) {
         LOGGER.setLevel(Level.ALL);
         this.port = port;
         this.in = new BufferedReader(new InputStreamReader(System.in));
+        this.responseReaderPool = Executors.newFixedThreadPool(countOfUsers);
+        this.responseSenderPool = Executors.newCachedThreadPool();
+        this.responseExecutorPool = Executors.newCachedThreadPool();
     }
 
     public void run() throws IOException, VariableException, CreateError, SQLException, NoSuchAlgorithmException {
@@ -58,57 +64,19 @@ public class ServerApp {
         serverSocketChannel.bind(address);
         serverSocketChannel.configureBlocking(false);
 
-        Selector selector = Selector.open();
-        serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
+
         LOGGER.info("server works");
-        bdstart();
-        interactivelyModule(selector, serverSocketChannel);
+        bdstart(Variable.getContains(Variable.HOST), Variable.getContains(Variable.NAME), Variable.getContains(Variable.LOGIN), Variable.getContains(Variable.PASSWORD));
+        interactivelyModule(serverSocketChannel);
     }
 
-    public BasicResponse executeCommand(ByteBuffer byteBuffer) throws IOException, ClassNotFoundException, NoSuchAlgorithmException {
-        BasicResponse response = ObjectWrapper.serverDeserialize(byteBuffer);
-        //check authorisation
-        Authorisation authorisation = new Authorisation();
-        if (!authorisation.authorisation(response)) {
-            return authorisation.getResponse();
-        }
 
-        Registration registration = new Registration();
-        if (!registration.registration(response)) {
-            return registration.getBasicResponse();
-        } else {
-            try {
-                if (isAuthorised(response.getLogin(), response.getPassword())) {
-                    if (!response.getCommand().equals(Values.COLLECTION.toString()) && response instanceof Response) {
-                        LOGGER.fine("execute method: " + response);
-                        return commandsManager.chooseCommand((Response) response);
-                    }
-                    response = new ResponseWithCollection(commandsManager.getCommandValues());
-                } else {
-                    response = new ResponseWithError("the user wasn't authorised");
-                }
-            } catch (SQLException | WrongUsersData e) {
-                response = new ResponseWithError("the user wasn't authorised: " + e.getMessage());
-            }
-            return response;
-        }
-    }
-
-    public void read(SelectionKey selectionKey) throws IOException, ClassNotFoundException, NoSuchAlgorithmException {
-        SocketChannel socketChannel = (SocketChannel) selectionKey.channel();
-        ByteBuffer buf = readInBuf(socketChannel);
-        BasicResponse response = executeCommand(buf);
-        selectionKey.attach(response);
-        selectionKey.interestOps(SelectionKey.OP_WRITE);
-        buf.clear();
-    }
-
-    //private void BDstart(String dbHost, String dbName, String dbUser, String dbPassword){
-    private void bdstart() throws SQLException, VariableException, CreateError {
-        String dbHost = "pg";
+    private void bdstart(String dbHost, String dbName, String dbUser, String dbPassword) throws SQLException, VariableException, CreateError {
+        /*private void bdstart() throws SQLException, VariableException, CreateError {
+         *//*String dbHost = "pg";
         String dbName = "studs";
         String dbUser = "s336767";
-        String dbPassword = "azi261";
+        String dbPassword = "azi261";*/
         LOGGER.info("BD was connected");
         bdUsersManager = new BDUsersManager("users", dbHost, dbName, dbUser, dbPassword);
         bdManager = new BDManager("products", dbHost, dbName, dbUser, dbPassword);
@@ -116,41 +84,6 @@ public class ServerApp {
 
     }
 
-    private ByteBuffer readInBuf(SocketChannel socketChannel) throws IOException {
-        int newCapacity = capacity;
-        ByteBuffer buf = ByteBuffer.allocate(capacity);
-        while (socketChannel.read(buf) > 0) {
-            newCapacity = newCapacity * 2;
-            ByteBuffer byteBuffer = ByteBuffer.allocate(newCapacity);
-            byteBuffer.put(buf.array());
-            buf = byteBuffer.slice();
-        }
-        return buf;
-    }
-
-    public boolean write(SelectionKey selectionKey) throws IOException {
-        BasicResponse response = (BasicResponse) selectionKey.attachment();
-        String answer = response.getCommand();
-        ByteBuffer byteBuffer = ObjectWrapper.serialize(selectionKey.attachment());
-        SocketChannel socketChannel = (SocketChannel) selectionKey.channel();
-        socketChannel.write(byteBuffer);
-        selectionKey.interestOps(SelectionKey.OP_READ);
-        byteBuffer.clear();
-        return !"exit".equals(answer);
-    }
-
-    public void accept(ServerSocketChannel serverSocketChannel, Selector selector, SelectionKey selectionKey) {
-        try {
-            SocketChannel socket = serverSocketChannel.accept();
-            socket.configureBlocking(false);
-            socket.register(selector, SelectionKey.OP_READ);
-            LOGGER.info("Connection from: " + socket);
-        } catch (IOException e) {
-            LOGGER.info("Unable to accept channel");
-            //e.printStackTrace();
-            selectionKey.cancel();
-        }
-    }
 
     private boolean consoleInput() throws IOException {
         boolean flag = false;
@@ -159,13 +92,10 @@ public class ServerApp {
         if (isReadyConsole > 0) {
             try {
                 command = in.readLine().trim().toLowerCase();
-                switch (command) {
-                    case "exit":
-                        flag = true;
-                        break;
-
-                    default:
-                        LOGGER.config("There is no so command");
+                if ("exit".equals(command)) {
+                    flag = true;
+                } else {
+                    LOGGER.config("There is no so command");
                 }
             } catch (NullPointerException e) {
                 LOGGER.warning("you write null, please repeat input ");
@@ -175,57 +105,26 @@ public class ServerApp {
         return flag;
     }
 
-    public boolean console(Selector selector) throws IOException {
+    public boolean console() throws IOException {
         if (consoleInput()) {
-            Set<SelectionKey> keySet = selector.selectedKeys();
-            Iterator<SelectionKey> iterator = keySet.iterator();
-            while (iterator.hasNext()) {
-                SelectionKey selectionKey = iterator.next();
-                iterator.remove();
-                selectionKey.cancel();
-            }
-            //commandsManager.save();
             Util.toColor(Colors.GREEN, "Thank you for using, goodbye");
             return false;
         }
         return true;
     }
 
-    private void interactivelyModule(Selector selector, ServerSocketChannel serverSocketChannel) throws IOException, NoSuchAlgorithmException {
-        while (console(selector)) {
-            int count = selector.select(1);
-            if (count == 0) {
-                continue;
-            }
-            Set<SelectionKey> keySet = selector.selectedKeys();
-            Iterator<SelectionKey> iterator = keySet.iterator();
-            while (iterator.hasNext()) {
-                SelectionKey selectionKey = iterator.next();
-                iterator.remove();
-                if (selectionKey.isAcceptable() && selectionKey.isValid()) {
-                    accept(serverSocketChannel, selector, selectionKey);
-                }
-                if (selectionKey.isValid() && selectionKey.isReadable()) {
-                    try {
-                        read(selectionKey);
-                    } catch (ClassNotFoundException | IOException e) {
-                        LOGGER.info("The client was unconnected" + selectionKey.channel());
-                        selectionKey.cancel();
-                    }
-                }
-                if (selectionKey.isValid() && selectionKey.isWritable()) {
-                    if (!write(selectionKey)) {
-                        LOGGER.info("The client was unconnected" + selectionKey.channel());
-                        selectionKey.cancel();
-                    }
-                }
-                if (!selectionKey.isValid()) {
-                    selectionKey.cancel();
-                }
+    private void interactivelyModule(ServerSocketChannel serverSocketChannel) throws IOException {
+        while (console()) {
+            SocketChannel socketChannel = serverSocketChannel.accept();
+            if (socketChannel != null) {
+                socketChannel.configureBlocking(false);
+                responseReaderPool.submit(new Client(socketChannel));
             }
         }
-        selector.close();
-        serverSocketChannel.close();
+        responseReaderPool.shutdown();
+        responseSenderPool.shutdown();
+        responseExecutorPool.shutdown();
+
     }
 
     private boolean isAuthorised(String login, String password) throws SQLException, WrongUsersData, NoSuchAlgorithmException {
@@ -234,7 +133,7 @@ public class ServerApp {
     }
 
 
-    private class Authorisation {
+    private class Authorisator {
         private BasicResponse basicResponse;
 
         private boolean authorisation(BasicResponse response) throws NoSuchAlgorithmException {
@@ -260,7 +159,7 @@ public class ServerApp {
         }
     }
 
-    private class Registration {
+    private class Registrator {
         private BasicResponse basicResponse;
 
         public boolean registration(BasicResponse response) throws NoSuchAlgorithmException {
@@ -284,4 +183,143 @@ public class ServerApp {
             return basicResponse;
         }
     }
+
+    private class Executor implements Runnable {
+        private BasicResponse basicResponse;
+        private final ByteBuffer byteBuffer;
+
+        Executor(ByteBuffer byteBuffer) {
+            this.byteBuffer = byteBuffer;
+        }
+
+        public BasicResponse execute() throws IOException, ClassNotFoundException, NoSuchAlgorithmException {
+            BasicResponse response = ObjectWrapper.serverDeserialize(byteBuffer);
+            //check authorisation
+            Authorisator authorisation = new Authorisator();
+            if (!authorisation.authorisation(response)) {
+                return authorisation.getResponse();
+            }
+
+            Registrator registration = new Registrator();
+            if (!registration.registration(response)) {
+                return registration.getBasicResponse();
+            } else {
+                try {
+                    if (isAuthorised(response.getLogin(), response.getPassword())) {
+                        if (!response.getCommand().equals(Values.COLLECTION.toString()) && response instanceof Response) {
+                            LOGGER.fine("execute method: " + response);
+                            return commandsManager.chooseCommand((Response) response);
+                        }
+                        response = new ResponseWithCollection(commandsManager.getCommandValues());
+                    } else {
+                        response = new ResponseWithError("the user wasn't authorised");
+                    }
+                } catch (SQLException | WrongUsersData e) {
+                    response = new ResponseWithError("the user wasn't authorised: " + e.getMessage());
+                }
+                return response;
+            }
+        }
+
+        @Override
+        public void run() {
+            try {
+                basicResponse = execute();
+            } catch (IOException | ClassNotFoundException | NoSuchAlgorithmException e) {
+                basicResponse = new ResponseWithError("the user command wasn't execute because of " + e.getMessage());
+            }
+        }
+
+        public BasicResponse getBasicResponse() {
+            return basicResponse;
+        }
+    }
+
+    private class Client implements Runnable {
+
+        private final SocketChannel socketChannel;
+        private boolean running = true;
+        private boolean isReade = false;
+
+        Client(SocketChannel socketChannel) {
+            this.socketChannel = socketChannel;
+        }
+
+        @Override
+        public void run() {
+            LOGGER.info(Util.giveColor(Colors.BlUE, "the new client was connected and start execute"));
+            try {
+                while (running) {
+                    read();
+                }
+            } catch (IOException | ClassNotFoundException | NoSuchAlgorithmException e) {
+                LOGGER.warning("impossible to connect with "
+                        + socketChannel.socket().getLocalSocketAddress()
+                        + " because of " + e.getMessage() + " the channel is closing");
+                close();
+            }
+        }
+
+        public void read() throws IOException, ClassNotFoundException, NoSuchAlgorithmException {
+            LOGGER.config("the read method starts");
+            isReade = false;
+            ByteBuffer buf = readInBuf();
+            if (isReade) {
+                executeCommand(buf);
+                buf.clear();
+            }
+            LOGGER.config("the read method finished");
+        }
+
+        public void executeCommand(ByteBuffer byteBuffer) {
+            Executor executor = new Executor(byteBuffer);
+            responseExecutorPool.submit(() -> {
+                executor.run();
+                responseSenderPool.submit(() -> {
+                    try {
+                        if (!write(executor.getBasicResponse())) {
+                            close();
+                        }
+                    } catch (IOException e) {
+                        LOGGER.warning("impossible to run because of " + e.getMessage());
+                        close();
+                    }
+                });
+            });
+        }
+
+        private ByteBuffer readInBuf() throws IOException {
+            int newCapacity = capacity;
+            ByteBuffer buf = ByteBuffer.allocate(capacity);
+            while (socketChannel.read(buf) > 0) {
+                isReade = true;
+                newCapacity = newCapacity * 2;
+                ByteBuffer byteBuffer = ByteBuffer.allocate(newCapacity);
+                byteBuffer.put(buf.array());
+                buf = byteBuffer.slice();
+            }
+            return buf;
+        }
+
+        private boolean write(BasicResponse response) throws IOException {
+            LOGGER.config("the write method starts");
+            String answer = response.getCommand();
+            ByteBuffer byteBuffer = ObjectWrapper.serialize(response);
+            socketChannel.write(byteBuffer);
+            byteBuffer.clear();
+            LOGGER.config("the write method finished");
+            return !"exit".equals(answer);
+        }
+
+        private void close() {
+            try {
+                LOGGER.info("the client was disconnected + " + socketChannel);
+                socketChannel.close();
+            } catch (IOException e) {
+                LOGGER.warning("impossible to close channel because of " + e.getMessage());
+            }
+        }
+    }
+
 }
+

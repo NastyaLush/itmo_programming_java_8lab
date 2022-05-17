@@ -22,7 +22,7 @@ public final class Client {
      */
     public static void main(String[] args) {
         final Logger logger = Logger.getLogger(Client.class.getName());
-        logger.setLevel(Level.CONFIG);
+        logger.setLevel(Level.INFO);
         logger.info(Util.giveColor(Colors.BlUE, "the main method starts"));
         ClientApp clientApp = new ClientApp();
         int length = args.length;
@@ -47,7 +47,7 @@ public final class Client {
                     logger.severe(Util.giveColor(Colors.RED, "Can't connect to the server, please check host address and port"));
                 }
             } catch (IOException e) {
-                logger.severe(Util.giveColor(Colors.RED, "Can't connect to the server, check host address and port"));
+                logger.severe(Util.giveColor(Colors.RED, "Can't connect to the server, check host address and port: " + e.getMessage()));
             } catch (NumberFormatException e) {
                 logger.severe(Util.giveColor(Colors.RED, "impossible pars host address and port "));
             }

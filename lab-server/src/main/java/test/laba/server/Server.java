@@ -17,7 +17,7 @@ public final class Server {
     private static final Logger LOGGER = Logger.getLogger(Server.class.getName());
 
     static {
-        LOGGER.setLevel(Level.CONFIG);
+        LOGGER.setLevel(Level.ALL);
     }
 
     private Server() {
@@ -41,7 +41,8 @@ public final class Server {
                     LOGGER.warning(Util.giveColor(Colors.RED, "impossible to run server because of mistake while downland products: " + e.getMessage()));
                 } catch (SQLException e) {
                     e.printStackTrace();
-                    LOGGER.warning(Util.giveColor(Colors.RED, "impossible to run server because of troubles with BD: " + e.getMessage()));
+                    LOGGER.warning(Util.giveColor(Colors.RED, "impossible to run server because of troubles with BD: " + e.getMessage()
+                    + "please check environment variables: host, login, password and name(it's meaning name of bd)"));
                 } catch (NoSuchAlgorithmException e) {
                     LOGGER.warning(Util.giveColor(Colors.RED, "impossible to run server because of impossible to execute an encryption : " + e.getMessage()));
                 }

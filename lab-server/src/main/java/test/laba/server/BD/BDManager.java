@@ -30,7 +30,7 @@ import java.util.logging.Logger;
 public class BDManager extends TableOperations {
     private static final Logger LOGGER = Logger.getLogger(BDManager.class.getName());
     private final String name = "products";
-    private final DateTimeFormatter forrmater = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public BDManager(String name, String dbHost, String dbName, String dbUser, String dbPassword) throws SQLException {
         super(name, dbHost, dbName, dbUser, dbPassword);
@@ -68,20 +68,18 @@ public class BDManager extends TableOperations {
     public void clear() throws SQLException {
         reOpenConnection();
         Statement statement = getConnection().createStatement();
-        statement.execute("DELETE FROM " + name);
+        synchronized (this) {
+            statement.execute("DELETE FROM " + name);
+        }
         statement.close();
     }
 
-    public void removeLower(String login, Set<Long> keys, Root root, BDUsersManager bdUsersManager) {
-        keys.stream().forEach(key -> {
+    public synchronized void removeLower(String login, Set<Long> keys, Root root, BDUsersManager bdUsersManager) {
+        keys.forEach(key -> {
             try {
                 removeKey(login, key, root, bdUsersManager);
-            } catch (SQLException e) {
-                //hidden
-                //e.printStackTrace();
-            } catch (WrongUsersData e) {
-                //hidden
-                //e.printStackTrace();
+            } catch (WrongUsersData | SQLException e) {
+                LOGGER.info("something went wrong because of " + e.getMessage());
             }
         });
     }
@@ -90,23 +88,8 @@ public class BDManager extends TableOperations {
         reOpenConnection();
         if (root.isExistProductWithKey(key)) {
             long id = bdUsersManager.getId(login);
-            System.out.println(id);
-            String query = "DELETE FROM " + this.name + " WHERE key = ? AND creatorID = ?";
-            String query1 = "SELECT * FROM " + this.name + " WHERE key = ? AND creatorID = ?";
 
-            try (PreparedStatement preparedStatement = getConnection().prepareStatement(query1)) {
-                preparedStatement.setLong(1, (key));
-                preparedStatement.setLong(2, id);
-                preparedStatement.execute();
-                if (preparedStatement.getResultSet().next()) {
-                    PreparedStatement ps = getConnection().prepareStatement(query);
-                    ps.setLong(1, (key));
-                    ps.setLong(2, id);
-                    ps.execute();
-                } else {
-                    throw new WrongUsersData("this object not belongs to you");
-                }
-            }
+            checkOnKeyAnaIDAndDelete(key, id);
         } else {
             throw new WrongUsersData("this key is not exist");
         }
@@ -116,22 +99,30 @@ public class BDManager extends TableOperations {
     public boolean removeLowerKey(BasicResponse response, BDUsersManager bdUsersManager) throws SQLException {
         reOpenConnection();
         long id = bdUsersManager.getId(response.getLogin());
-        System.out.println(id);
-        String query = "DELETE FROM " + this.name + " WHERE key <= ? AND creatorID = ?";
-        String query1 = "SELECT * FROM " + this.name + " WHERE key <= ? AND creatorID = ?";
+        try {
+            return checkOnKeyAnaIDAndDelete(((Response) response).getKey(), id);
+        } catch (WrongUsersData e) {
+            return false;
+        }
 
-        try (PreparedStatement preparedStatement = getConnection().prepareStatement(query1)) {
-            preparedStatement.setLong(1, ((Response) response).getKey());
-            preparedStatement.setLong(2, id);
-            preparedStatement.execute();
-            if (preparedStatement.getResultSet().next()) {
-                PreparedStatement ps = getConnection().prepareStatement(query);
-                ps.setLong(1, ((Response) response).getKey());
-                ps.setLong(2, id);
-                ps.execute();
-                ps.close();
-            } else {
-                return false;
+    }
+    public boolean checkOnKeyAnaIDAndDelete(Long key, Long id) throws SQLException, WrongUsersData {
+        String query = "DELETE FROM " + this.name + " WHERE key = ? AND creatorID = ?";
+        String query1 = "SELECT * FROM " + this.name + " WHERE key = ? AND creatorID = ?";
+        synchronized (this) {
+            try (PreparedStatement preparedStatement = getConnection().prepareStatement(query1)) {
+                preparedStatement.setLong(1, (key));
+                preparedStatement.setLong(2, id);
+                preparedStatement.execute();
+                if (preparedStatement.getResultSet().next()) {
+                    PreparedStatement ps = getConnection().prepareStatement(query);
+                    ps.setLong(1, (key));
+                    ps.setLong(2, id);
+                    ps.execute();
+                    ps.close();
+                } else {
+                    throw new WrongUsersData("this object not belongs to you");
+                }
             }
             return true;
         }
@@ -157,7 +148,9 @@ public class BDManager extends TableOperations {
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(query)) {
             int column = preparing(preparedStatement, product, 1);
             preparedStatement.setLong(column, key);
-            preparedStatement.execute();
+            synchronized (this) {
+                preparedStatement.execute();
+            }
         }
 
     }
@@ -170,10 +163,11 @@ public class BDManager extends TableOperations {
             preparedStatement.setLong(1, key);
             int column = preparing(preparedStatement, ((Response) registerResponse).getProduct(), 2);
             preparedStatement.setLong(column, ((Response) registerResponse).getProduct().getOwnerID());
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                resultSet.next();
-                writeContains();
-                return resultSet.getLong("id");
+            synchronized (this) {
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    resultSet.next();
+                    return resultSet.getLong("id");
+                }
             }
         }
 
@@ -185,7 +179,7 @@ public class BDManager extends TableOperations {
         preparedStatement.setString(i++, product.getName());
         preparedStatement.setInt(i++, product.getCoordinates().getX());
         preparedStatement.setFloat(i++, product.getCoordinates().getY());
-        preparedStatement.setTimestamp(i++, Timestamp.valueOf(product.getCreationDate().format(forrmater)));
+        preparedStatement.setTimestamp(i++, Timestamp.valueOf(product.getCreationDate().format(formatter)));
         preparedStatement.setLong(i++, product.getPrice());
         if (product.getManufactureCost() != null) {
             preparedStatement.setInt(i++, product.getManufactureCost());
@@ -195,7 +189,7 @@ public class BDManager extends TableOperations {
         preparedStatement.setString(i++, product.getUnitOfMeasure().toString());
         if (product.getOwner() != null) {
             preparedStatement.setString(i++, product.getOwner().getName());
-            preparedStatement.setTimestamp(i++, Timestamp.valueOf(product.getOwner().getBirthday().format(forrmater)));
+            preparedStatement.setTimestamp(i++, Timestamp.valueOf(product.getOwner().getBirthday().format(formatter)));
             preparedStatement.setInt(i++, product.getOwner().getHeight());
             preparedStatement.setLong(i++, product.getOwner().getLocation().getX());
             preparedStatement.setInt(i++, product.getOwner().getLocation().getY());
@@ -238,7 +232,7 @@ public class BDManager extends TableOperations {
         if (resultSet.getString("person_name") != null) {
             product.setOwner(new Person(
                     resultSet.getString("person_name"),
-                    ZonedDateTime.of(LocalDateTime.parse(resultSet.getString("person_birthday"), forrmater), ZoneId.of("Europe/Berlin")),
+                    ZonedDateTime.of(LocalDateTime.parse(resultSet.getString("person_birthday"), formatter), ZoneId.of("Europe/Berlin")),
                     resultSet.getInt("person_height"),
                     new Location(
                             resultSet.getLong("location_x"),
@@ -246,7 +240,7 @@ public class BDManager extends TableOperations {
                             resultSet.getString("location_name"))));
         }
         product.setCreationDate(ZonedDateTime.of(
-                LocalDateTime.parse(resultSet.getString("creation_date"), forrmater),
+                LocalDateTime.parse(resultSet.getString("creation_date"), formatter),
                 ZoneId.of("Europe/Berlin")));
         product.setOwnerID(resultSet.getLong("creatorID"));
         return product;

@@ -22,15 +22,16 @@ public class Wrapper {
     private final InputStream in;
 
     public Wrapper(Socket socket) throws IOException {
-        LOGGER.setLevel(Level.WARNING);
+        LOGGER.setLevel(Level.INFO);
         out = socket.getOutputStream();
         in = socket.getInputStream();
     }
 
     public void sent(BasicResponse response) throws IOException {
+        LOGGER.fine("response try to sent");
         ByteBuffer oute = ObjectWrapper.serialize(response);
         out.write(oute.array());
-        LOGGER.info("response was sent");
+        LOGGER.fine("response was sent");
         oute.clear();
         oute.flip();
 
@@ -38,9 +39,10 @@ public class Wrapper {
 
 
     public Response readResponse() throws IOException, ClassNotFoundException {
+        LOGGER.fine("response try to read");
         ByteBuffer byteBuffer = ByteBuffer.allocate(capacity);
         in.read(byteBuffer.array());
-        LOGGER.info("response was given");
+        LOGGER.fine("response was given");
         return ObjectWrapper.deserialize(byteBuffer);
     }
 

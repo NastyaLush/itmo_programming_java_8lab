@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 public class Root {
     @XmlTransient
     private ZonedDateTime dateOfCreation;
-    private HashMap<Long, Product> products = new HashMap<>();
+    private volatile HashMap<Long, Product> products = new HashMap<>();
 
     /**
      * the constructor, create only date creation
@@ -72,17 +72,19 @@ public class Root {
      */
     public Long getKeyOnIDIfBelongsToUser(Long id, Long ownerId) {
         AtomicReference<Long> answer = new AtomicReference<>();
-        products.entrySet().stream().filter(x -> x.getValue().getId() == id && x.getValue().getOwnerID() == ownerId).limit(1).forEach(e -> answer.set(e.getKey()));
+        products.entrySet().stream().filter(x -> x.getValue().getId() == id && x.getValue().getOwnerID().equals(ownerId)).limit(1).forEach(e -> answer.set(e.getKey()));
         return answer.get();
     }
 
     public void setProduct(Product product, Long key) {
-        products.put(key, product);
+        synchronized (this) {
+            products.put(key, product);
+        }
         dateOfCreation = ZonedDateTime.now();
     }
 
 
-    public void setProductWithKey(Long key, Product product) throws AlreadyHaveTheseProduct {
+    public synchronized void setProductWithKey(Long key, Product product) throws AlreadyHaveTheseProduct {
         if (!products.containsKey(key)) {
             products.put(key, product);
             dateOfCreation = ZonedDateTime.now();
@@ -92,7 +94,9 @@ public class Root {
     }
 
     public void updateProductWithKey(Long key, Product product) {
-        products.put(key, product);
+        synchronized (this) {
+            products.put(key, product);
+        }
         dateOfCreation = ZonedDateTime.now();
     }
 
@@ -101,14 +105,14 @@ public class Root {
      * @return true if product of collection contains this id and false in another case
      */
     public boolean containsIDAndBelongsToUser(Long id, Long ownerID) {
-        return products.values().stream().anyMatch(e -> e.getId() == id && e.getOwnerID() == ownerID);
+        return products.values().stream().anyMatch(e -> e.getId() == id && e.getOwnerID().equals(ownerID));
     }
 
 
     /**
      * the method which clear collection
      */
-    public void clear() {
+    public synchronized void clear() {
         products.clear();
     }
 
@@ -128,10 +132,10 @@ public class Root {
      *
      * @param unitOfMeasure argument for removing
      */
-    public Long removeAnyByUnitOfMeasure(UnitOfMeasure unitOfMeasure, Long id) {
+    public Long getKeyByUnitOfMeasure(UnitOfMeasure unitOfMeasure, Long id) {
         PrimitiveIterator.OfLong stream = products.entrySet()
                 .stream()
-                .filter(x -> x.getValue().getUnitOfMeasure() == unitOfMeasure && x.getValue().getOwnerID() == id)
+                .filter(x -> x.getValue().getUnitOfMeasure() == unitOfMeasure && x.getValue().getOwnerID().equals(id))
                 .limit(1).mapToLong(Map.Entry::getKey).iterator();
         if (stream.hasNext()) {
             return stream.next();
@@ -145,13 +149,13 @@ public class Root {
      *
      * @param product argument for comparing
      */
-    public void removeIfLess(Product product, Long id) {
-        products.entrySet().removeIf(entry -> product.compareTo(entry.getValue()) < 0 && entry.getValue().getOwnerID() == id);
+    public synchronized void removeIfLess(Product product, Long id) {
+        products.entrySet().removeIf(entry -> product.compareTo(entry.getValue()) < 0 && entry.getValue().getOwnerID().equals(id));
     }
 
-    public Set<Long> getProductsKeysWhichLessAndBelongsUser(Product product, Long id) {
+    public Set<Long> getProductsKeysWhichLessThanThisAndBelongsUser(Product product, Long id) {
         return products.entrySet().stream()
-                .filter(entry -> product.compareTo(entry.getValue()) < 0 && entry.getValue().getOwnerID() == id).map(Map.Entry::getKey)
+                .filter(entry -> product.compareTo(entry.getValue()) < 0 && entry.getValue().getOwnerID().equals(id)).map(Map.Entry::getKey)
                 .collect(Collectors.toSet());
     }
 
@@ -160,17 +164,17 @@ public class Root {
      *
      * @param key key for comparing
      */
-    public void removeIfKeyLess(Long key, Long id) {
-        products.entrySet().removeIf(entry -> key > entry.getKey() && id == entry.getValue().getOwnerID());
+    public synchronized void removeIfKeyLess(Long key, Long id) {
+        products.entrySet().removeIf(entry -> key > entry.getKey() && id.equals(entry.getValue().getOwnerID()));
     }
 
     /**
      * delete product by key
      *
-     * @param deleteKey key for deleting
+     * @param key key for deleting
      */
-    public void remove(Long deleteKey) {
-        products.remove(deleteKey);
+    public synchronized void remove(Long key) {
+        products.remove(key);
     }
 
     /**

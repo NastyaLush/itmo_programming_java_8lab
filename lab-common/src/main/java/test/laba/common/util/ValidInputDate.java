@@ -6,7 +6,7 @@ import java.net.InetAddress;
 public final class ValidInputDate {
     private static final int MIN_PORT = 1;
     private static final int MAX_PORT = 65535;
-    private static final  int TIME_OUT = 5000;
+    private static final  int TIME_OUT = 10000;
 
     private ValidInputDate() {
 

@@ -6,8 +6,10 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.logging.Logger;
 
 public abstract class TableOperations {
+    private static final Logger LOGGER = Logger.getLogger(TableOperations.class.getName());
     protected final String name;
     protected final String dbHost;
     protected final String dbName;
@@ -70,5 +72,13 @@ public abstract class TableOperations {
         Statement statement = getConnection().createStatement();
         statement.execute("DELETE * FROM " + name);
         statement.close();
+        LOGGER.info("the table " + name + " was cleared");
+    }
+    public void delete() throws SQLException {
+        reOpenConnection();
+        Statement statement = getConnection().createStatement();
+        statement.execute("DROP TABLE " + name + " CASCADE");
+        statement.close();
+        LOGGER.info("the table " + name + " was deleted");
     }
 }

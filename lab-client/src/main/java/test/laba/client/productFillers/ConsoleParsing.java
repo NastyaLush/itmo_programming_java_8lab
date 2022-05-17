@@ -2,7 +2,6 @@ package test.laba.client.productFillers;
 
 import test.laba.client.util.Console;
 import test.laba.client.util.VariableParsing;
-import test.laba.server.mycommands.commands.Variable;
 import test.laba.common.exception.CreateError;
 import test.laba.common.exception.VariableException;
 import test.laba.common.dataClasses.Location;
@@ -16,7 +15,7 @@ import java.time.ZonedDateTime;
 /**
  * the class is responsible for work with creating products from console
  */
-public class ConsoleParsing implements Variable {
+public class ConsoleParsing {
     private Console console;
 
     public ConsoleParsing(Console console) {

@@ -33,7 +33,7 @@ public class RemoveAnyByUnitOfMeasure extends AbstractCommand {
     public Response execute(UnitOfMeasure unitOfMeasure, Root root, BDManager bdManager, BDUsersManager bdUsersManager, String login) {
 
         try {
-            Long key = root.removeAnyByUnitOfMeasure(unitOfMeasure, bdUsersManager.getId(login));
+            Long key = root.getKeyByUnitOfMeasure(unitOfMeasure, bdUsersManager.getId(login));
             if (key != null) {
                 bdManager.removeKey(login, key, root, bdUsersManager);
                 root.remove(key);
