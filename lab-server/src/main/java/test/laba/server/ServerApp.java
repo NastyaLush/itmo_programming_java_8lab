@@ -49,7 +49,7 @@ public class ServerApp {
 
 
     public ServerApp(int port) {
-        LOGGER.setLevel(Level.ALL);
+        LOGGER.setLevel(Level.INFO);
         this.port = port;
         this.in = new BufferedReader(new InputStreamReader(System.in));
         this.responseReaderPool = Executors.newFixedThreadPool(countOfUsers);
@@ -72,11 +72,6 @@ public class ServerApp {
 
 
     private void bdstart(String dbHost, String dbName, String dbUser, String dbPassword) throws SQLException, VariableException, CreateError {
-        /*private void bdstart() throws SQLException, VariableException, CreateError {
-         *//*String dbHost = "pg";
-        String dbName = "studs";
-        String dbUser = "s336767";
-        String dbPassword = "azi261";*/
         LOGGER.info("BD was connected");
         bdUsersManager = new BDUsersManager("users", dbHost, dbName, dbUser, dbPassword);
         bdManager = new BDManager("products", dbHost, dbName, dbUser, dbPassword);
@@ -107,7 +102,7 @@ public class ServerApp {
 
     public boolean console() throws IOException {
         if (consoleInput()) {
-            Util.toColor(Colors.GREEN, "Thank you for using, goodbye");
+            Util.toColor(Colors.GREEN, "Thank you for using app, goodbye");
             return false;
         }
         return true;
