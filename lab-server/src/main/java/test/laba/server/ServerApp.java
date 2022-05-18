@@ -49,7 +49,7 @@ public class ServerApp {
 
 
     public ServerApp(int port) {
-        LOGGER.setLevel(Level.INFO);
+        LOGGER.setLevel(Level.ALL);
         this.port = port;
         this.in = new BufferedReader(new InputStreamReader(System.in));
         this.responseReaderPool = Executors.newFixedThreadPool(countOfUsers);
@@ -116,9 +116,10 @@ public class ServerApp {
                 responseReaderPool.submit(new Client(socketChannel));
             }
         }
-        responseReaderPool.shutdown();
-        responseSenderPool.shutdown();
-        responseExecutorPool.shutdown();
+        responseReaderPool.shutdownNow();
+        responseSenderPool.shutdownNow();
+        responseExecutorPool.shutdownNow();
+        LOGGER.info("For all threads shutdown was completed");
 
     }
 
@@ -244,7 +245,7 @@ public class ServerApp {
         public void run() {
             LOGGER.info(Util.giveColor(Colors.BlUE, "the new client was connected and start execute"));
             try {
-                while (running) {
+                while (running && !Thread.currentThread().isInterrupted()) {
                     read();
                 }
             } catch (IOException | ClassNotFoundException | NoSuchAlgorithmException e) {
@@ -253,6 +254,7 @@ public class ServerApp {
                         + " because of " + e.getMessage() + " the channel is closing");
                 close();
             }
+            close();
         }
 
         public void read() throws IOException, ClassNotFoundException, NoSuchAlgorithmException {
@@ -271,14 +273,14 @@ public class ServerApp {
             responseExecutorPool.submit(() -> {
                 executor.run();
                 responseSenderPool.submit(() -> {
-                    try {
-                        if (!write(executor.getBasicResponse())) {
+                        try {
+                            if (!write(executor.getBasicResponse())) {
+                                close();
+                            }
+                        } catch (IOException e) {
+                            LOGGER.warning("impossible to run because of " + e.getMessage());
                             close();
                         }
-                    } catch (IOException e) {
-                        LOGGER.warning("impossible to run because of " + e.getMessage());
-                        close();
-                    }
                 });
             });
         }

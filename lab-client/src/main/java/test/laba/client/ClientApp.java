@@ -75,7 +75,8 @@ public class ClientApp {
 
             }
         } catch (IOException | ClassNotFoundException e) {
-            LOGGER.warning(Util.giveColor(Colors.RED, "The client can't exist because of: " + e.getMessage()));
+            LOGGER.warning(Util.giveColor(Colors.RED, "The client can't exist because of: " + e.getMessage()
+                    + "\n Probably server was closed"));
         }
         LOGGER.fine("the method was closed");
 
