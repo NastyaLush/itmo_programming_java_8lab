@@ -19,11 +19,17 @@ public class GroupCountingByPrice extends AbstractCommand {
      * @param root object contained collection values
      * @return collection with information, key- price, value- count
      */
+    @Override
     public Response execute(String arg, Root root) {
         Map<Long, Long> countingByPrice = root.groupCountingByPrice();
         StringBuilder answer = new StringBuilder();
         answer.append(Colors.BlUE + "price = count\n" + Colors.END);
-        countingByPrice.forEach((key, value) -> answer.append(key).append(" =  ").append(value).append('\n'));
+        countingByPrice.forEach((key, value) -> {
+            answer.append(key);
+            answer.append(" =  ");
+            answer.append(value);
+            answer.append('\n');
+        });
         return new Response(answer.toString());
     }
 }

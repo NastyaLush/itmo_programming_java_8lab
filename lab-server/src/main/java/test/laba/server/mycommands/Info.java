@@ -18,6 +18,7 @@ public class Info extends AbstractCommand {
      * @param root object contained collection values
      * @return string with information
      */
+    @Override
     public Response execute(String arg, Root root) {
         return new Response(Colors.BlUE + "Information about collection\n" + Colors.END + root.infoAboutCollection());
     }

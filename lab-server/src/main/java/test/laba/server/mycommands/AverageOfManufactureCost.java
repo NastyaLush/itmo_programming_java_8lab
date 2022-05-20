@@ -16,6 +16,7 @@ public final class AverageOfManufactureCost extends AbstractCommand {
      * @param root object contained collection values
      * @return the average value of the manufacture Co st field for all items in the collection
      */
+    @Override
     public Response execute(String arg, Root root) {
         StringBuilder s = new StringBuilder(Colors.BlUE + "Average_of_manufacture_cost: " + Colors.END);
         if (root.getProducts().size() != 0) {

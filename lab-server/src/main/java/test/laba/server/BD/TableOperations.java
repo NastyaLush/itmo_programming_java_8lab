@@ -16,23 +16,23 @@ public abstract class TableOperations {
     protected final String dbUser;
     protected final String dbPassword;
     private Connection connection;
+    private boolean isConnected = false;
 
     //void add(Object objetct) throws SQLException; // создание связей между таблицами
-    public TableOperations(String name, String dbHost, String dbName, String dbUser, String dbPassword) throws SQLException {
+    public TableOperations(String name, String dbHost, String dbName, String dbUser, String dbPassword) {
         this.name = name;
         this.dbUser = dbUser;
         this.dbPassword = dbPassword;
         this.dbHost = dbHost;
         this.dbName = dbName;
-        reOpenConnection();
-        createTable();
     }
 
-    protected void reOpenConnection() throws SQLException {
+    protected void openConnection() throws SQLException {
         if (connection == null || connection.isClosed()) {
             connection = DriverManager.getConnection("jdbc:postgresql://"
                     + dbHost + '/'
                     + dbName, dbUser, dbPassword);
+            isConnected = true;
         }
     }
 
@@ -43,7 +43,6 @@ public abstract class TableOperations {
     }
 
     public void writeContains() throws SQLException {
-        reOpenConnection();
         Statement statement = getConnection().createStatement();
         statement.execute("SELECT * FROM " + name);
         ResultSet rs = statement.getResultSet();
@@ -68,17 +67,22 @@ public abstract class TableOperations {
         }
     }
     public void clear() throws SQLException {
-        reOpenConnection();
         Statement statement = getConnection().createStatement();
         statement.execute("DELETE * FROM " + name);
         statement.close();
         LOGGER.info("the table " + name + " was cleared");
     }
     public void delete() throws SQLException {
-        reOpenConnection();
         Statement statement = getConnection().createStatement();
         statement.execute("DROP TABLE " + name + " CASCADE");
         statement.close();
         LOGGER.info("the table " + name + " was deleted");
     }
+
+   /* public boolean isConnected() {
+        if(isConnected){
+            return true;
+        }
+        throw new NoConnectionWithDB("The DB wasn't connected");
+    }*/
 }

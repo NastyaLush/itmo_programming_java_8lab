@@ -23,13 +23,13 @@ public class BDUsersManager extends TableOperations {
 
     public BDUsersManager(String name, String dbHost, String dbName, String dbUser, String dbPassword) throws SQLException {
         super(name, dbHost, dbName, dbUser, dbPassword);
-        createTable();
         LOGGER.setLevel(Level.FINEST);
     }
 
 
     @Override
     public void createTable() throws SQLException {
+        openConnection();
         Statement statement = getConnection().createStatement();
         statement.execute("CREATE TABLE IF NOT EXISTS " + this.name + " ("
                 + "id serial PRIMARY KEY,"
@@ -47,7 +47,6 @@ public class BDUsersManager extends TableOperations {
 
 
     public void add(RegisterResponse registerResponse) throws SQLException, NoSuchAlgorithmException, AlreadyExistLogin {
-        reOpenConnection();
         PreparedStatement statement = getConnection().prepareStatement("SELECT password FROM " + this.name + " WHERE login = ? LIMIT 1");
         statement.setString(1, registerResponse.getLogin());
         statement.execute();
@@ -67,13 +66,13 @@ public class BDUsersManager extends TableOperations {
                 throw new AlreadyExistLogin("this login is already exist");
             }
         }
-        writeContains();
+        //writeContains();
         statement.close();
     }
 
     public boolean isAuthorized(String login, String password) throws SQLException, WrongUsersData, NoSuchAlgorithmException {
         LOGGER.fine("the authorised method started");
-        reOpenConnection();
+
 
         try (PreparedStatement statement = getConnection().prepareStatement("SELECT password, salt, count_hash FROM " + this.name + " WHERE login = ? LIMIT 1")) {
             statement.setString(1, login);
@@ -97,7 +96,6 @@ public class BDUsersManager extends TableOperations {
     }
 
     public Long getId(String login) throws SQLException {
-        reOpenConnection();
         try (PreparedStatement statement = getConnection().prepareStatement("SELECT * FROM " + this.name + " WHERE login = ? LIMIT 1")) {
             statement.setString(1, login);
             statement.execute();

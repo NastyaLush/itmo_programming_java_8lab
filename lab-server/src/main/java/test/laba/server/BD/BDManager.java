@@ -37,8 +37,9 @@ public class BDManager extends TableOperations {
     }
 
 
-    @Override
-    public void createTable() throws SQLException {
+        @Override
+        public void createTable() throws SQLException {
+        openConnection();
         Statement statement = getConnection().createStatement();
         statement.execute("CREATE TABLE IF NOT EXISTS " + this.name + " ("
                 + "id serial PRIMARY KEY,"
@@ -65,8 +66,8 @@ public class BDManager extends TableOperations {
     }
 
 
+    @Override
     public void clear() throws SQLException {
-        reOpenConnection();
         Statement statement = getConnection().createStatement();
         synchronized (this) {
             statement.execute("DELETE FROM " + name);
@@ -85,7 +86,6 @@ public class BDManager extends TableOperations {
     }
 
     public void removeKey(String login, Long key, Root root, BDUsersManager bdUsersManager) throws SQLException, WrongUsersData {
-        reOpenConnection();
         if (root.isExistProductWithKey(key)) {
             long id = bdUsersManager.getId(login);
 
@@ -97,7 +97,6 @@ public class BDManager extends TableOperations {
     }
 
     public boolean removeLowerKey(BasicResponse response, BDUsersManager bdUsersManager) throws SQLException {
-        reOpenConnection();
         long id = bdUsersManager.getId(response.getLogin());
         try {
             return checkOnKeyAnaIDAndDelete(((Response) response).getKey(), id);
@@ -107,15 +106,15 @@ public class BDManager extends TableOperations {
 
     }
     public boolean checkOnKeyAnaIDAndDelete(Long key, Long id) throws SQLException, WrongUsersData {
-        String query = "DELETE FROM " + this.name + " WHERE key = ? AND creatorID = ?";
-        String query1 = "SELECT * FROM " + this.name + " WHERE key = ? AND creatorID = ?";
+        String deleteQuery = "DELETE FROM " + this.name + " WHERE key = ? AND creatorID = ?";
+        String selectQuery = "SELECT * FROM " + this.name + " WHERE key = ? AND creatorID = ?";
         synchronized (this) {
-            try (PreparedStatement preparedStatement = getConnection().prepareStatement(query1)) {
+            try (PreparedStatement preparedStatement = getConnection().prepareStatement(selectQuery)) {
                 preparedStatement.setLong(1, (key));
                 preparedStatement.setLong(2, id);
                 preparedStatement.execute();
                 if (preparedStatement.getResultSet().next()) {
-                    PreparedStatement ps = getConnection().prepareStatement(query);
+                    PreparedStatement ps = getConnection().prepareStatement(deleteQuery);
                     ps.setLong(1, (key));
                     ps.setLong(2, id);
                     ps.execute();
@@ -129,7 +128,6 @@ public class BDManager extends TableOperations {
     }
 
     public void updateID(Product product, Long key) throws SQLException {
-        reOpenConnection();
         String query = "UPDATE products SET "
                 + "name = ?,"
                 + "coordinate_x = ?,"
@@ -156,7 +154,6 @@ public class BDManager extends TableOperations {
     }
 
     public long add(BasicResponse registerResponse, Long key) throws SQLException {
-        reOpenConnection();
         String query = "INSERT INTO products VALUES ("
                 + "    default,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) RETURNING id";
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(query)) {
@@ -175,38 +172,38 @@ public class BDManager extends TableOperations {
     }
 
     public int preparing(PreparedStatement preparedStatement, Product product, int beginning) throws SQLException {
-        int i = beginning;
-        preparedStatement.setString(i++, product.getName());
-        preparedStatement.setInt(i++, product.getCoordinates().getX());
-        preparedStatement.setFloat(i++, product.getCoordinates().getY());
-        preparedStatement.setTimestamp(i++, Timestamp.valueOf(product.getCreationDate().format(formatter)));
-        preparedStatement.setLong(i++, product.getPrice());
+        int column = beginning;
+        preparedStatement.setString(column++, product.getName());
+        preparedStatement.setInt(column++, product.getCoordinates().getX());
+        preparedStatement.setFloat(column++, product.getCoordinates().getY());
+        preparedStatement.setTimestamp(column++, Timestamp.valueOf(product.getCreationDate().format(formatter)));
+        preparedStatement.setLong(column++, product.getPrice());
         if (product.getManufactureCost() != null) {
-            preparedStatement.setInt(i++, product.getManufactureCost());
+            preparedStatement.setInt(column++, product.getManufactureCost());
         } else {
-            preparedStatement.setNull(i++, Types.BIGINT);
+            preparedStatement.setNull(column++, Types.BIGINT);
         }
-        preparedStatement.setString(i++, product.getUnitOfMeasure().toString());
+        preparedStatement.setString(column++, product.getUnitOfMeasure().toString());
         if (product.getOwner() != null) {
-            preparedStatement.setString(i++, product.getOwner().getName());
-            preparedStatement.setTimestamp(i++, Timestamp.valueOf(product.getOwner().getBirthday().format(formatter)));
-            preparedStatement.setInt(i++, product.getOwner().getHeight());
-            preparedStatement.setLong(i++, product.getOwner().getLocation().getX());
-            preparedStatement.setInt(i++, product.getOwner().getLocation().getY());
-            preparedStatement.setString(i++, product.getOwner().getLocation().getName());
+            preparedStatement.setString(column++, product.getOwner().getName());
+            preparedStatement.setTimestamp(column++, Timestamp.valueOf(product.getOwner().getBirthday().format(formatter)));
+            preparedStatement.setInt(column++, product.getOwner().getHeight());
+            preparedStatement.setLong(column++, product.getOwner().getLocation().getX());
+            preparedStatement.setInt(column++, product.getOwner().getLocation().getY());
+            preparedStatement.setString(column++, product.getOwner().getLocation().getName());
         } else {
-            preparedStatement.setNull(i++, Types.VARCHAR);
-            preparedStatement.setNull(i++, Types.TIMESTAMP);
-            preparedStatement.setNull(i++, Types.INTEGER);
-            preparedStatement.setNull(i++, Types.BIGINT);
-            preparedStatement.setNull(i++, Types.INTEGER);
-            preparedStatement.setNull(i++, Types.VARCHAR);
+            preparedStatement.setNull(column++, Types.VARCHAR);
+            preparedStatement.setNull(column++, Types.TIMESTAMP);
+            preparedStatement.setNull(column++, Types.INTEGER);
+            preparedStatement.setNull(column++, Types.BIGINT);
+            preparedStatement.setNull(column++, Types.INTEGER);
+            preparedStatement.setNull(column++, Types.VARCHAR);
         }
-        return i;
+        return column;
     }
 
     public Root getProducts() throws SQLException, VariableException, CreateError {
-        reOpenConnection();
+
         Statement statement = getConnection().createStatement();
         statement.execute("SELECT * FROM " + name);
         Root root = new Root();

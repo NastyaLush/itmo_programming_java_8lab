@@ -38,6 +38,7 @@ public class InsertNull extends AbstractCommand {
         return new Response("insert null was executed");
     }
 
+    @Override
     public Response execute(String arg, Root root) {
         return new ResponseWithError("insert null can not be executed");
     }

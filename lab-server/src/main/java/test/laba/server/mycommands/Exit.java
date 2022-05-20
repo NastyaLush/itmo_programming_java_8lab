@@ -15,6 +15,7 @@ public class Exit extends AbstractCommand {
     /**
      * returns exit
      */
+    @Override
     public Response execute(String arg, Root root) {
         return new Response("exit");
     }

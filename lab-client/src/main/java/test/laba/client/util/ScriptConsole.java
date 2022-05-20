@@ -29,6 +29,7 @@ public class ScriptConsole extends Console {
      * scan a line from script
      * @return line from script
      */
+    @Override
     public String scanner()  {
         String command;
         try {
@@ -43,6 +44,7 @@ public class ScriptConsole extends Console {
      * print argument to console
      * @param object object for print
      */
+    @Override
     public void print(Object object) {
         System.out.println(object);
     }
@@ -51,15 +53,14 @@ public class ScriptConsole extends Console {
      * print error on console and close file and buffered reader
      * @param object object for print with red text
      */
-    public void  printError(Object object) throws ScriptError {
+    @Override
+    public void  printError(Object object) {
         System.out.println(Colors.RED + object.toString() + Colors.END);
         try {
             fileReader.close();
             reader.close();
         } catch (IOException e) {
-            super.printError("Ошибка при выполнении скрипта");
-        } finally {
-            throw new ScriptError("Невозможно закрыть файл");
+            super.printError("Ошибка при закрытии скрипта");
         }
     }
 
@@ -67,6 +68,7 @@ public class ScriptConsole extends Console {
      * to nothing override from parent class
      * @param object object for asking
      */
+    @Override
     public void ask(Object object) {
     }
 
@@ -75,6 +77,7 @@ public class ScriptConsole extends Console {
      * @param question question for asking
      * @return answer
      */
+    @Override
     public String askFullQuestion(String question) {
         ask(question);
         return scanner();
@@ -85,6 +88,7 @@ public class ScriptConsole extends Console {
      * @param question question for asking
      * @return answer
      */
+    @Override
     public boolean askQuestion(String question) {
         String answer;
         ask(question);

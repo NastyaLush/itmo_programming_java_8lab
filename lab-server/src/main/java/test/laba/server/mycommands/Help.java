@@ -20,6 +20,7 @@ public class Help extends AbstractCommand implements Serializable {
      * output help for available commands
      * @return string with output help for available commands
      */
+    @Override
     public Response execute(String arg, Root root) {
         StringBuilder s = new StringBuilder();
         commands.forEach(command -> s.append(Colors.BlUE).append(command.getName()).append(Colors.END)

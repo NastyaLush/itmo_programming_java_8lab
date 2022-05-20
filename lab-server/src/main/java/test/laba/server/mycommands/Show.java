@@ -18,6 +18,7 @@ public class Show extends AbstractCommand {
      * @param root object contained collection values
      * @return string with info about values
      */
+    @Override
     public Response execute(String arg, Root root) {
         return new Response(root.showCollection());
     }

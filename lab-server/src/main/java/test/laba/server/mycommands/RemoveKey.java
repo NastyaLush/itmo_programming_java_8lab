@@ -25,6 +25,7 @@ public class RemoveKey extends AbstractCommand {
      * @param arg  key for searching
      * @param root object contained collection values
      */
+    @Override
     public Response execute(String arg, Root root) {
         return new ResponseWithError("Remove_Key can not be executed");
     }

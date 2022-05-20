@@ -66,15 +66,17 @@ public class ServerApp {
 
 
         LOGGER.info("server works");
-        bdstart(Variable.getContains(Variable.HOST), Variable.getContains(Variable.NAME), Variable.getContains(Variable.LOGIN), Variable.getContains(Variable.PASSWORD));
+        bdStart(Variable.getContains(Variable.HOST), Variable.getContains(Variable.NAME), Variable.getContains(Variable.LOGIN), Variable.getContains(Variable.PASSWORD));
         interactivelyModule(serverSocketChannel);
     }
 
 
-    private void bdstart(String dbHost, String dbName, String dbUser, String dbPassword) throws SQLException, VariableException, CreateError {
+    private void bdStart(String dbHost, String dbName, String dbUser, String dbPassword) throws SQLException, VariableException, CreateError {
         LOGGER.info("BD was connected");
         bdUsersManager = new BDUsersManager("users", dbHost, dbName, dbUser, dbPassword);
+        bdUsersManager.createTable();
         bdManager = new BDManager("products", dbHost, dbName, dbUser, dbPassword);
+        bdManager.createTable();
         commandsManager = new CommandsManager(bdManager, bdUsersManager);
 
     }
@@ -240,6 +242,7 @@ public class ServerApp {
         Client(SocketChannel socketChannel) {
             this.socketChannel = socketChannel;
         }
+
 
         @Override
         public void run() {

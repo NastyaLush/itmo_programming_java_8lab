@@ -22,8 +22,8 @@ import java.util.stream.Collectors;
 @XmlRootElement(name = "root")
 public class Root {
     @XmlTransient
-    private ZonedDateTime dateOfCreation;
-    private volatile HashMap<Long, Product> products = new HashMap<>();
+    private volatile ZonedDateTime dateOfCreation;
+    private HashMap<Long, Product> products = new HashMap<>();
 
     /**
      * the constructor, create only date creation
@@ -46,7 +46,7 @@ public class Root {
         this.products = products;
     }
 
-    public HashMap<Long, Product> getProducts() {
+    public synchronized HashMap<Long, Product> getProducts() {
         return products;
     }
 
@@ -58,11 +58,11 @@ public class Root {
      * @param key key for searching
      * @return product wish key equal to argument
      */
-    public Product getProductByKey(Long key) {
+    public synchronized Product getProductByKey(Long key) {
         return products.get(key);
     }
 
-    public boolean isExistProductWithKey(Long key) {
+    public synchronized boolean isExistProductWithKey(Long key) {
         return products.containsKey(key);
     }
 
@@ -70,7 +70,7 @@ public class Root {
      * @param id id for searching
      * @return key of product by id
      */
-    public Long getKeyOnIDIfBelongsToUser(Long id, Long ownerId) {
+    public synchronized Long getKeyOnIDIfBelongsToUser(Long id, Long ownerId) {
         AtomicReference<Long> answer = new AtomicReference<>();
         products.entrySet().stream().filter(x -> x.getValue().getId() == id && x.getValue().getOwnerID().equals(ownerId)).limit(1).forEach(e -> answer.set(e.getKey()));
         return answer.get();
@@ -104,7 +104,7 @@ public class Root {
      * @param id id for searching
      * @return true if product of collection contains this id and false in another case
      */
-    public boolean containsIDAndBelongsToUser(Long id, Long ownerID) {
+    public synchronized boolean containsIDAndBelongsToUser(Long id, Long ownerID) {
         return products.values().stream().anyMatch(e -> e.getId() == id && e.getOwnerID().equals(ownerID));
     }
 
@@ -121,7 +121,7 @@ public class Root {
      *
      * @return string with information about collection
      */
-    public String infoAboutCollection() {
+    public synchronized String infoAboutCollection() {
         return "Class of collection: " + getProducts().getClass()
                 + "\nDate of initialization: " + getDateOfCreation()
                 + "\nNumber of elements: " + getProducts().size();
@@ -132,7 +132,7 @@ public class Root {
      *
      * @param unitOfMeasure argument for removing
      */
-    public Long getKeyByUnitOfMeasure(UnitOfMeasure unitOfMeasure, Long id) {
+    public synchronized Long getKeyByUnitOfMeasure(UnitOfMeasure unitOfMeasure, Long id) {
         PrimitiveIterator.OfLong stream = products.entrySet()
                 .stream()
                 .filter(x -> x.getValue().getUnitOfMeasure() == unitOfMeasure && x.getValue().getOwnerID().equals(id))
@@ -153,7 +153,7 @@ public class Root {
         products.entrySet().removeIf(entry -> product.compareTo(entry.getValue()) < 0 && entry.getValue().getOwnerID().equals(id));
     }
 
-    public Set<Long> getProductsKeysWhichLessThanThisAndBelongsUser(Product product, Long id) {
+    public synchronized Set<Long> getProductsKeysWhichLessThanThisAndBelongsUser(Product product, Long id) {
         return products.entrySet().stream()
                 .filter(entry -> product.compareTo(entry.getValue()) < 0 && entry.getValue().getOwnerID().equals(id)).map(Map.Entry::getKey)
                 .collect(Collectors.toSet());
@@ -184,7 +184,9 @@ public class Root {
      */
     public String showCollection() {
         StringBuilder s = new StringBuilder(Colors.BlUE + "Products: \n" + Colors.END);
-        products.forEach((key, value) -> s.append("Ключ: ").append(key).append(" ").append(value).append("\n"));
+        synchronized (this) {
+            products.forEach((key, value) -> s.append("Ключ: ").append(key).append(" ").append(value).append("\n"));
+        }
         return s.toString();
     }
 
@@ -193,14 +195,16 @@ public class Root {
      */
     public double sumOfManufactureCost() {
         double answer = 0.0;
-        answer += products.values().stream().mapToDouble(Product::getManufactureCost).sum();
+        synchronized (this) {
+            answer += products.values().stream().mapToDouble(Product::getManufactureCost).sum();
+        }
         return answer;
     }
 
     /**
      * @return hashmap where keys- field value price in product and values- count of these products with this price
      */
-    public Map<Long, Long> groupCountingByPrice() {
+    public synchronized Map<Long, Long> groupCountingByPrice() {
         return products.values()
                 .stream().map(Product::getPrice).distinct().collect(Collectors.toMap(e -> e, e -> products.values()
                         .stream().map(Product::getPrice).filter(e::equals).count()));
@@ -209,7 +213,7 @@ public class Root {
 
 
     @Override
-    public String toString() {
+    public synchronized String toString() {
         return "Root{"
                 + "products=" + products
                 + ", dateOfLastModification=" + dateOfCreation + '}';

@@ -24,6 +24,7 @@ public class Clear extends AbstractCommand {
      *
      * @param root object contained collection values
      */
+    @Override
     public Response execute(String arg, Root root) {
         try {
             bdManager.clear();

@@ -24,6 +24,7 @@ public class RemoveLower extends AbstractCommand {
     /**
      * @param root object contained collection values
      */
+    @Override
     public Response execute(String arg, Root root) {
         return new ResponseWithError("command can't be executed");
     }
