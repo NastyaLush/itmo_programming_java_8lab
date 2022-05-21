@@ -105,10 +105,7 @@ public class ClientApp {
         LOGGER.fine("sent unit command starts");
         Values value = valuesOfCommands.get(command[0]);
         Response response = null;
-        boolean isWrongArguments = true;
-        while (isWrongArguments) {
             try {
-                isWrongArguments = false;
                 switch (value) {
                     case PRODUCT:
                         response = new Response(login, password, command[0], VariableParsing.toLongNumber(command[1]), new ConsoleParsing(console2).parsProductFromConsole());
@@ -130,11 +127,8 @@ public class ClientApp {
                         break;
                 }
             } catch (VariableException | IllegalArgumentException | CreateError | NullPointerException | ClassNotFoundException e) {
-                console2.printError("repeat writing, create error\n" + e.getMessage());
-                isWrongArguments = true;
-                command[1] = console2.read();
+                console2.printError("repeat writing\n" + e.getMessage());
             }
-        }
         LOGGER.fine("the unique command was send");
         return response;
     }
@@ -144,6 +138,9 @@ public class ClientApp {
         Response response;
         if (valuesOfCommands.containsKey(command[0].trim().toLowerCase())) {
             response = sendUniqueCommand(command, console2);
+            if (response == null) {
+                isNormalUpdateID = false;
+            }
         } else {
             response = new Response(login, password, command[0], command[1]);
         }
