@@ -2,7 +2,6 @@ package test.laba.client.util;
 
 
 import test.laba.common.IO.Colors;
-import test.laba.common.exception.ScriptError;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

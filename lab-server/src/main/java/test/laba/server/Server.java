@@ -40,7 +40,7 @@ public final class Server {
                 } catch (VariableException | CreateError e) {
                     LOGGER.warning(Util.giveColor(Colors.RED, "impossible to run server because of mistake while downland products: " + e.getMessage()));
                 } catch (SQLException e) {
-                    e.printStackTrace();
+                   // e.printStackTrace();
                     LOGGER.warning(Util.giveColor(Colors.RED, "impossible to run server because of troubles with BD: " + e.getMessage()
                     + "please check environment variables: host, login, password and name(it's meaning name of bd)"));
                 } catch (NoSuchAlgorithmException e) {
