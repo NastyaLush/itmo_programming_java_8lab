@@ -55,40 +55,41 @@ public class BDManager extends TableOperations {
 
     @Override
     public void createTable() throws SQLException {
-    openConnection();
-    Statement statement = getConnection().createStatement();
-    statement.execute("CREATE TABLE IF NOT EXISTS " + this.name + " ("
-            + "id serial PRIMARY KEY,"
-            + "key BIGINT NOT NULL UNIQUE,"
-            + "name varchar(100) NOT NULL,"
-            + "coordinate_x INT NOT NULL CHECK(coordinate_x>-233),"
-            + "coordinate_y DOUBLE precision NOT NULL,"
-            + "creation_date TIMESTAMP NOT NULL,"
-            + "price BIGINT NOT NULL CHECK(price>0),"
-            + "manufacture_cost INT,"
-            + "unit_of_measure varchar(100) NOT NULL CHECK (unit_of_measure IN ('PCS','MILLILITERS','GRAMS')),"
-            + "person_name varchar(100),"
-            + "person_birthday TIMESTAMP,"
-            + "person_height INT CHECK(person_height>0),"
-            + "location_x BIGINT,"
-            + "location_y INT,"
-            + "location_name varchar(100),"
-            + "creatorID BIGINT NOT NULL REFERENCES users (id))"
-
-    );
-
-    statement.close();
-    LOGGER.info("the table with products was created");
-}
-
-
-    @Override
-    public void clear() throws SQLException {
+        openConnection();
         Statement statement = getConnection().createStatement();
-        synchronized (this) {
-            statement.execute("DELETE FROM " + name);
-        }
+        statement.execute("CREATE TABLE IF NOT EXISTS " + this.name + " ("
+                + "id serial PRIMARY KEY,"
+                + "key BIGINT NOT NULL UNIQUE,"
+                + "name varchar(100) NOT NULL,"
+                + "coordinate_x INT NOT NULL CHECK(coordinate_x>-233),"
+                + "coordinate_y DOUBLE precision NOT NULL,"
+                + "creation_date TIMESTAMP NOT NULL,"
+                + "price BIGINT NOT NULL CHECK(price>0),"
+                + "manufacture_cost INT,"
+                + "unit_of_measure varchar(100) NOT NULL CHECK (unit_of_measure IN ('PCS','MILLILITERS','GRAMS')),"
+                + "person_name varchar(100),"
+                + "person_birthday TIMESTAMP,"
+                + "person_height INT CHECK(person_height>0),"
+                + "location_x BIGINT,"
+                + "location_y INT,"
+                + "location_name varchar(100),"
+                + "creatorID BIGINT NOT NULL REFERENCES users (id))"
+
+        );
+
         statement.close();
+        LOGGER.info("the table with products was created");
+    }
+
+
+    public void clear(Long id) throws SQLException {
+        PreparedStatement preparedStatement = getConnection().prepareStatement("DELETE FROM " + name + " WHERE creatorID=?");
+        preparedStatement.setLong(1, id);
+        synchronized (this) {
+            preparedStatement.execute();
+        }
+        writeContains();
+        preparedStatement.close();
     }
 
     public synchronized void removeLower(String login, Set<Long> keys, Root root, BDUsersManager bdUsersManager) {
@@ -125,16 +126,14 @@ public class BDManager extends TableOperations {
         }
 
     }
+
     public boolean checkOnKeyAnaIDAndDelete(Long key, Long id, String deleteQuery, String selectQuery) throws SQLException, WrongUsersData {
-        /*String deleteQuery = "DELETE FROM " + this.name + " WHERE key = ? AND creatorID = ?";
-        String selectQuery = "SELECT * FROM " + this.name + " WHERE key = ? AND creatorID = ?";*/
         synchronized (this) {
             try (PreparedStatement preparedStatement = getConnection().prepareStatement(selectQuery)) {
                 preparedStatement.setLong(1, (key));
                 preparedStatement.setLong(2, id);
                 preparedStatement.execute();
                 if (preparedStatement.getResultSet().next()) {
-                   // System.out.println("sdksdk");
                     PreparedStatement ps = getConnection().prepareStatement(deleteQuery);
                     ps.setLong(1, (key));
                     ps.setLong(2, id);

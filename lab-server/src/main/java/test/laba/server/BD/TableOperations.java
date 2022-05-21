@@ -16,9 +16,7 @@ public abstract class TableOperations {
     protected final String dbUser;
     protected final String dbPassword;
     private Connection connection;
-    private boolean isConnected = false;
 
-    //void add(Object objetct) throws SQLException; // создание связей между таблицами
     public TableOperations(String name, String dbHost, String dbName, String dbUser, String dbPassword) {
         this.name = name;
         this.dbUser = dbUser;
@@ -32,7 +30,6 @@ public abstract class TableOperations {
             connection = DriverManager.getConnection("jdbc:postgresql://"
                     + dbHost + '/'
                     + dbName, dbUser, dbPassword);
-            isConnected = true;
         }
     }
 
@@ -78,11 +75,4 @@ public abstract class TableOperations {
         statement.close();
         LOGGER.info("the table " + name + " was deleted");
     }
-
-   /* public boolean isConnected() {
-        if(isConnected){
-            return true;
-        }
-        throw new NoConnectionWithDB("The DB wasn't connected");
-    }*/
 }

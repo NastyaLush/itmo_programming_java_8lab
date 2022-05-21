@@ -13,7 +13,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * history command
  */
 public class History extends AbstractCommand {
-    private Deque<String> history = new ArrayDeque<>();
+    private final Deque<String> history = new ArrayDeque<>();
     private Integer i = 0;
     private  final  int numberOfProducts = 10;
     private final ReadWriteLock lock = new ReentrantReadWriteLock();

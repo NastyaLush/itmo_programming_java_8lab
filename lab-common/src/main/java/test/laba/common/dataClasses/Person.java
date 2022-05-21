@@ -4,8 +4,6 @@ package test.laba.common.dataClasses;
 import test.laba.common.exception.CreateError;
 import test.laba.common.exception.VariableException;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.time.DateTimeException;
 import java.time.LocalDate;
@@ -19,13 +17,13 @@ import java.util.Comparator;
 /**
  * data class
  */
-@XmlRootElement(name = "owner")
 public class Person implements Comparable<Person>, Serializable {
     private String name; //Поле не может быть null, Строка не может быть пустой
     private java.time.ZonedDateTime birthday; //Поле не может быть null
     private Integer height; //Значение поля должно быть больше 0
     private Location location; //Поле не может быть null
 
+    //using for parsing
     public  Person() {
     }
 
@@ -77,7 +75,6 @@ public class Person implements Comparable<Person>, Serializable {
     public void setBirthday(ZonedDateTime birthday) {
         this.birthday = birthday;
     }
-    @XmlElement
     public void setBirthday(String birthday) throws VariableException {
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
@@ -100,10 +97,6 @@ public class Person implements Comparable<Person>, Serializable {
         this.location = location;
     }
 
-    public boolean isRightPerson() {
-
-        return name != null && !"".equals(name) && birthday != null && height > 0 && location !=  null && location.isRightLocation();
-    }
 
     @Override
     public String toString() {

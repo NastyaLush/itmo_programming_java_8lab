@@ -29,11 +29,11 @@ public class Wrapper {
 
     public void sent(BasicResponse response) throws IOException {
         LOGGER.fine("response try to sent");
-        ByteBuffer oute = ObjectWrapper.serialize(response);
-        out.write(oute.array());
+        ByteBuffer byteBuffer = ObjectWrapper.serialize(response);
+        out.write(byteBuffer.array());
         LOGGER.fine("response was sent");
-        oute.clear();
-        oute.flip();
+        byteBuffer.clear();
+        byteBuffer.flip();
 
     }
 

@@ -17,18 +17,19 @@ import java.util.HashMap;
  * class is responsible for implementation commands
  */
 public class CommandsManager {
-    private Root root;
-    private HashMap<String, AbstractCommand> commands = new HashMap<>();
+    private final Root root;
+    private final HashMap<String, AbstractCommand> commands = new HashMap<>();
     private final HashMap<String, Values> commandValues = new HashMap<>();
-    private History history;
+    private final History history;
     private InsertNull insertNull;
     private RemoveAnyByUnitOfMeasure removeAnyByUnitOfMeasure;
     private RemoveKey removeKey;
     private RemoveLower removeLower;
     private RemoveLowerKey removeLowerKey;
     private UpdateID updateID;
-    private BDManager bdManager;
-    private BDUsersManager bdUsersManager;
+    private Clear clear;
+    private final BDManager bdManager;
+    private final BDUsersManager bdUsersManager;
 
     /**
      * create command classes
@@ -68,7 +69,7 @@ public class CommandsManager {
         Help help = new Help();
         commands.put(help.getName().toLowerCase(), help);
         help.setCommands(commands.values());
-        Clear clear = new Clear(bdManager);
+        this.clear = new Clear();
         commands.put(clear.getName().toLowerCase(), clear);
         ExecuteScript executeScript = new ExecuteScript();
         commands.put(executeScript.getName().toLowerCase(), executeScript);
@@ -116,20 +117,15 @@ public class CommandsManager {
                 }
                 return response1;
             }
+            if ("Clear".equals(command.getName())) {
+                return clear.execute(response, root, bdUsersManager, bdManager);
+            }
             return command.execute(response.getMessage(), root);
         } else {
             return new ResponseWithError("Данной команды не существует, проверьте корректность "
                     + "данных или введите help для получения списка команд,вы ввели " + response.getCommand().trim());
         }
     }
-/*
-    public void save() {
-        save.execute("", root);
-    }
-    public void saveUsers(UsersHandler usersHandler) throws ParsException, IOException {
-        save.save(usersHandler);
-    }*/
-
 
     public HashMap<String, Values> getCommandValues() {
         return commandValues;

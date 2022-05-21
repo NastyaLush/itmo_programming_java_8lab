@@ -3,8 +3,8 @@ package test.laba.common.responses;
 import java.io.Serializable;
 
 public abstract class BasicResponse implements Serializable {
-    private static final long serialVersionUID = 11;
-    private String command;
+    private static final long serialVersionUID = 10;
+    private final String command;
     private String login;
     private String password;
 

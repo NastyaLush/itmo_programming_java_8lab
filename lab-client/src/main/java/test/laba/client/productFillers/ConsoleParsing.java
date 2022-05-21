@@ -16,7 +16,7 @@ import java.time.ZonedDateTime;
  * the class is responsible for work with creating products from console
  */
 public class ConsoleParsing {
-    private Console console;
+    private final Console console;
 
     public ConsoleParsing(Console console) {
         this.console = console;

@@ -34,7 +34,6 @@ public class RemoveLower extends AbstractCommand {
         try {
             Long id = bdUsersManager.getId(basicResponse.getLogin());
             Set<Long> keys = root.getProductsKeysWhichLessThanThisAndBelongsUser(product, id);
-            System.out.println(keys);
             bdManager.removeLower(basicResponse.getLogin(), keys, root, bdUsersManager);
             root.removeIfLess(product, id);
             return new Response("command was executed");

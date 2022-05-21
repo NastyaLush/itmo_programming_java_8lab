@@ -17,6 +17,7 @@ public class Location implements Comparable<Location>, Serializable {
     private Integer y;
     private String name; //Строка не может быть пустой, Поле не может быть null
 
+    //for parsing
     public Location() {
     }
     @SuppressWarnings("all")
@@ -67,9 +68,6 @@ public class Location implements Comparable<Location>, Serializable {
                 + "x=" + x
                 + ", y=" + y
                 + ", name=" + name;
-    }
-    public boolean isRightLocation() {
-        return name != null && !"".equals(name);
     }
 
     @Override

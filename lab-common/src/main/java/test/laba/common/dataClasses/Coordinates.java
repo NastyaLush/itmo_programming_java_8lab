@@ -65,9 +65,6 @@ public class Coordinates implements Comparable<Coordinates>, Serializable {
                 + ", y=" + y
                 + '}';
     }
-    public boolean isRightCoordinates() {
-        return x > minNumberOfX && y != null;
-    }
 
     @Override
     public int compareTo(Coordinates o) {

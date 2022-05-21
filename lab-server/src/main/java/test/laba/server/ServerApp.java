@@ -67,7 +67,7 @@ public class ServerApp {
 
         LOGGER.info("server works");
         if (Variable.HOST != null && Variable.NAME != null && Variable.LOGIN != null && Variable.PASSWORD != null) {
-            bdStart(Variable.HOST, Variable.NAME, Variable.LOGIN, Variable.PASSWORD);
+            bdStart();
             interactivelyModule(serverSocketChannel);
         } else {
             LOGGER.warning(Util.giveColor(Colors.RED, "Please check environment variables : host, name, login, password and restart server again"));
@@ -75,11 +75,11 @@ public class ServerApp {
     }
 
 
-    private void bdStart(String dbHost, String dbName, String dbUser, String dbPassword) throws SQLException, VariableException, CreateError {
+    private void bdStart() throws SQLException, VariableException, CreateError {
         LOGGER.info("BD was connected");
-        bdUsersManager = new BDUsersManager("users", dbHost, dbName, dbUser, dbPassword);
+        bdUsersManager = new BDUsersManager("users", Variable.HOST, Variable.NAME, Variable.LOGIN, Variable.PASSWORD);
         bdUsersManager.createTable();
-        bdManager = new BDManager("products", dbHost, dbName, dbUser, dbPassword);
+        bdManager = new BDManager("products", Variable.HOST, Variable.NAME, Variable.LOGIN, Variable.PASSWORD);
         bdManager.createTable();
         commandsManager = new CommandsManager(bdManager, bdUsersManager);
 
@@ -240,7 +240,6 @@ public class ServerApp {
     private class Client implements Runnable {
 
         private final SocketChannel socketChannel;
-        private boolean running = true;
         private boolean isReade = false;
 
         Client(SocketChannel socketChannel) {
@@ -252,7 +251,7 @@ public class ServerApp {
         public void run() {
             LOGGER.info(Util.giveColor(Colors.BlUE, "the new client was connected and start execute"));
             try {
-                while (running && !Thread.currentThread().isInterrupted()) {
+                while (!Thread.currentThread().isInterrupted()) {
                     read();
                 }
             } catch (IOException | ClassNotFoundException | NoSuchAlgorithmException e) {

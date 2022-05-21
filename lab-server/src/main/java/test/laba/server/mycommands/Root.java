@@ -112,8 +112,12 @@ public class Root {
     /**
      * the method which clear collection
      */
-    public synchronized void clear() {
-        products.clear();
+    public synchronized void clear(Long id) {
+        products.entrySet()
+                .stream()
+                .filter(e -> e.getValue().getOwnerID().equals(id))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
+                .forEach((key, value) -> products.remove(key));
     }
 
     /**

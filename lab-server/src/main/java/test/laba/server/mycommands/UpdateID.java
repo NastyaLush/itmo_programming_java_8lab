@@ -29,7 +29,7 @@ public class UpdateID extends AbstractCommand {
      * @param root object contained collection
      */
     public Response execute(Response response, Root root, BDUsersManager bdUsersManager, String login, BDManager bdManager) {
-        Response answer = null;
+        Response answer;
         if (response.isFlag()) {
             try {
                 Long key = root.getKeyOnIDIfBelongsToUser(response.getKey(), bdUsersManager.getId(login));

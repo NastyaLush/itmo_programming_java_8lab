@@ -7,7 +7,7 @@ import test.laba.common.util.Values;
 import java.util.Map;
 
 public class Response extends RegisterResponse {
-    private static final long serialVersionUID = 11;
+    private static final long serialVersionUID = 10;
     private Map<String, Values> collection = null;
     private Product product;
     private UnitOfMeasure unitOfMeasure;

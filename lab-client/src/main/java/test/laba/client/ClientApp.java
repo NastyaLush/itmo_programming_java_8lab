@@ -33,10 +33,10 @@ import java.util.logging.Level;
 public class ClientApp {
     public static final Logger LOGGER = Logger.getLogger(ClientApp.class.getName());
     private final Console console = new Console();
-    private Map valuesOfCommands = null;
+    private Map<String, Values> valuesOfCommands = null;
     private Wrapper wrapper;
     private boolean isNormalUpdateID = true;
-    private HashSet<String> executeScriptFiles = new HashSet<>();
+    private final HashSet<String> executeScriptFiles = new HashSet<>();
     private boolean isExitInExecuteScript = false;
     private String login;
     private String password;
@@ -101,9 +101,9 @@ public class ClientApp {
         return response;
     }
 
-    public Response sendUniqCommand(String[] command, Console console2) throws IOException {
+    public Response sendUniqueCommand(String[] command, Console console2) throws IOException {
         LOGGER.fine("sent unit command starts");
-        Values value = (Values) valuesOfCommands.get(command[0]);
+        Values value = valuesOfCommands.get(command[0]);
         Response response = null;
         boolean isWrongArguments = true;
         while (isWrongArguments) {
@@ -143,7 +143,7 @@ public class ClientApp {
         LOGGER.fine("send and receive starts ");
         Response response;
         if (valuesOfCommands.containsKey(command[0].trim().toLowerCase())) {
-            response = sendUniqCommand(command, console2);
+            response = sendUniqueCommand(command, console2);
         } else {
             response = new Response(login, password, command[0], command[1]);
         }

@@ -11,9 +11,13 @@ public enum UnitOfMeasure implements Serializable {
     MILLILITERS("MILLILITERS"),
     GRAMS("GRAMS");
 
-    private String message;
+    private final String message;
 
     UnitOfMeasure(String message) {
         this.message = message;
+    }
+
+    public String getMessage() {
+        return message;
     }
 }
