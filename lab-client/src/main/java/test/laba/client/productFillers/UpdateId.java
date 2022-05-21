@@ -82,13 +82,17 @@ public class UpdateId {
     private void changePerson(Product product) {
         if (console.askQuestion("Хотите изменить owner?(yes/no/да/нет)")) {
             console.ask("Owner: " + product.getOwner());
-            if (product.getOwner() != null) {
-                changeNamePerson(product);
-                changeBirthday(product);
-                changeHeight(product);
-                changeLocation(product);
+            if (!console.askQuestion("Хотите owner сделать null?(yes/no/да/нет)")) {
+                if (product.getOwner() != null) {
+                    changeNamePerson(product);
+                    changeBirthday(product);
+                    changeHeight(product);
+                    changeLocation(product);
+                } else {
+                    product.setOwner(consoleParsing.parsPersonFromConsole());
+                }
             } else {
-                product.setOwner(consoleParsing.parsPersonFromConsole());
+                product.setOwner(null);
             }
         }
     }

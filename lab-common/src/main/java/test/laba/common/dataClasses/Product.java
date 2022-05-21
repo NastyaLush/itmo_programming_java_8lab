@@ -65,29 +65,6 @@ public class  Product implements Comparable<Product>, Serializable {
         }
     }
 
-    //сделан костыль!!!!!!!!!!! надо будет чекнуть и исправить
-/*
-    public Product(long id, String name, Coordinates coordinates, ZonedDateTime creationDate, Long price, Integer manufactureCost, UnitOfMeasure unitOfMeasure, Person owner) throws CreateError {
-        if (name == null || name.isEmpty() || coordinates == null || price == null || price <= 0  || unitOfMeasure == null) {
-            throw new CreateError("Ошибка при создании объекта Product, обратите внимание:\n"
-                    + "    Поле name может быть null и не может быть пустым\n"
-                    + "    Поле coordinates не может быть null\n"
-                    + "    Поле price не может быть null и значение поля должно быть больше 0\n"
-                    + "    Поле unitOfMeasure не может быть null\n"
-                    + "    Поле owner может быть null\n");
-        } else {
-            this.id = id;
-            this.name = name;
-            this.coordinates = coordinates;
-            this.creationDate = creationDate;
-            this.price = price;
-            this.manufactureCost = manufactureCost;
-            this.unitOfMeasure = unitOfMeasure;
-            this.owner = owner;
-        }
-    }
-*/
-
     public Product(long id, String name, Coordinates coordinates, Long price, Integer manufactureCost, UnitOfMeasure unitOfMeasure, Person owner) throws CreateError {
         if (name == null || name.isEmpty() || coordinates == null || price == null || price <= 0  || unitOfMeasure == null) {
             throw new CreateError("Ошибка при создании объекта Product, обратите внимание:\n"
