@@ -32,7 +32,7 @@ public class InsertNull extends AbstractCommand {
             root.setProductWithKey(key, ((Response) basicResponse).getProduct());
         } catch (AlreadyHaveTheseProduct | SQLException e) {
             System.out.println(".....");
-            e.printStackTrace();
+            //e.printStackTrace();
             return new ResponseWithError("impossible to execute because of: " + e.getMessage());
         }
         return new Response("insert null was executed");
