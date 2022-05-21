@@ -33,8 +33,11 @@ public class RemoveKey extends AbstractCommand {
     public Response execute(BasicResponse basicResponse, Root root, BDManager bdManager, BDUsersManager bdUsersManager) {
         long key = ((Response) basicResponse).getKey();
         try {
-            bdManager.removeKey(basicResponse.getLogin(), ((Response) basicResponse).getKey(), root, bdUsersManager);
-            root.remove(key);
+            if (bdManager.removeKey(basicResponse.getLogin(), ((Response) basicResponse).getKey(), root, bdUsersManager)) {
+                root.remove(key);
+            } else {
+                return new Response(Util.giveColor(Colors.BlUE, "the element wasn't deleted"));
+            }
             return new Response(Util.giveColor(Colors.BlUE, "the element was deleted"));
         } catch (SQLException | WrongUsersData e) {
             return new ResponseWithError("the element wasn't deleted because of: " + e.getMessage());

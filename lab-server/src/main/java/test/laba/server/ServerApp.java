@@ -66,8 +66,12 @@ public class ServerApp {
 
 
         LOGGER.info("server works");
-        bdStart(Variable.getContains(Variable.HOST), Variable.getContains(Variable.NAME), Variable.getContains(Variable.LOGIN), Variable.getContains(Variable.PASSWORD));
-        interactivelyModule(serverSocketChannel);
+        if (Variable.HOST != null && Variable.NAME != null && Variable.LOGIN != null && Variable.PASSWORD != null) {
+            bdStart(Variable.HOST, Variable.NAME, Variable.LOGIN, Variable.PASSWORD);
+            interactivelyModule(serverSocketChannel);
+        } else {
+            LOGGER.warning(Util.giveColor(Colors.RED, "Please check environment variables : host, name, login, password and restart server again"));
+        }
     }
 
 
@@ -276,14 +280,14 @@ public class ServerApp {
             responseExecutorPool.submit(() -> {
                 executor.run();
                 responseSenderPool.submit(() -> {
-                        try {
-                            if (!write(executor.getBasicResponse())) {
-                                close();
-                            }
-                        } catch (IOException e) {
-                            LOGGER.warning("impossible to run because of " + e.getMessage());
+                    try {
+                        if (!write(executor.getBasicResponse())) {
                             close();
                         }
+                    } catch (IOException e) {
+                        LOGGER.warning("impossible to run because of " + e.getMessage());
+                        close();
+                    }
                 });
             });
         }

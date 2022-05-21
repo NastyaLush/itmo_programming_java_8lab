@@ -30,19 +30,19 @@ import java.util.logging.Logger;
 public class BDManager extends TableOperations {
     private static final Logger LOGGER = Logger.getLogger(BDManager.class.getName());
     private static final int PARAMETER_OFFSET_KEY = 1;
-    private static final int PARAMETER_OFFSET_NAME = 2;
-    private static final int PARAMETER_OFFSET_COORDINATES_X = 3;
-    private static final int PARAMETER_OFFSET_COORDINATES_Y = 4;
-    private static final int PARAMETER_OFFSET_TIMESTAMP = 5;
-    private static final int PARAMETER_OFFSET_PRICE = 6;
-    private static final int PARAMETER_OFFSET_MANUFACTORY_COST = 7;
-    private static final int PARAMETER_OFFSET_UNIT_OF_MEASURE = 8;
-    private static final int PARAMETER_OFFSET_PERSON_NAME = 9;
-    private static final int PARAMETER_OFFSET_PERSON_BIRTHDAY = 10;
-    private static final int PARAMETER_OFFSET_PERSON_HEIGHT = 11;
-    private static final int PARAMETER_OFFSET_LOCATION_X = 12;
-    private static final int PARAMETER_OFFSET_LOCATION_Y = 13;
-    private static final int PARAMETER_OFFSET_LOCATION_NAME = 14;
+    private static final int PARAMETER_OFFSET_NAME = 1;
+    private static final int PARAMETER_OFFSET_COORDINATES_X = 2;
+    private static final int PARAMETER_OFFSET_COORDINATES_Y = 3;
+    private static final int PARAMETER_OFFSET_TIMESTAMP = 4;
+    private static final int PARAMETER_OFFSET_PRICE = 5;
+    private static final int PARAMETER_OFFSET_MANUFACTURE_COST = 6;
+    private static final int PARAMETER_OFFSET_UNIT_OF_MEASURE = 7;
+    private static final int PARAMETER_OFFSET_PERSON_NAME = 8;
+    private static final int PARAMETER_OFFSET_PERSON_BIRTHDAY = 9;
+    private static final int PARAMETER_OFFSET_PERSON_HEIGHT = 10;
+    private static final int PARAMETER_OFFSET_LOCATION_X = 11;
+    private static final int PARAMETER_OFFSET_LOCATION_Y = 12;
+    private static final int PARAMETER_OFFSET_LOCATION_NAME = 13;
 
 
     private final String name = "products";
@@ -101,11 +101,13 @@ public class BDManager extends TableOperations {
         });
     }
 
-    public void removeKey(String login, Long key, Root root, BDUsersManager bdUsersManager) throws SQLException, WrongUsersData {
+    public boolean removeKey(String login, Long key, Root root, BDUsersManager bdUsersManager) throws SQLException, WrongUsersData {
         if (root.isExistProductWithKey(key)) {
             long id = bdUsersManager.getId(login);
-
-            checkOnKeyAnaIDAndDelete(key, id);
+            //System.out.println(id);
+            String deleteQuery = "DELETE FROM " + this.name + " WHERE key = ? AND creatorID = ?";
+            String selectQuery = "SELECT * FROM " + this.name + " WHERE key = ? AND creatorID = ?";
+            return checkOnKeyAnaIDAndDelete(key, id, deleteQuery, selectQuery);
         } else {
             throw new WrongUsersData("this key is not exist");
         }
@@ -115,22 +117,24 @@ public class BDManager extends TableOperations {
     public boolean removeLowerKey(BasicResponse response, BDUsersManager bdUsersManager) throws SQLException {
         long id = bdUsersManager.getId(response.getLogin());
         try {
-            //System.out.println(((Response) response).getKey() + " " + id);
-            return checkOnKeyAnaIDAndDelete(((Response) response).getKey(), id);
+            String deleteQuery = "DELETE FROM " + this.name + " WHERE key <= ? AND creatorID = ?";
+            String selectQuery = "SELECT * FROM " + this.name + " WHERE key <= ? AND creatorID = ?";
+            return checkOnKeyAnaIDAndDelete(((Response) response).getKey(), id, deleteQuery, selectQuery);
         } catch (WrongUsersData e) {
             return false;
         }
 
     }
-    public boolean checkOnKeyAnaIDAndDelete(Long key, Long id) throws SQLException, WrongUsersData {
-        String deleteQuery = "DELETE FROM " + this.name + " WHERE key = ? AND creatorID = ?";
-        String selectQuery = "SELECT * FROM " + this.name + " WHERE key = ? AND creatorID = ?";
+    public boolean checkOnKeyAnaIDAndDelete(Long key, Long id, String deleteQuery, String selectQuery) throws SQLException, WrongUsersData {
+        /*String deleteQuery = "DELETE FROM " + this.name + " WHERE key = ? AND creatorID = ?";
+        String selectQuery = "SELECT * FROM " + this.name + " WHERE key = ? AND creatorID = ?";*/
         synchronized (this) {
             try (PreparedStatement preparedStatement = getConnection().prepareStatement(selectQuery)) {
                 preparedStatement.setLong(1, (key));
                 preparedStatement.setLong(2, id);
                 preparedStatement.execute();
                 if (preparedStatement.getResultSet().next()) {
+                   // System.out.println("sdksdk");
                     PreparedStatement ps = getConnection().prepareStatement(deleteQuery);
                     ps.setLong(1, (key));
                     ps.setLong(2, id);
@@ -195,9 +199,9 @@ public class BDManager extends TableOperations {
         preparedStatement.setTimestamp(PARAMETER_OFFSET_TIMESTAMP + beginning, Timestamp.valueOf(product.getCreationDate().format(formatter)));
         preparedStatement.setLong(PARAMETER_OFFSET_PRICE + beginning, product.getPrice());
         if (product.getManufactureCost() != null) {
-            preparedStatement.setInt(PARAMETER_OFFSET_MANUFACTORY_COST + beginning, product.getManufactureCost());
+            preparedStatement.setInt(PARAMETER_OFFSET_MANUFACTURE_COST + beginning, product.getManufactureCost());
         } else {
-            preparedStatement.setNull(PARAMETER_OFFSET_MANUFACTORY_COST + beginning, Types.BIGINT);
+            preparedStatement.setNull(PARAMETER_OFFSET_MANUFACTURE_COST + beginning, Types.BIGINT);
         }
         preparedStatement.setString(PARAMETER_OFFSET_UNIT_OF_MEASURE + beginning, product.getUnitOfMeasure().toString());
         if (product.getOwner() != null) {
@@ -210,7 +214,7 @@ public class BDManager extends TableOperations {
         } else {
             preparedStatement.setNull(PARAMETER_OFFSET_PERSON_NAME + beginning, Types.VARCHAR);
             preparedStatement.setNull(PARAMETER_OFFSET_PERSON_BIRTHDAY + beginning, Types.TIMESTAMP);
-            preparedStatement.setNull(PARAMETER_OFFSET_PERSON_HEIGHT, Types.INTEGER);
+            preparedStatement.setNull(PARAMETER_OFFSET_PERSON_HEIGHT + beginning, Types.INTEGER);
             preparedStatement.setNull(PARAMETER_OFFSET_LOCATION_X + beginning, Types.BIGINT);
             preparedStatement.setNull(PARAMETER_OFFSET_LOCATION_Y + beginning, Types.INTEGER);
             preparedStatement.setNull(PARAMETER_OFFSET_LOCATION_NAME + beginning, Types.VARCHAR);
