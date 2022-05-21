@@ -54,13 +54,13 @@ public class BDUsersManager extends TableOperations {
         String salt = RandomStringUtils.randomAlphanumeric(maxLengthOfSalt);
         long count = Math.round(Math.random() * maxCountOfHash);
         synchronized (this) {
-            int i = 0;
+            int column = 0;
             if (!resultSet.next()) {
                 statement = getConnection().prepareStatement("INSERT INTO " + this.name + "(login,password,salt,count_hash)" + " VALUES (?,?,?,?)" + " RETURNING id");
-                statement.setString(++i, registerResponse.getLogin());
-                statement.setString(++i, Encryption.coding(paper + registerResponse.getPassword() + salt, count));
-                statement.setString(++i, salt);
-                statement.setLong(++i, count);
+                statement.setString(++column, registerResponse.getLogin());
+                statement.setString(++column, Encryption.coding(paper + registerResponse.getPassword() + salt, count));
+                statement.setString(++column, salt);
+                statement.setLong(++column, count);
                 statement.execute();
             } else {
                 throw new AlreadyExistLogin("this login is already exist");

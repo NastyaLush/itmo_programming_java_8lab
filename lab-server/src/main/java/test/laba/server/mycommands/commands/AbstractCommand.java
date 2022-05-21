@@ -21,10 +21,12 @@ public abstract class AbstractCommand implements AbstractCommandInterface {
                 + '}';
     }
 
+    @Override
     public String getDescription() {
         return description;
     }
 
+    @Override
     public String getName() {
         return name;
     }
