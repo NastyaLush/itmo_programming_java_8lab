@@ -16,6 +16,10 @@ import java.util.logging.Logger;
 
 public class BDUsersManager extends TableOperations {
     private static final Logger LOGGER = Logger.getLogger(BDManager.class.getName());
+    private static final int PARAMETER_OFFSET_LOGIN = 1;
+    private static final int PARAMETER_OFFSET_PASSWORD = 2;
+    private static final int PARAMETER_OFFSET_SALT = 3;
+    private static final int PARAMETER_OFFSET_COUNT_HASH = 4;
     private final String name = "users";
     private final String paper = "H@*#admkl";
     private final int maxCountOfHash = 10;
@@ -54,13 +58,13 @@ public class BDUsersManager extends TableOperations {
         String salt = RandomStringUtils.randomAlphanumeric(maxLengthOfSalt);
         long count = Math.round(Math.random() * maxCountOfHash);
         synchronized (this) {
-            int column = 0;
+            //int column = 0;
             if (!resultSet.next()) {
                 statement = getConnection().prepareStatement("INSERT INTO " + this.name + "(login,password,salt,count_hash)" + " VALUES (?,?,?,?)" + " RETURNING id");
-                statement.setString(++column, registerResponse.getLogin());
-                statement.setString(++column, Encryption.coding(paper + registerResponse.getPassword() + salt, count));
-                statement.setString(++column, salt);
-                statement.setLong(++column, count);
+                statement.setString(PARAMETER_OFFSET_LOGIN, registerResponse.getLogin());
+                statement.setString(PARAMETER_OFFSET_PASSWORD, Encryption.coding(paper + registerResponse.getPassword() + salt, count));
+                statement.setString(PARAMETER_OFFSET_SALT, salt);
+                statement.setLong(PARAMETER_OFFSET_COUNT_HASH, count);
                 statement.execute();
             } else {
                 throw new AlreadyExistLogin("this login is already exist");

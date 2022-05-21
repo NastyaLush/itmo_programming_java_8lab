@@ -29,6 +29,22 @@ import java.util.logging.Logger;
 
 public class BDManager extends TableOperations {
     private static final Logger LOGGER = Logger.getLogger(BDManager.class.getName());
+    private static final int PARAMETER_OFFSET_KEY = 1;
+    private static final int PARAMETER_OFFSET_NAME = 2;
+    private static final int PARAMETER_OFFSET_COORDINATES_X = 3;
+    private static final int PARAMETER_OFFSET_COORDINATES_Y = 4;
+    private static final int PARAMETER_OFFSET_TIMESTAMP = 5;
+    private static final int PARAMETER_OFFSET_PRICE = 6;
+    private static final int PARAMETER_OFFSET_MANUFACTORY_COST = 7;
+    private static final int PARAMETER_OFFSET_UNIT_OF_MEASURE = 8;
+    private static final int PARAMETER_OFFSET_PERSON_NAME = 9;
+    private static final int PARAMETER_OFFSET_PERSON_BIRTHDAY = 10;
+    private static final int PARAMETER_OFFSET_PERSON_HEIGHT = 11;
+    private static final int PARAMETER_OFFSET_LOCATION_X = 12;
+    private static final int PARAMETER_OFFSET_LOCATION_Y = 13;
+    private static final int PARAMETER_OFFSET_LOCATION_NAME = 14;
+
+
     private final String name = "products";
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -37,33 +53,33 @@ public class BDManager extends TableOperations {
     }
 
 
-        @Override
-        public void createTable() throws SQLException {
-        openConnection();
-        Statement statement = getConnection().createStatement();
-        statement.execute("CREATE TABLE IF NOT EXISTS " + this.name + " ("
-                + "id serial PRIMARY KEY,"
-                + "key BIGINT NOT NULL UNIQUE,"
-                + "name varchar(100) NOT NULL,"
-                + "coordinate_x INT NOT NULL CHECK(coordinate_x>-233),"
-                + "coordinate_y DOUBLE precision NOT NULL,"
-                + "creation_date TIMESTAMP NOT NULL,"
-                + "price BIGINT NOT NULL CHECK(price>0),"
-                + "manufacture_cost INT,"
-                + "unit_of_measure varchar(100) NOT NULL CHECK (unit_of_measure IN ('PCS','MILLILITERS','GRAMS')),"
-                + "person_name varchar(100),"
-                + "person_birthday TIMESTAMP,"
-                + "person_height INT CHECK(person_height>0),"
-                + "location_x BIGINT,"
-                + "location_y INT,"
-                + "location_name varchar(100),"
-                + "creatorID BIGINT NOT NULL REFERENCES users (id))"
+    @Override
+    public void createTable() throws SQLException {
+    openConnection();
+    Statement statement = getConnection().createStatement();
+    statement.execute("CREATE TABLE IF NOT EXISTS " + this.name + " ("
+            + "id serial PRIMARY KEY,"
+            + "key BIGINT NOT NULL UNIQUE,"
+            + "name varchar(100) NOT NULL,"
+            + "coordinate_x INT NOT NULL CHECK(coordinate_x>-233),"
+            + "coordinate_y DOUBLE precision NOT NULL,"
+            + "creation_date TIMESTAMP NOT NULL,"
+            + "price BIGINT NOT NULL CHECK(price>0),"
+            + "manufacture_cost INT,"
+            + "unit_of_measure varchar(100) NOT NULL CHECK (unit_of_measure IN ('PCS','MILLILITERS','GRAMS')),"
+            + "person_name varchar(100),"
+            + "person_birthday TIMESTAMP,"
+            + "person_height INT CHECK(person_height>0),"
+            + "location_x BIGINT,"
+            + "location_y INT,"
+            + "location_name varchar(100),"
+            + "creatorID BIGINT NOT NULL REFERENCES users (id))"
 
-        );
+    );
 
-        statement.close();
-        LOGGER.info("the table with products was created");
-    }
+    statement.close();
+    LOGGER.info("the table with products was created");
+}
 
 
     @Override
@@ -145,7 +161,7 @@ public class BDManager extends TableOperations {
                 + "location_name = ?"
                 + "WHERE key = ?";
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(query)) {
-            int column = preparing(preparedStatement, product, 1);
+            int column = preparing(preparedStatement, product, 0);
             preparedStatement.setLong(column, key);
             synchronized (this) {
                 preparedStatement.execute();
@@ -158,8 +174,8 @@ public class BDManager extends TableOperations {
         String query = "INSERT INTO products VALUES ("
                 + "    default,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) RETURNING id";
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(query)) {
-            preparedStatement.setLong(1, key);
-            int column = preparing(preparedStatement, ((Response) registerResponse).getProduct(), 2);
+            preparedStatement.setLong(PARAMETER_OFFSET_KEY, key);
+            int column = preparing(preparedStatement, ((Response) registerResponse).getProduct(), 1);
             preparedStatement.setLong(column, ((Response) registerResponse).getProduct().getOwnerID());
             synchronized (this) {
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -173,35 +189,35 @@ public class BDManager extends TableOperations {
     }
 
     public int preparing(PreparedStatement preparedStatement, Product product, int beginning) throws SQLException {
-        int column = beginning;
-        preparedStatement.setString(column++, product.getName());
-        preparedStatement.setInt(column++, product.getCoordinates().getX());
-        preparedStatement.setFloat(column++, product.getCoordinates().getY());
-        preparedStatement.setTimestamp(column++, Timestamp.valueOf(product.getCreationDate().format(formatter)));
-        preparedStatement.setLong(column++, product.getPrice());
+        preparedStatement.setString(PARAMETER_OFFSET_NAME + beginning, product.getName());
+        preparedStatement.setInt(PARAMETER_OFFSET_COORDINATES_X + beginning, product.getCoordinates().getX());
+        preparedStatement.setFloat(PARAMETER_OFFSET_COORDINATES_Y + beginning, product.getCoordinates().getY());
+        preparedStatement.setTimestamp(PARAMETER_OFFSET_TIMESTAMP + beginning, Timestamp.valueOf(product.getCreationDate().format(formatter)));
+        preparedStatement.setLong(PARAMETER_OFFSET_PRICE + beginning, product.getPrice());
         if (product.getManufactureCost() != null) {
-            preparedStatement.setInt(column++, product.getManufactureCost());
+            preparedStatement.setInt(PARAMETER_OFFSET_MANUFACTORY_COST + beginning, product.getManufactureCost());
         } else {
-            preparedStatement.setNull(column++, Types.BIGINT);
+            preparedStatement.setNull(PARAMETER_OFFSET_MANUFACTORY_COST + beginning, Types.BIGINT);
         }
-        preparedStatement.setString(column++, product.getUnitOfMeasure().toString());
+        preparedStatement.setString(PARAMETER_OFFSET_UNIT_OF_MEASURE + beginning, product.getUnitOfMeasure().toString());
         if (product.getOwner() != null) {
-            preparedStatement.setString(column++, product.getOwner().getName());
-            preparedStatement.setTimestamp(column++, Timestamp.valueOf(product.getOwner().getBirthday().format(formatter)));
-            preparedStatement.setInt(column++, product.getOwner().getHeight());
-            preparedStatement.setLong(column++, product.getOwner().getLocation().getX());
-            preparedStatement.setInt(column++, product.getOwner().getLocation().getY());
-            preparedStatement.setString(column++, product.getOwner().getLocation().getName());
+            preparedStatement.setString(PARAMETER_OFFSET_PERSON_NAME + beginning, product.getOwner().getName());
+            preparedStatement.setTimestamp(PARAMETER_OFFSET_PERSON_BIRTHDAY + beginning, Timestamp.valueOf(product.getOwner().getBirthday().format(formatter)));
+            preparedStatement.setInt(PARAMETER_OFFSET_PERSON_HEIGHT + beginning, product.getOwner().getHeight());
+            preparedStatement.setLong(PARAMETER_OFFSET_LOCATION_X + beginning, product.getOwner().getLocation().getX());
+            preparedStatement.setInt(PARAMETER_OFFSET_LOCATION_Y + beginning, product.getOwner().getLocation().getY());
+            preparedStatement.setString(PARAMETER_OFFSET_LOCATION_NAME + beginning, product.getOwner().getLocation().getName());
         } else {
-            preparedStatement.setNull(column++, Types.VARCHAR);
-            preparedStatement.setNull(column++, Types.TIMESTAMP);
-            preparedStatement.setNull(column++, Types.INTEGER);
-            preparedStatement.setNull(column++, Types.BIGINT);
-            preparedStatement.setNull(column++, Types.INTEGER);
-            preparedStatement.setNull(column++, Types.VARCHAR);
+            preparedStatement.setNull(PARAMETER_OFFSET_PERSON_NAME + beginning, Types.VARCHAR);
+            preparedStatement.setNull(PARAMETER_OFFSET_PERSON_BIRTHDAY + beginning, Types.TIMESTAMP);
+            preparedStatement.setNull(PARAMETER_OFFSET_PERSON_HEIGHT, Types.INTEGER);
+            preparedStatement.setNull(PARAMETER_OFFSET_LOCATION_X + beginning, Types.BIGINT);
+            preparedStatement.setNull(PARAMETER_OFFSET_LOCATION_Y + beginning, Types.INTEGER);
+            preparedStatement.setNull(PARAMETER_OFFSET_LOCATION_NAME + beginning, Types.VARCHAR);
         }
-        return column;
+        return PARAMETER_OFFSET_LOCATION_NAME + beginning + 1;
     }
+
 
     public Root getProducts() throws SQLException, VariableException, CreateError {
 
