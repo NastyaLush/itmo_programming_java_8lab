@@ -19,10 +19,12 @@ public class RegisterResponse extends BasicResponse {
 
     }
 
+    @Override
     public String getLogin() {
         return login;
     }
 
+    @Override
     public String getPassword() {
         return password;
     }
