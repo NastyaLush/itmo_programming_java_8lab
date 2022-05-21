@@ -99,6 +99,7 @@ public class BDManager extends TableOperations {
     public boolean removeLowerKey(BasicResponse response, BDUsersManager bdUsersManager) throws SQLException {
         long id = bdUsersManager.getId(response.getLogin());
         try {
+            //System.out.println(((Response) response).getKey() + " " + id);
             return checkOnKeyAnaIDAndDelete(((Response) response).getKey(), id);
         } catch (WrongUsersData e) {
             return false;
