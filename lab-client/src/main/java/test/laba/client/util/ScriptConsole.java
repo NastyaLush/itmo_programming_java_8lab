@@ -2,6 +2,7 @@ package test.laba.client.util;
 
 
 import test.laba.common.IO.Colors;
+import test.laba.common.exception.ScriptError;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -16,7 +17,8 @@ public class ScriptConsole extends Console {
 
     /**
      * the constructor accept file for reading and buffered reader
-     * @param reader buffered reader
+     *
+     * @param reader     buffered reader
      * @param fileReader file reader
      */
     public ScriptConsole(BufferedReader reader, FileReader fileReader) {
@@ -26,10 +28,11 @@ public class ScriptConsole extends Console {
 
     /**
      * scan a line from script
+     *
      * @return line from script
      */
     @Override
-    public String scanner()  {
+    public String scanner() {
         String command;
         try {
             command = (reader.readLine().trim());
@@ -41,6 +44,7 @@ public class ScriptConsole extends Console {
 
     /**
      * print argument to console
+     *
      * @param object object for print
      */
     @Override
@@ -50,21 +54,25 @@ public class ScriptConsole extends Console {
 
     /**
      * print error on console and close file and buffered reader
+     *
      * @param object object for print with red text
      */
     @Override
-    public void  printError(Object object) {
+    public void printError(Object object) {
         System.out.println(Colors.RED + object.toString() + Colors.END);
         try {
             fileReader.close();
             reader.close();
         } catch (IOException e) {
             super.printError("Ошибка при закрытии скрипта");
+        } finally {
+            throw new ScriptError("Невозможно закрыть файл");
         }
     }
 
     /**
      * to nothing override from parent class
+     *
      * @param object object for asking
      */
     @Override
@@ -73,6 +81,7 @@ public class ScriptConsole extends Console {
 
     /**
      * ask question and return answer
+     *
      * @param question question for asking
      * @return answer
      */
@@ -84,6 +93,7 @@ public class ScriptConsole extends Console {
 
     /**
      * ask question and return true if answer was yes, another case false
+     *
      * @param question question for asking
      * @return answer
      */
