@@ -6,6 +6,7 @@ public final class Variable {
     public static final String PASSWORD = System.getenv("password");
     public static final String LOGIN = System.getenv("login");
     public static final String NAME = System.getenv("name");
+    public static final String PORT = System.getenv("port");
 
     private Variable() {
     }

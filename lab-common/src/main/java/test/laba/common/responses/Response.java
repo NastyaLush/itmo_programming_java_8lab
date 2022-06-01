@@ -97,6 +97,7 @@ public class Response extends RegisterResponse {
         this.flag = flag;
     }
 
+
     public boolean isFlag() {
         return flag;
     }

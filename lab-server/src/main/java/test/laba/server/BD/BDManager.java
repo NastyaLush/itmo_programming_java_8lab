@@ -48,8 +48,8 @@ public class BDManager extends TableOperations {
     private final String name = "products";
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    public BDManager(String name, String dbHost, String dbName, String dbUser, String dbPassword) throws SQLException {
-        super(name, dbHost, dbName, dbUser, dbPassword);
+    public BDManager(String name, String dbHost, String dbName, String dbUser, String dbPassword, String bdPort) throws SQLException {
+        super(name, dbHost, dbName, dbUser, dbPassword, bdPort);
     }
 
 

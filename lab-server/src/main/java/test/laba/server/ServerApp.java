@@ -66,7 +66,7 @@ public class ServerApp {
 
 
         LOGGER.info("server works");
-        if (Variable.HOST != null && Variable.NAME != null && Variable.LOGIN != null && Variable.PASSWORD != null) {
+        if (Variable.HOST != null && Variable.NAME != null && Variable.LOGIN != null && Variable.PASSWORD != null && Variable.PORT != null) {
             bdStart();
             interactivelyModule(serverSocketChannel);
         } else {
@@ -77,9 +77,9 @@ public class ServerApp {
 
     private void bdStart() throws SQLException, VariableException, CreateError {
         LOGGER.info("BD was connected");
-        bdUsersManager = new BDUsersManager("users", Variable.HOST, Variable.NAME, Variable.LOGIN, Variable.PASSWORD);
+        bdUsersManager = new BDUsersManager("users", Variable.HOST, Variable.NAME, Variable.LOGIN, Variable.PASSWORD, Variable.PORT);
         bdUsersManager.createTable();
-        bdManager = new BDManager("products", Variable.HOST, Variable.NAME, Variable.LOGIN, Variable.PASSWORD);
+        bdManager = new BDManager("products", Variable.HOST, Variable.NAME, Variable.LOGIN, Variable.PASSWORD, Variable.PORT);
         bdManager.createTable();
         commandsManager = new CommandsManager(bdManager, bdUsersManager);
 

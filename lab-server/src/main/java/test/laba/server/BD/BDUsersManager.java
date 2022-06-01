@@ -25,8 +25,8 @@ public class BDUsersManager extends TableOperations {
     private final int maxCountOfHash = 10;
     private final int maxLengthOfSalt = 10;
 
-    public BDUsersManager(String name, String dbHost, String dbName, String dbUser, String dbPassword) throws SQLException {
-        super(name, dbHost, dbName, dbUser, dbPassword);
+    public BDUsersManager(String name, String dbHost, String dbName, String dbUser, String dbPassword, String bdPort) throws SQLException {
+        super(name, dbHost, dbName, dbUser, dbPassword, bdPort);
         LOGGER.setLevel(Level.FINEST);
     }
 

@@ -1,8 +1,12 @@
 package test.laba.client;
 
 
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
 import java.util.logging.Logger;
 
+import test.laba.client.frontEnd.Frame;
+import test.laba.client.frontEnd.HomeFrame;
 import test.laba.client.productFillers.ConsoleParsing;
 import test.laba.client.productFillers.UpdateId;
 import test.laba.client.util.Console;
@@ -37,34 +41,50 @@ public class ClientApp {
     private Wrapper wrapper;
     private boolean isNormalUpdateID = true;
     private final HashSet<String> executeScriptFiles = new HashSet<>();
+    private Frame frame;
     private boolean isExitInExecuteScript = false;
     private String login;
     private String password;
+    private final Condition condition;
+    private final Lock lock;
 
-    ClientApp() {
+    ClientApp(Frame frame, Condition condition, Lock lock) {
+        this.lock = lock;
+        this.condition =condition;
         LOGGER.setLevel(Level.INFO);
+        this.frame = frame;
     }
 
     public void interactivelyMode() {
         LOGGER.log(Level.FINE, "The interactively Mode starts");
         try {
             registeringUser();
+            frame = new HomeFrame(condition, lock, login);
+            new Thread(frame).start();
             wrapper.sent(new Response(login, password, Values.COLLECTION.toString()));
             valuesOfCommands = wrapper.readWithMap();
             LOGGER.info(Util.giveColor(Colors.BlUE, "Program in an interactive module, for giving information about opportunities write help"));
             String answer;
-            while ((answer = console.read()) != null) {
+            while (/*(answer = console.read()) != null*/ true) {
                 try {
-                    String[] command = answer.split(" ", 2);
+                    /*String[] command = answer.split(" ", 2);
                     if (command.length < 2) {
                         command = new String[]{command[0], ""};
-                    }
-                    sendAndReceiveCommand(command, console);
+                    }*/
+                    lock.lock();
+                    condition.await();
+                    lock.unlock();
+
+                    Response response = frame.getResponse();
+                    //sendAndReceiveCommand(command, console);
+                    sendAndReceiveCommand(response, console);
 
                 } catch (IOException e) {
+                    frame.exception("server was closed, app is finishing work :) \nSee you soon!");
                     LOGGER.info(Util.giveColor(Colors.GREEN, "server was closed, app is finishing work :) \nSee you soon!"));
                     break;
                 } catch (CycleInTheScript | ClassNotFoundException e) {
+                    frame.exception(e.getMessage());
                     LOGGER.warning(e.getMessage());
                 }
                 if (ifReadyToClose(answer) || isExitInExecuteScript) {
@@ -74,9 +94,11 @@ public class ClientApp {
                 }
 
             }
-        } catch (IOException | ClassNotFoundException e) {
+        } catch (IOException | ClassNotFoundException | InterruptedException e) {
             LOGGER.warning(Util.giveColor(Colors.RED, "The client can't exist because of: " + e.getMessage()
-                    + "\n Probably server was closed"));
+                    + "\nProbably server was closed"));
+            frame.exception("The client can't exist because of: " + e.getMessage()
+                    + "\nProbably server was closed");
         }
         LOGGER.fine("the method was closed");
 
@@ -133,7 +155,7 @@ public class ClientApp {
         return response;
     }
 
-    public void sendAndReceiveCommand(String[] command, Console console2) throws IOException, CycleInTheScript, ClassNotFoundException {
+    public void sendAndReceiveCommand(Response response, Console console2) throws IOException, CycleInTheScript, ClassNotFoundException {
         LOGGER.fine("send and receive starts ");
         Response response;
         if (valuesOfCommands.containsKey(command[0].trim().toLowerCase())) {
@@ -149,6 +171,7 @@ public class ClientApp {
             wrapper.sent(response);
             response = wrapper.readResponse();
             console.print(response.getCommand());
+            // TODO: 01.06.2022
             isExitInExecuteScript = ifReadyToClose(response.getCommand().trim());
             if (response.getCommand().equals(Values.SCRIPT.toString())) {
                 readScript(response);
@@ -227,17 +250,24 @@ public class ClientApp {
         return "exit".equals(answer.trim());
     }
 
-    private void registeringUser() throws IOException, ClassNotFoundException {
+    private void registeringUser() throws IOException, ClassNotFoundException, InterruptedException {
         LOGGER.info("the registration is started ");
-        String answer = console.askFullQuestion(Util.giveColor(Colors.BlUE, "Would you like to create new login and password or you are registering first?(print yes or else if your answer no)"));
-        login = new ConsoleParsing(console).parsField(Util.giveColor(Colors.BlUE, "Enter your login"), VariableParsing::toRightName);
-        password = new ConsoleParsing(console).parsField(Util.giveColor(Colors.BlUE, "Enter your password"), VariableParsing::toRightName);
-        if ("yes".equals(answer.trim())) {
+        //String answer = console.askFullQuestion(Util.giveColor(Colors.BlUE, "Would you like to create new login and password or you are registering first?(print yes or else if your answer no)"));
+        //login = new ConsoleParsing(console).parsField(Util.giveColor(Colors.BlUE, "Enter your login"), VariableParsing::toRightName);
+        //password = new ConsoleParsing(console).parsField(Util.giveColor(Colors.BlUE, "Enter your password"), VariableParsing::toRightName);
+        Response frameResponse = frame.getResponse();
+        login = frameResponse.getLogin();
+        password = frameResponse.getPassword();
+        if (frame.isNewUser()) {
             RegisterResponse response1 = new RegisterResponse(login, password, Values.REGISTRATION.toString());
             wrapper.sent(response1);
             Response response = wrapper.readResponse();
             if (response instanceof ResponseWithError) {
+                frame.exception(response.getCommand());
                 LOGGER.info(response.getCommand());
+                lock.lock();
+                condition.await();
+                lock.unlock();
                 registeringUser();
             } else {
                 LOGGER.info(response.getCommand());
@@ -247,7 +277,11 @@ public class ClientApp {
             wrapper.sent(response1);
             Response response = wrapper.readResponse();
             if (response instanceof ResponseWithError) {
+                frame.exception(response.getCommand());
                 LOGGER.info(response.getCommand());
+                lock.lock();
+                condition.await();
+                lock.unlock();
                 registeringUser();
             } else {
                 LOGGER.info(response.getCommand());
