@@ -18,7 +18,7 @@ public final class AverageOfManufactureCost extends AbstractCommand {
      */
     @Override
     public Response execute(String arg, Root root) {
-        StringBuilder s = new StringBuilder(Colors.BlUE + "Average_of_manufacture_cost: " + Colors.END);
+        StringBuilder s = new StringBuilder("Average_of_manufacture_cost: " + Colors.END);
         if (root.getProducts().size() != 0) {
             s.append(root.sumOfManufactureCost() / (root.getProducts().size()));
             return new Response(s.toString());

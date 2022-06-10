@@ -23,4 +23,5 @@ public abstract class BasicResponse implements Serializable {
     public String getPassword() {
         return password;
     }
+
 }

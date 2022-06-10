@@ -120,7 +120,7 @@ public class BDManager extends TableOperations {
         try {
             String deleteQuery = "DELETE FROM " + this.name + " WHERE key <= ? AND creatorID = ?";
             String selectQuery = "SELECT * FROM " + this.name + " WHERE key <= ? AND creatorID = ?";
-            return checkOnKeyAnaIDAndDelete(((Response) response).getKey(), id, deleteQuery, selectQuery);
+            return checkOnKeyAnaIDAndDelete(((Response) response).getKeyOrID(), id, deleteQuery, selectQuery);
         } catch (WrongUsersData e) {
             return false;
         }

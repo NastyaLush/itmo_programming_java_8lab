@@ -4,16 +4,19 @@ import test.laba.common.dataClasses.Product;
 import test.laba.common.dataClasses.UnitOfMeasure;
 import test.laba.common.util.Values;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class Response extends RegisterResponse {
     private static final long serialVersionUID = 10;
+    private boolean addToHistory = true;
     private Map<String, Values> collection = null;
     private Product product;
     private UnitOfMeasure unitOfMeasure;
-    private Long key;
+    private Long keyOrID;
     private String message;
-    private boolean flag;
+    private boolean flagUdateID;
+    private HashMap<Long,Product> productHashMap;
 
 
 
@@ -22,9 +25,9 @@ public class Response extends RegisterResponse {
         this.unitOfMeasure = unitOfMeasure;
     }
 
-    public Response(String login, String password, String command, Long key) {
+    public Response(String login, String password, String command, Long keyOrID) {
         super(login, password, command);
-        this.key = key;
+        this.keyOrID = keyOrID;
     }
 
 
@@ -33,10 +36,10 @@ public class Response extends RegisterResponse {
         this.product = product;
     }
 
-    public Response(String login, String password, String command, Long key, Product product) {
+    public Response(String login, String password, String command, Long keyOrID, Product product) {
         super(login, password, command);
         this.product = product;
-        this.key = key;
+        this.keyOrID = keyOrID;
     }
 
     public Response(String login, String password, String command, String fileName) {
@@ -85,21 +88,49 @@ public class Response extends RegisterResponse {
         return unitOfMeasure;
     }
 
-    public Long getKey() {
-        return key;
+    public Long getKeyOrID() {
+        return keyOrID;
     }
 
     public String getMessage() {
         return message;
     }
 
-    public void setFlag(boolean flag) {
-        this.flag = flag;
+    public void setFlagUdateID(boolean flagUdateID) {
+        this.flagUdateID = flagUdateID;
+    }
+
+    public void setProductHashMap(HashMap<Long, Product> productHashMap) {
+        this.productHashMap = productHashMap;
+    }
+
+    public void setUnitOfMeasure(UnitOfMeasure unitOfMeasure) {
+        this.unitOfMeasure = unitOfMeasure;
+    }
+
+    public HashMap<Long, Product> getProductHashMap() {
+        return productHashMap;
     }
 
 
-    public boolean isFlag() {
-        return flag;
+    public void setProduct(Product product) {
+        this.product = product;
+    }
+
+    public void setKeyOrID(Long keyOrID) {
+        this.keyOrID = keyOrID;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public boolean isAddToHistory() {
+        return addToHistory;
+    }
+
+    public void setAddToHistory(boolean addToHistory) {
+        this.addToHistory = addToHistory;
     }
 
     @Override
@@ -110,10 +141,15 @@ public class Response extends RegisterResponse {
                 + ", collection=" + collection
                 + ", product=" + product
                 + ", unitOfMeasure=" + unitOfMeasure
-                + ", key=" + key
+                + ", key=" + keyOrID
                 + ", message='" + message + '\''
-                + ", flag=" + flag
+                + ", flag=" + flagUdateID
                 + ", command='" + getCommand() + '\''
+                + ", products=" + productHashMap
                 + '}';
+    }
+
+    public boolean isFlagUdateID() {
+        return flagUdateID;
     }
 }

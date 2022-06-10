@@ -1,65 +1,122 @@
 package test.laba.client.frontEnd;
 
+import test.laba.client.frontEnd.Frames.ChangeProductFrame;
+import test.laba.client.frontEnd.Frames.ChangeProductFrameTable;
+import test.laba.client.frontEnd.Frames.FrameProduct;
+import test.laba.client.util.VariableParsing;
+import test.laba.common.dataClasses.*;
+import test.laba.common.exception.VariableException;
 import test.laba.common.responses.Response;
+import test.laba.common.responses.ResponseWithError;
 
 import javax.swing.*;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
+import java.util.ResourceBundle;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 
-public class HomeFrame extends Frame{
-    private final JPanel mainPanel = new JPanel();
+public class HomeFrame extends FrameProduct implements Runnable {
+    private JPanel mainPanel = new JPanel();
     private final String login;
     private final JLabel userPicture = new JLabel();
-    private JLabel userName = new JLabel();
+    private TableModule tableModule;
+    private final JLabel userName = new JLabel();
+    private Response response;
+    private final Condition condition;
+    private final Lock lock;
     private final Color green = Color.getHSBColor((float) 0.40034366, (float) 0.8362069, (float) 0.9098039);
 
-    private Response response;
-    public HomeFrame(Condition condition, Lock lock, String login) {
-        super(condition, lock);
+    ///////////
+
+    public HomeFrame(Condition condition, Lock lock, String login, Response response) {
+        super(new JFrame(), Local.getResourceBundleDeafult());
         this.login = login;
+        this.response = response;
+        this.lock = lock;
+        this.condition = condition;
     }
 
-    @Override
     public void run() {
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        UIManager.put("swing.boldMetal", Boolean.FALSE);
+        jFrame.setName(localisation(resourceBundle, Constants.TITLE));
         jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        jFrame.setSize(screenSize.width - 250, screenSize.height-150);
-        jFrame.setLocationRelativeTo(null);
-        jFrame.setMinimumSize(new Dimension(screenSize.width/2, screenSize.height/2));
-
-
-
+        jFrame.setSize(screenSize.width - 250, screenSize.height - 150);
+        jFrame.setMinimumSize(new Dimension(screenSize.width / 2, screenSize.height / 2));
         jFrame.setLayout(new BorderLayout());
+        tableModule = new TableModule(resourceBundle);
 
-        mainPanel.setLayout(new BoxLayout(mainPanel,BoxLayout.Y_AXIS));
+        mainPanel = new TablePanel(new JTable(tableModule)) {
+            @Override
+            protected void outputSelection() {
+                new ChangeProductFrameTable(this, tableModule, resourceBundle) {
+                    @Override
+                    protected void addOkListener() {
+                        ok.addActionListener(new OkListener() {
+                            @Override
+                            protected void createResponse(Product product, Long key) {
+                                response = new Response(Command.UPDATE_ID.getString());
+                                response.setProduct(product);
+                                response.setFlagUdateID(true);
+                                response.setKeyOrID(key);
+                            }
+
+                            @Override
+                            protected void sentProduct(Long key, Product product) {
+                            }
+                            @Override
+                            public void actionPerformed(ActionEvent e) {
+                                try {
+                                    Product product = addProduct();
+                                    System.out.println(product);
+                                    createResponse(product, Long.valueOf(getDescription(Constants.ID.getString())));
+                                    sentProduct();
+                                } catch (VariableException ex) {
+                                    exception(ex.getMessage());
+                                }
+                            }
+                            private void sentProduct() {
+                                jFrame.dispatchEvent(new WindowEvent(jFrame, WindowEvent.WINDOW_CLOSING));
+                                treatmentResponseWithoutFrame(HomeFrame.this :: show);
+                            }
+                        });
+                    }
+                }.actionPerformed(new ActionEvent(this, 1, Command.UPDATE_ID.getString()));
+            }
+        };
+        mainPanel.setOpaque(true);
+        jFrame.getContentPane().add(BorderLayout.CENTER, mainPanel);
+
 
         ImageIcon imageIcon = new ImageIcon("user1.png");
         userPicture.setIcon(imageIcon);
 
         userName.setText(login);
         userName.setForeground(Color.WHITE);
-        userName.setFont(underLine(new Font("Safari", Font.CENTER_BASELINE, 38)));
+        userName.setFont(underLine(new Font("Safari", Font.BOLD, 38)));
 
-        JButton manCost = new JButton("average of manufacture cost");
-        manCost.setFont(new Font("Safari", Font.CENTER_BASELINE, 20));
-        manCost.setBackground(Color.BLACK);
-        manCost.setForeground(Color.WHITE);
+        JButton manCost = createButtonCommand(localisation(resourceBundle, Constants.AVERAGE_OF_MANUFACTURE_COST));
+        JButton groupCountingByPrice = createButtonCommand(localisation(resourceBundle, Constants.GROUP_COUNTING_BY_PRICE));
 
-        JButton groupCountingByPrice = new JButton("group counting by price");
-        groupCountingByPrice.setFont(new Font("Safari", Font.CENTER_BASELINE, 20));
-        groupCountingByPrice.setBackground(Color.BLACK);
-        groupCountingByPrice.setForeground(Color.WHITE);
+        System.out.println(resourceBundle.getString("key"));
+        System.out.println(resourceBundle);
 
-        JMenu lang = new JMenu("lang");
-        lang.setPreferredSize(new Dimension(jFrame.getWidth()/16,250));
-        lang.setFont(new Font("Safari", Font.CENTER_BASELINE, 20));
-        JMenuItem rus = new JMenuItem("Russian");
-        JMenuItem nor = new JMenuItem("Norwegian");
-        JMenuItem fr = new JMenuItem("French");
-        JMenuItem sp = new JMenuItem("Spanish");
+        JMenu lang = new JMenu(localisation(resourceBundle, Constants.LANGUAGE));
+        lang.setPreferredSize(new Dimension(jFrame.getWidth() / 15, 250));
+        lang.setFont(new Font("Safari", Font.PLAIN, 20));
+
+        JMenuItem rus = new JMenuItem(localisation(resourceBundle, Constants.RUSSIAN));
+        JMenuItem nor = new JMenuItem(localisation(resourceBundle, Constants.NORWEGIAN));
+        JMenuItem fr = new JMenuItem(localisation(resourceBundle, Constants.FRENCH));
+        JMenuItem sp = new JMenuItem(localisation(resourceBundle, Constants.SPANISH));
+
+
+        changeMenuAndLAg(rus, lang);
+        changeMenuAndLAg(nor, lang);
+        changeMenuAndLAg(fr, lang);
+        changeMenuAndLAg(sp, lang);
 
         lang.add(rus);
         lang.add(nor);
@@ -71,14 +128,85 @@ public class HomeFrame extends Frame{
         language.setBackground(green);
         language.setForeground(Color.BLACK);
 
+        JMenuBar sortBy = createSortBy();
 
-        JMenu sort = new JMenu("sort by");
-        sort.setFont(new Font("Safari", Font.CENTER_BASELINE, 15));
-        sort.setPreferredSize(new Dimension(100,250));
+        JPanel leftPanel = new JPanel();
+        JPanel upPanel = new JPanel();
+        JPanel downPAnel = new JPanel();
+
+        upPanel.setLayout(new BoxLayout(upPanel, BoxLayout.X_AXIS));
+        upPanel.add(Box.createRigidArea(new Dimension(5, 0)));
+        upPanel.add(language, BorderLayout.WEST);
+        upPanel.add(Box.createRigidArea(new Dimension(5, 0)));
+        upPanel.add(sortBy, BorderLayout.WEST);
+        upPanel.add(Box.createRigidArea(new Dimension(5, 0)));
+        upPanel.add(groupCountingByPrice, BorderLayout.WEST);
+        upPanel.add(Box.createRigidArea(new Dimension(5, 0)));
+        upPanel.add(manCost, BorderLayout.WEST);
+        upPanel.add(Box.createRigidArea(new Dimension(screenSize.width / 3, 0)));
+        upPanel.add(userName, BorderLayout.EAST);
+        upPanel.add(Box.createRigidArea(new Dimension(5, 0)));
+        upPanel.add(userPicture, BorderLayout.NORTH);
+
+        JButton picture = createPictureButton("graphics", green, "picture.png", new Picture());
+        JButton restart = createPictureButton("show", green, "restart.png", new CommandWithoutAction(){
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                treatmentResponseWithCommandName(((JButton) e.getSource()).getName(), HomeFrame.this::showNothing);
+            }
+        });
+        JButton help = createPictureButton("help", green, "question.png", new CommandWithoutAction());
+        JButton history = createPictureButton("history", green, "history.png", new CommandWithoutAction());
+        JButton script = createPictureButton("script", green, "script.png", new Script());
+        JButton info = createPictureButton("info", green, "info.png", new CommandWithoutAction());
+
+        leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
+        leftPanel.add(picture);
+        leftPanel.add(restart);
+        leftPanel.add(help);
+        leftPanel.add(info);
+        leftPanel.add(history);
+        leftPanel.add(script);
+
+/////////////////
+
+        JButton trash = createPictureButton("trash", green, "trash.png", e -> treatmentResponseWithCommandName("clear", this::show));
+        JButton minus = createPictureButton("minus", Color.white, "minus.png", new Minus());
+        JButton plus = createPictureButton("plus", Color.white, "plus.png", new Plus(resourceBundle));
+
+
+        downPAnel.setLayout(new BoxLayout(downPAnel, BoxLayout.X_AXIS));
+        downPAnel.add(trash, BorderLayout.EAST);
+        downPAnel.add(Box.createRigidArea(new Dimension(screenSize.width - 700, 0)));
+        downPAnel.add(minus, BorderLayout.WEST);
+        downPAnel.add(plus, BorderLayout.WEST);
+
+        leftPanel.setBackground(green);
+        upPanel.setBackground(Color.BLACK);
+
+        mainPanel.setPreferredSize(new Dimension(jFrame.getWidth() / 2, jFrame.getHeight() / 2));
+        leftPanel.setPreferredSize(new Dimension(jFrame.getWidth() / 16, jFrame.getHeight()));
+        upPanel.setPreferredSize(new Dimension(jFrame.getWidth(), jFrame.getHeight() / 10));
+        downPAnel.setPreferredSize(new Dimension(jFrame.getWidth(), jFrame.getHeight() / 8));
+
+        jFrame.getContentPane().add(BorderLayout.CENTER, mainPanel);
+        jFrame.getContentPane().add(BorderLayout.WEST, leftPanel);
+        jFrame.getContentPane().add(BorderLayout.NORTH, upPanel);
+        jFrame.getContentPane().add(BorderLayout.SOUTH, downPAnel);
+
+        jFrame.repaint();
+        repaintAll();
+        jFrame.pack();
+        jFrame.setVisible(true);
+    }
+    private JMenuBar createSortBy(){
+        JMenu sort = new JMenu(localisation(resourceBundle, Constants.SORT_BY));
+        sort.setFont(new Font("Safari", Font.BOLD, 15));
+        sort.setPreferredSize(new Dimension(100, 250));
         sort.setForeground(Color.WHITE);
-        JMenuItem aToZ = new JMenuItem("sort a to z");
-        JMenuItem zToA = new JMenuItem("sort z to a");
-        JMenuItem random = new JMenuItem("random");
+        JMenuItem aToZ = new JMenuItem(localisation(resourceBundle, Constants.SORT_A_TO_Z));
+        JMenuItem zToA = new JMenuItem(localisation(resourceBundle, Constants.SORT_Z_TO_A));
+        JMenuItem random = new JMenuItem(localisation(resourceBundle, Constants.RANDOM));
 
         sort.add(aToZ);
         sort.add(zToA);
@@ -89,115 +217,59 @@ public class HomeFrame extends Frame{
         sortBy.setBackground(Color.BLACK);
         sortBy.setForeground(Color.WHITE);
 
-        JPanel leftPanel = new JPanel();
-        JPanel hightPanel = new JPanel();
-        JPanel downPAnel = new JPanel();
+        return sortBy;
+    }
+   /* private JMenuBar createLanguageButton(){
+        JMenu lang = new JMenu(localisation(resourceBundle, Constants.LANGUAGE));
+        lang.setPreferredSize(new Dimension(jFrame.getWidth() / 16, 250));
+        lang.setFont(new Font("Safari", Font.PLAIN, 20));
+        lang.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("mkk");
+            }
+        });
+        JMenuItem rus = new JMenuItem(localisation(resourceBundle, Constants.RUSSIAN));
+        JMenuItem nor = new JMenuItem(localisation(resourceBundle, Constants.NORWEGIAN));
+        JMenuItem fr = new JMenuItem(localisation(resourceBundle, Constants.FRENCH));
+        JMenuItem sp = new JMenuItem(localisation(resourceBundle, Constants.SPANISH));
 
-        hightPanel.setLayout( new BoxLayout(hightPanel,BoxLayout.X_AXIS));
-        hightPanel.add(language,BorderLayout.WEST );
-        hightPanel.add(Box.createRigidArea(new Dimension(5,0)));
-        hightPanel.add(sortBy, BorderLayout.WEST);
-        hightPanel.add(Box.createRigidArea(new Dimension(5,0)));
-        hightPanel.add(groupCountingByPrice, BorderLayout.WEST);
-        hightPanel.add(Box.createRigidArea(new Dimension(5,0)));
-        hightPanel.add(manCost, BorderLayout.WEST);
-        hightPanel.add(Box.createRigidArea(new Dimension(screenSize.width/3,0)));
-        hightPanel.add(userName, BorderLayout.EAST);
-        hightPanel.add(Box.createRigidArea(new Dimension(5,0)));
-        hightPanel.add(userPicture, BorderLayout.NORTH);
-/////////////////////////////////////
-        JButton picture = new JButton();
-        picture.setBackground(green);
-        ImageIcon pictureIcon = new ImageIcon("picture.png");
-        picture.setIcon(pictureIcon);
-        picture.addActionListener(new Picture());
+        changeMenuName(rus, lang);
+        changeMenuName(nor, lang);
+        changeMenuName(fr, lang);
+        changeMenuName(sp, lang);
 
-        JButton restart = new JButton();
-        restart.setBackground(green);
-        ImageIcon restartIcon = new ImageIcon("restart.png");
-        restart.setIcon(restartIcon);
+        lang.add(rus);
+        lang.add(nor);
+        lang.add(fr);
+        lang.add(sp);
 
-        JButton help = new JButton();
-        help.setBackground(green);
-        ImageIcon helpIcon = new ImageIcon("question.png");
-        help.setIcon(helpIcon);
+        JMenuBar language = new JMenuBar();
+        language.add(lang);
+        language.setBackground(green);
+        language.setForeground(Color.BLACK);
 
-        JButton history = new JButton();
-        history.setBackground(green);
-        ImageIcon historyIcon = new ImageIcon("history.png");
-        history.setIcon(historyIcon);
+        return language;
+    }*/
 
-        JButton script = new JButton();
-        script.setBackground(green);
-        ImageIcon scriptIcon = new ImageIcon("script.png");
-        script.setIcon(scriptIcon);
-
-        JButton info = new JButton();
-        info.setBackground(green);
-        ImageIcon infoIcon = new ImageIcon("info.png");
-        info.setIcon(infoIcon);
-
-        leftPanel.setLayout( new BoxLayout(leftPanel,BoxLayout.Y_AXIS));
-        leftPanel.add(picture);
-        leftPanel.add(restart);
-        leftPanel.add(help);
-        leftPanel.add(info);
-        leftPanel.add(history);
-        leftPanel.add(script);
-
-/////////////////
-
-        JButton trash = new JButton();
-        trash.setBackground(green);
-        ImageIcon trashIcon = new ImageIcon("trash.png");
-        trash.setIcon(trashIcon);
-        trash.setPreferredSize(new Dimension(jFrame.getWidth()/16,0));
-
-        JButton minus = new JButton();
-        minus.setBackground(Color.white);
-        ImageIcon minusIcon = new ImageIcon("minus.png");
-        minus.setIcon(minusIcon);
-
-        JButton plus = new JButton();
-        plus.setBackground(Color.white);
-        ImageIcon plusIcon = new ImageIcon("plus.png");
-        plus.setIcon(plusIcon);
-
-
-        downPAnel.setLayout( new BoxLayout(downPAnel,BoxLayout.X_AXIS));
-        downPAnel.add(trash, BorderLayout.EAST);
-        downPAnel.add(Box.createRigidArea(new Dimension(screenSize.width-700,0)));
-        downPAnel.add(minus, BorderLayout.WEST);
-        downPAnel.add(plus, BorderLayout.WEST);
-
-        leftPanel.setBackground(green);
-        hightPanel.setBackground(Color.BLACK);
-
-        mainPanel.setPreferredSize(new Dimension(jFrame.getWidth()/2,jFrame.getHeight()/2));
-        leftPanel.setPreferredSize(new Dimension(jFrame.getWidth()/16,jFrame.getHeight()));
-        hightPanel.setPreferredSize(new Dimension(jFrame.getWidth(),jFrame.getHeight()/10));
-        downPAnel.setPreferredSize(new Dimension(jFrame.getWidth(),jFrame.getHeight()/8));
-
-        jFrame.getContentPane().add(BorderLayout.CENTER, mainPanel);
-        jFrame.getContentPane().add(BorderLayout.WEST, leftPanel);
-        jFrame.getContentPane().add(BorderLayout.NORTH, hightPanel);
-        jFrame.getContentPane().add(BorderLayout.SOUTH, downPAnel);
-        //createTable();
-        jFrame.repaint();
-        jFrame.setVisible(true);
-        createTable();
-        jFrame.repaint();
-        //jFrame.addWindowStateListener();
+    private void repaint() {
+        response = new Response("show");
+        mainPanel.repaint();
     }
 
-    public void createTable(){
-
-        TableModule tableModule = new TableModule();
-        JTable table = new JTable(tableModule);
-        JScrollPane tableScrollPane = new JScrollPane(table);
-        //tableScrollPane.setPreferredSize();
-
-        mainPanel.add(tableScrollPane);
+    private void repaintAll() {
+        response = new Response("show");
+        response.setAddToHistory(false);
+        lock.lock();
+        condition.signal();
+        try {
+            condition.await();
+        } catch (InterruptedException ex) {
+            exception(ex.getMessage());
+        }
+        lock.unlock();
+        tableModule.addProducts(response.getProductHashMap());
+        repaint();
     }
 
     private class Picture implements ActionListener {
@@ -209,42 +281,379 @@ public class HomeFrame extends Frame{
             pictureFrame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
             pictureFrame.setSize(screenSize.width - 250, screenSize.height);
             pictureFrame.setLocationRelativeTo(null);
-            pictureFrame.setMinimumSize(new Dimension(screenSize.width/2, screenSize.height/2));
+            pictureFrame.setMinimumSize(new Dimension(screenSize.width / 2, screenSize.height / 2));
 
-            JPanel hightPanel = new JPanel();
-            pictureFrame.getContentPane().add(BorderLayout.NORTH, hightPanel);
-            hightPanel.setPreferredSize(new Dimension(jFrame.getWidth(),jFrame.getHeight()/10));
-            hightPanel.setLayout(new BoxLayout(hightPanel, BoxLayout.X_AXIS));
-            hightPanel.setBackground(Color.BLACK);
+            JPanel upPanel = new JPanel();
+            pictureFrame.getContentPane().add(BorderLayout.NORTH, upPanel);
+            upPanel.setPreferredSize(new Dimension(jFrame.getWidth(), jFrame.getHeight() / 10));
+            upPanel.setLayout(new BoxLayout(upPanel, BoxLayout.X_AXIS));
+            upPanel.setBackground(Color.BLACK);
 
-            hightPanel.add(Box.createRigidArea(new Dimension(screenSize.width-500,0)));
-            hightPanel.add(userName);
-            hightPanel.add(Box.createRigidArea(new Dimension(5,0)));
-            hightPanel.add(userPicture);
+            upPanel.add(Box.createRigidArea(new Dimension(screenSize.width - 500, 0)));
+            upPanel.add(userName);
+            upPanel.add(Box.createRigidArea(new Dimension(5, 0)));
+            upPanel.add(userPicture);
+            JPanel activePanel = new JPanel();
 
 
             pictureFrame.setLayout(new BorderLayout());
-            pictureFrame.getContentPane().add(hightPanel,BorderLayout.NORTH );
-            pictureFrame.getContentPane().add(mainPanel,BorderLayout.CENTER );
-
+            pictureFrame.getContentPane().add(upPanel, BorderLayout.NORTH);
+            pictureFrame.getContentPane().add(activePanel, BorderLayout.CENTER);
 
 
             pictureFrame.setVisible(true);
         }
     }
-    private class Help implements ActionListener{
+
+    private class CommandWithoutAction implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            response = new Response("help");
-            lock.lock();
-            condition.signal();
-            try {
-                condition.await();
-            } catch (InterruptedException ex) {
-                throw new RuntimeException(ex);
+            treatmentResponseWithCommandName(((JButton) e.getSource()).getName(), HomeFrame.this::show);
+        }
+
+    }
+
+    private class Plus extends ChangeProductFrame {
+        public Plus(ResourceBundle resourceBundle) {
+            super(resourceBundle);
+        }
+
+        @Override
+        protected void addOkListener() {
+            ok.addActionListener(new OkListener() {
+                @Override
+                protected void createResponse(Product product, Long key) {
+                    response = new Response("insert_null");
+                    response.setProduct(product);
+                    response.setKeyOrID(key);
+                }
+
+                @Override
+                protected void sentProduct(Long key, Product product) {
+                    lock.lock();
+                    jFrame.dispatchEvent(new WindowEvent(jFrame, WindowEvent.WINDOW_CLOSING));
+                    condition.signal();
+
+                    try {
+                        condition.await();
+                        if (response instanceof ResponseWithError) {
+                            exception(response.getCommand());
+                        } else {
+                            show(response.getCommand());
+                            tableModule.addProduct(key, product);
+                            repaintAll();
+                        }
+                    } catch (InterruptedException ex) {
+                        exception(ex.getMessage());
+                    }
+
+                    lock.unlock();
+                }
+            });
+        }
+
+    }
+
+    private class Minus implements ActionListener {
+        private final JFrame delete = new JFrame();
+        private final JPanel leftMinusPanel = new JPanel();
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            delete.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            delete.setSize(screenSize.width / 2, screenSize.height / 4);
+            delete.setLocation(30, 30);
+            delete.setMinimumSize(new Dimension(screenSize.width / 2, screenSize.height / 10 * 5));
+            delete.setLayout(new BorderLayout());
+            revalidate(leftMinusPanel);
+
+            leftMinusPanel.setLayout(new BoxLayout(leftMinusPanel, BoxLayout.Y_AXIS));
+
+            JRadioButton removeKey = new JRadioButton(localisation(resourceBundle, Constants.REMOVE_KEY));
+            removeKey.addActionListener(new RemoveKeyOrRemoveLowerKey(Command.REMOVE_KEY.getString()));
+            JRadioButton removeLowerKey = new JRadioButton(localisation(resourceBundle, Constants.REMOVE_LOWER_KEY));
+            removeLowerKey.addActionListener(new RemoveKeyOrRemoveLowerKey(Command.REMOVE_LOWER_KEY.getString()));
+            JRadioButton removeLower = new JRadioButton(localisation(resourceBundle, Constants.REMOVE_LOWER));
+            removeLower.addActionListener(new RemoveLower(resourceBundle));
+            JRadioButton removeAnyByUnitOfMeasure = new JRadioButton(localisation(resourceBundle, Constants.REMOVE_ANY_BY_UNIT_OF_MEASURE));
+            removeAnyByUnitOfMeasure.addActionListener(new RemoveAnyByUnitOfMeasure(Command.REMOVE_ANY_BY_UNIT_OF_MEASURE.getString()));
+
+            ButtonGroup buttonGroup = new ButtonGroup();
+            buttonGroup.add(removeKey);
+            buttonGroup.add(removeLower);
+            buttonGroup.add(removeLowerKey);
+            buttonGroup.add(removeAnyByUnitOfMeasure);
+
+            delete.add(leftMinusPanel, BorderLayout.WEST);
+
+            leftMinusPanel.add(removeKey);
+            leftMinusPanel.add(removeLowerKey);
+            leftMinusPanel.add(removeLower);
+            leftMinusPanel.add(removeAnyByUnitOfMeasure);
+
+            delete.setVisible(true);
+        }
+
+        private class RemoveKeyOrRemoveLowerKey implements ActionListener {
+            private final String name;
+
+            public RemoveKeyOrRemoveLowerKey(String name) {
+                this.name = name;
             }
-            lock.unlock();
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFrame removeFrame = new JFrame();
+                removeFrame.setSize(screenSize.width / 8, screenSize.height / 8);
+                removeFrame.setLocation(50, 50);
+                removeFrame.setMinimumSize(new Dimension(screenSize.width / 6, screenSize.height / 6));
+                removeFrame.setLayout(new BorderLayout());
+
+                JLabel key = new JLabel(localisation(resourceBundle, Constants.KEY));
+                JTextField textKey = new JTextField();
+                textKey.setPreferredSize(new Dimension(100, 20));
+
+                JButton ok = new JButton(localisation(resourceBundle, Constants.OK));
+                ok.addActionListener(new OkListener(name, textKey, removeFrame, resourceBundle) {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        try {
+                            response = createResponse();
+                            treatmentResponseWithFrame(HomeFrame.this::show);
+                        } catch (VariableException ex) {
+                            exception(ex.getMessage());
+                        }
+                    }
+                    @Override
+                    public Response createResponse() throws VariableException {
+                        Response createdResponse = new Response(command);
+                        Long key = VariableParsing.toLongNumber(((JTextField) textKey).getText());
+                        createdResponse.setKeyOrID(key);
+                        return createdResponse;
+                    }
+
+
+                });
+
+                JPanel removePanel = new JPanel();
+                removePanel.setLayout(new BoxLayout(removePanel, BoxLayout.Y_AXIS));
+
+                removePanel.add(Box.createRigidArea(new Dimension(0, 10)));
+                removePanel.add(key);
+                removePanel.add(textKey);
+                removePanel.add(Box.createRigidArea(new Dimension(0, 50)));
+                removePanel.add(ok);
+                removePanel.revalidate();
+                removePanel.repaint();
+
+                removeFrame.add(removePanel);
+                removeFrame.setVisible(true);
+            }
+        }
+
+        private class RemoveAnyByUnitOfMeasure implements ActionListener {
+            private final String name;
+
+            public RemoveAnyByUnitOfMeasure(String name) {
+                this.name = name;
+            }
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFrame removeFrame = new JFrame();
+                removeFrame.setSize(screenSize.width / 8, screenSize.height / 8);
+                removeFrame.setLocation(50, 50);
+                removeFrame.setMinimumSize(new Dimension(screenSize.width / 6, screenSize.height / 6));
+                removeFrame.setLayout(new BorderLayout());
+
+                JLabel unitOfMeasure = new JLabel(localisation(resourceBundle, Constants.UNIT_OF_MEASURE));
+                JMenu menu = createUMMenu(localisation(resourceBundle, Constants.UNIT_OF_MEASURE));
+                JMenuBar menuBar = unitOfMeasureButton(menu);
+
+                JButton ok = new JButton(localisation(resourceBundle, Constants.OK));
+                ok.addActionListener(new OkListener(name, menu, removeFrame, resourceBundle) {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        try {
+                            response = createResponse();
+                            treatmentResponseWithFrame(HomeFrame.this::show);
+                        } catch (VariableException ex) {
+                            exception(ex.getMessage());
+                        }
+                    }
+                    @Override
+                    public Response createResponse() throws VariableException {
+                        Response createdResponse = new Response(command);
+                        UnitOfMeasure unitOfMeasure1 = VariableParsing.toRightUnitOfMeasure(((JMenu) textKey).getText());
+                        createdResponse.setUnitOfMeasure(unitOfMeasure1);
+                        return createdResponse;
+                    }
+                });
+
+                JPanel removePanel = new JPanel();
+                removePanel.setLayout(new BoxLayout(removePanel, BoxLayout.Y_AXIS));
+
+                removePanel.add(Box.createRigidArea(new Dimension(0, 10)));
+                removePanel.add(unitOfMeasure);
+                removePanel.add(menuBar);
+                removePanel.add(ok);
+                removePanel.add(Box.createRigidArea(new Dimension(0, 50)));
+                removePanel.revalidate();
+                removePanel.repaint();
+
+                removeFrame.add(removePanel);
+                removeFrame.setVisible(true);
+            }
 
         }
+
+        private class RemoveLower extends ChangeProductFrame {
+            public RemoveLower(ResourceBundle resourceBundle) {
+                super(resourceBundle);
+            }
+
+            @Override
+            protected void addKey(){
+            }
+            @Override
+            protected void addOkListener() {
+                ok.addActionListener(new OkListener() {
+                    @Override
+                    protected void createResponse(Product product, Long key) {
+
+                    }
+
+                    @Override
+                    protected void sentProduct(Long key, Product product) {
+
+                    }
+
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        try {
+                            Product product = addProduct();
+                            createResponse(product);
+                            sentProduct(product);
+                        } catch (VariableException ex) {
+                            exception(ex.getMessage());
+                        }
+                    }
+                    private void createResponse(Product product) {
+                        response = new Response(Command.REMOVE_LOWER.getString());
+                        response.setProduct(product);
+                    }
+
+                    private void sentProduct(Product product) {
+                        delete.dispatchEvent(new WindowEvent(jFrame, WindowEvent.WINDOW_CLOSING));
+                        treatmentResponseWithoutFrame(HomeFrame.this::show);
+                    }
+                });
+            }
+
+        }
+
     }
+
+
+    private class Script implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle(localisation(resourceBundle, Constants.CHOOSE_DIRECTORY));
+            // Определение режима - только каталог
+            int result = fileChooser.showOpenDialog(null);
+            // Если директория выбрана, покажем ее в сообщении
+            if (result == JFileChooser.APPROVE_OPTION ) {
+                System.out.println(fileChooser.getSelectedFile().getAbsolutePath());
+                response = new Response(Command.EXECUTE_SCRIPT.getString());
+                response.setMessage(fileChooser.getSelectedFile().getAbsolutePath());
+
+                treatmentResponseWithFrame(HomeFrame.this::showScript);
+            }
+        }
+    }
+    private void treatmentResponseWithFrame(IFunction show){
+        if(jFrame != null) {
+            close(jFrame);
+        }
+        treatmentResponseWithoutFrame(show);
+    }
+    private void treatmentResponseWithCommandName(String name, IFunction show){
+        response = new Response(name);
+        treatmentResponseWithoutFrame(show);
+
+    }
+    private void treatmentResponseWithoutFrame(IFunction showResponse){
+        lock.lock();
+        condition.signal();
+        try {
+            condition.await();
+            if (response instanceof ResponseWithError) {
+                exception(response.getCommand());
+            } else {
+                showResponse.function(response.getCommand());
+                repaintAll();
+            }
+        } catch (InterruptedException ex) {
+            exception(ex.getMessage());
+        }
+        lock.unlock();
+    }
+    private JButton createPictureButton(String name, java.awt.Color colorBackground, String picturePath, ActionListener actionListener ){
+        JButton button = new JButton(new ImageIcon(picturePath));
+        button.setName(name);
+        button.setBackground(colorBackground);
+        button.addActionListener(actionListener);
+        return button;
+    }
+    private JButton createButtonCommand(String name){
+        JButton manCost = new JButton(name);
+        manCost.setFont(new Font("Safari", Font.ITALIC, 20));
+        manCost.setBackground(Color.BLACK);
+        manCost.setForeground(Color.WHITE);
+        manCost.addActionListener((ActionEvent actionEvent) -> {
+            response = new Response(name);
+            lock.lock();
+            condition.signal();
+
+            try {
+                condition.await();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            lock.unlock();
+            if (response instanceof ResponseWithError) {
+                exception(response.getCommand());
+            } else {
+                show(response.getCommand());
+            }
+
+        });
+        return manCost;
+    }
+    private void showNothing(String message){}
+
+    public Response getResponse() {
+        return response;
+    }
+    public void prepeareAnswer(Response response){
+        this.response = response;
+    }
+
+    private interface IFunction {
+        void function(String oldField);
+    }
+    private void repaintFrame(){
+        close();
+        jFrame = new JFrame();
+        run();
+    }
+    private void changeMenuAndLAg(JMenuItem jMenuItem, JMenu menu){
+        jMenuItem.addActionListener((ActionEvent e) -> {
+            menu.setText(jMenuItem.getText());
+            setResourceBundle(Local.getResourceBundleEnglish());
+            repaintFrame();
+        });
+    }
+
 }

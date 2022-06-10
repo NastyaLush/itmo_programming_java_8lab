@@ -20,6 +20,6 @@ public class Info extends AbstractCommand {
      */
     @Override
     public Response execute(String arg, Root root) {
-        return new Response(Colors.BlUE + "Information about collection\n" + Colors.END + root.infoAboutCollection());
+        return new Response("Information about collection\n" + root.infoAboutCollection());
     }
 }

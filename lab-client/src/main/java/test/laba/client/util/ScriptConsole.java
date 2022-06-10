@@ -1,6 +1,7 @@
 package test.laba.client.util;
 
 
+import javafx.beans.binding.StringBinding;
 import test.laba.common.IO.Colors;
 import test.laba.common.exception.ScriptError;
 
@@ -13,6 +14,7 @@ import java.io.IOException;
  */
 public class ScriptConsole extends Console {
     private final BufferedReader reader;
+    private StringBuilder answer  = new StringBuilder();
     private final FileReader fileReader;
 
     /**
@@ -50,6 +52,7 @@ public class ScriptConsole extends Console {
     @Override
     public void print(Object object) {
         System.out.println(object);
+        answer.append(object).append('\n');
     }
 
     /**
@@ -110,5 +113,9 @@ public class ScriptConsole extends Console {
         }
         printError("Ответ не распознан, пожалуйста введите да или нет, вы ввели:" + answer);
         return askQuestion(question);
+    }
+
+    public String getAnswer() {
+        return answer.toString();
     }
 }

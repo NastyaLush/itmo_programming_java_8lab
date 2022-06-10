@@ -25,7 +25,7 @@ public class RemoveLowerKey extends AbstractCommand {
     public Response execute(Response response, BDUsersManager bdUsersManager, BDManager bdManager, Root root) {
         try {
             if (bdManager.removeLowerKey(response, bdUsersManager)) {
-                root.removeIfKeyLess(response.getKey(), bdUsersManager.getId(response.getLogin()));
+                root.removeIfKeyLess(response.getKeyOrID(), bdUsersManager.getId(response.getLogin()));
                 return new Response("the remove lower key was executed");
             } else {
                 return new Response("there is no so products");

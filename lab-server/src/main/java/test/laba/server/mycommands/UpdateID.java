@@ -30,24 +30,35 @@ public class UpdateID extends AbstractCommand {
      */
     public Response execute(Response response, Root root, BDUsersManager bdUsersManager, String login, BDManager bdManager) {
         Response answer;
-        if (response.isFlag()) {
+        if (response.isFlagUdateID()) {
+            Long productID = response.getKeyOrID();
             try {
-                Long key = root.getKeyOnIDIfBelongsToUser(response.getKey(), bdUsersManager.getId(login));
-                bdManager.updateID(response.getProduct(), key);
-                root.updateProductWithKey(key, response.getProduct());
-                answer = new Response("the object was update");
+                Long id = bdUsersManager.getId(login);
+                System.out.println(productID + " " + id);
+                if (root.containsIDAndBelongsToUser(productID, id)) {
+                    try {
+                        Long key = root.getKeyOnIDIfBelongsToUser(response.getKeyOrID(), bdUsersManager.getId(login));
+                        bdManager.updateID(response.getProduct(), key);
+                        root.updateProductWithKey(key, response.getProduct());
+                        answer = new Response("the object was update");
+                    } catch (SQLException e) {
+                        return new ResponseWithError("the command cannot be execute because of " + e.getMessage());
+                    }
+                } else {
+                    answer =  new ResponseWithError("this id is not exists or product not belongs to you");
+                }
             } catch (SQLException e) {
                 return new ResponseWithError("the command cannot be execute because of " + e.getMessage());
             }
 
         } else {
-            Long key = response.getKey();
-            root.getProductByKey(key);
+            Long productID = response.getKeyOrID();
+            root.getProductByKey(productID);
             try {
                 Long id = bdUsersManager.getId(login);
-                if (root.containsIDAndBelongsToUser(key, id)) {
+                if (root.containsIDAndBelongsToUser(productID, id)) {
                     answer =  new Response("this id is exists and product belongs to you, please update product ",
-                            root.getProductByKey(root.getKeyOnIDIfBelongsToUser(key, id)));
+                            root.getProductByKey(root.getKeyOnIDIfBelongsToUser(productID, id)));
                 } else {
                     answer =  new ResponseWithError("this id is not exists or product not belongs to you");
                 }

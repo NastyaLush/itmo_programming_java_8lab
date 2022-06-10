@@ -31,9 +31,9 @@ public class RemoveKey extends AbstractCommand {
     }
 
     public Response execute(BasicResponse basicResponse, Root root, BDManager bdManager, BDUsersManager bdUsersManager) {
-        long key = ((Response) basicResponse).getKey();
+        long key = ((Response) basicResponse).getKeyOrID();
         try {
-            if (bdManager.removeKey(basicResponse.getLogin(), ((Response) basicResponse).getKey(), root, bdUsersManager)) {
+            if (bdManager.removeKey(basicResponse.getLogin(), ((Response) basicResponse).getKeyOrID(), root, bdUsersManager)) {
                 root.remove(key);
             } else {
                 return new Response(Util.giveColor(Colors.BlUE, "the element wasn't deleted"));

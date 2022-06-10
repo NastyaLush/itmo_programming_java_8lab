@@ -1,12 +1,12 @@
 package test.laba.client;
 
-import test.laba.client.frontEnd.Frame;
+import test.laba.client.frontEnd.Frames.Frame;
 import test.laba.client.frontEnd.HomeFrame;
 import test.laba.common.IO.Colors;
+import test.laba.common.responses.Response;
 import test.laba.common.util.Util;
 
 import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Logger;
 
@@ -25,7 +25,7 @@ public final class Client {
     /**
      * the main class create for run
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         final Logger logger = Logger.getLogger(Client.class.getName());
         logger.setLevel(Level.INFO);
         logger.info(Util.giveColor(Colors.BlUE, "the main method starts"));
@@ -33,8 +33,8 @@ public final class Client {
         Condition ready = lock.newCondition();
         Frame frame = new Frame(ready, lock);
         ClientApp clientApp = new ClientApp(frame,ready,lock);
-        //new Thread(frame).start();
-        new Thread(new HomeFrame(ready, lock, "test")).start();
+        new Thread(frame).start();
+        //new Thread(new HomeFrame(ready, lock, "test", new Response(""))).start();
         String port = frame.getPort();
         String host = frame.getHost();
         while (true){

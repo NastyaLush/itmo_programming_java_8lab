@@ -15,14 +15,14 @@ public final class Util {
         System.out.println(colors + s + " " + Colors.END);
     }
 
+    /*public static String giveColor(Colors colors, String s) {
+        return colors + s + " " + Colors.END;
+    }*/
     public static String giveColor(Colors colors, String s) {
-        return colors + s + " " + Colors.END;
+        return s;
     }
-
     public static String giveColor(String s, Colors colors) {
-        return colors + s + " " + Colors.END;
+        return s;
     }
-
-
 
 }

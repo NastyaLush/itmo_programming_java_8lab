@@ -1,57 +1,57 @@
-package test.laba.client.frontEnd;
+package test.laba.client.frontEnd.Frames;
 
 
+import test.laba.client.frontEnd.Constants;
+import test.laba.client.frontEnd.Frames.AbstractFrame;
+import test.laba.client.frontEnd.Local;
 import test.laba.common.responses.Response;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.font.TextAttribute;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 
 
-public class Frame implements Runnable {
-    protected final JFrame jFrame;
-    private final JLabel login = new JLabel("Login", 10);
+public class Frame extends AbstractFrame implements Runnable{
+    private JLabel login;
     private final JTextField textLogin = new JTextField(10);
-    private final JLabel password = new JLabel("Password");
+    private JLabel password;
     private final JPasswordField textPassword = new JPasswordField(10);
-    private final JLabel host = new JLabel("Host");
+    private JLabel host;
     private final JTextField textHost = new JTextField("localhost",10);
-    private final JLabel port = new JLabel("Port");
+    private JLabel port;
     private final JTextField textPort = new JTextField(10);
-    private final JLabel label = new JLabel("Authorisation");
-    private final JButton register = new JButton("Not login yet");
+    private JLabel authorisation;
+    private JButton register;
     private final JPanel mainPanel = new JPanel();
     private String userHost = null;
     private String userPort = null;
-    private Response response = null;
+    protected Response response = null;
     protected final Condition condition;
     protected final Lock lock;
     private boolean isNewUser = false;
+    protected boolean isException = false;
 
 
 
-    public Frame(Condition condition, Lock lock) {
+    public Frame(Condition condition, Lock lock/*, String name*/) {
+        super(new JFrame(/*name*/), Local.getResourceBundleDeafult());
         this.lock = lock;
         this.condition = condition;
-        jFrame = new JFrame("lab 8");
     }
 
-    protected void start() {
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+    private void start() {
+        inisialization();
         jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         jFrame.setSize(screenSize.width - 250, screenSize.height - 250);
         jFrame.setLocationRelativeTo(null);
         jFrame.setMinimumSize(new Dimension(screenSize.width/2, screenSize.height/2));
 
 
-        label.setFont(underLine(new Font("Tw Cen MT", Font.ITALIC, 50)));
-        label.setHorizontalAlignment(JLabel.LEFT);
+        authorisation.setFont(underLine(new Font("Safari", Font.ITALIC, 50)));
+        authorisation.setHorizontalAlignment(JLabel.LEFT);
 
 
         Font labelFont = new Font("Safari", Font.CENTER_BASELINE, 18);
@@ -73,7 +73,7 @@ public class Frame implements Runnable {
         port.setFont(labelFont);
 
 
-        JButton signUp = new JButton("sign up");
+        JButton signUp = new JButton(localisation(resourceBundle, Constants.SING_UP));
         signUp.setFont(new Font("Safari", Font.CENTER_BASELINE, 15));
         signUp.setBackground(Color.gray);
         signUp.setPreferredSize(new Dimension(10000,40));
@@ -88,7 +88,7 @@ public class Frame implements Runnable {
         BoxLayout boxLayout = new BoxLayout(mainPanel,BoxLayout.Y_AXIS);
         mainPanel.setLayout(boxLayout);
 
-        mainPanel.add(label);
+        mainPanel.add(authorisation);
         mainPanel.add(Box.createRigidArea(new Dimension(0,50)));
         mainPanel.add(login);
         mainPanel.add(textLogin);
@@ -130,17 +130,20 @@ public class Frame implements Runnable {
         jFrame.setVisible(true);
         //jFrame.addWindowStateListener();
     }
-    protected Font underLine(Font font){
-        Map<TextAttribute, Object> map = new HashMap<>();
-        map.put(TextAttribute.FONT, font);
-        map.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
-        return Font.getFont(map);
+
+    private void inisialization(){
+        System.out.println(resourceBundle.getString(Constants.AUTHORISATION.getString()));
+        login = new JLabel(localisation(resourceBundle, Constants.LOGIN), 10);
+        password = new JLabel(localisation(resourceBundle, Constants.PASSWORD));
+        host = new JLabel(localisation(resourceBundle, Constants.HOST));
+        port = new JLabel(localisation(resourceBundle, Constants.PORT));
+        authorisation = new JLabel(localisation(resourceBundle, Constants.AUTHORISATION));
+        register = new JButton(localisation(resourceBundle, Constants.NOT_LOGIN_YET));
     }
     private class SignUp implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            String message = "sign up: " + textLogin.getText() + new String(textPassword.getPassword()) + textHost.getText() + textPort.getText();
             userHost = textHost.getText();
             userPort = textPort.getText();
             System.out.println(textLogin.getText());
@@ -155,14 +158,10 @@ public class Frame implements Runnable {
         @Override
         public void actionPerformed(ActionEvent e) {
             isNewUser = true;
-            label.setText("Registration");
+            authorisation.setText(localisation(resourceBundle, Constants.REGISTRATION));
             mainPanel.remove(register);
             jFrame.repaint();
         }
-    }
-
-    public void exception(String exception){
-        JOptionPane.showMessageDialog(null,exception, "error", JOptionPane.ERROR_MESSAGE);
     }
 
     public String getHost() {
@@ -177,6 +176,10 @@ public class Frame implements Runnable {
         return response;
     }
 
+    public JFrame getjFrame() {
+        return jFrame;
+    }
+
     public boolean isNewUser() {
         return isNewUser;
     }
@@ -184,5 +187,9 @@ public class Frame implements Runnable {
     @Override
     public void run() {
         start();
+    }
+    public void prepeareAnswer(Response response, boolean isException){
+        this.response = response;
+        this.isException = isException;
     }
 }

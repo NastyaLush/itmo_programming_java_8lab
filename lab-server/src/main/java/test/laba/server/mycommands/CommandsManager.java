@@ -88,7 +88,9 @@ public class CommandsManager {
     }
 
     public Response chooseCommand(Response response) {
-        history.addToHistory(response.getCommand());
+        if(response.isAddToHistory()) {
+            history.addToHistory(response.getCommand());
+        }
         Response response1 = null;
         AbstractCommand command = this.commands.get(response.getCommand().toLowerCase());
         if (command != null) {
@@ -107,7 +109,7 @@ public class CommandsManager {
                         response1 = removeAnyByUnitOfMeasure.execute(response.getUnitOfMeasure(), root, bdManager, bdUsersManager, response.getLogin());
                         break;
                     case "Insert_Null":
-                        response1 = insertNull.execute(response.getKey(), response, root, bdManager, bdUsersManager);
+                        response1 = insertNull.execute(response.getKeyOrID(), response, root, bdManager, bdUsersManager);
                         break;
                     case "Update_ID":
                         response1 = updateID.execute(response, root, bdUsersManager, response.getLogin(), bdManager);

@@ -23,7 +23,7 @@ public class GroupCountingByPrice extends AbstractCommand {
     public Response execute(String arg, Root root) {
         Map<Long, Long> countingByPrice = root.groupCountingByPrice();
         StringBuilder answer = new StringBuilder();
-        answer.append(Colors.BlUE + "price = count\n" + Colors.END);
+        answer.append("price = count\n" + Colors.END);
         countingByPrice.forEach((key, value) -> {
             answer.append(key);
             answer.append(" =  ");

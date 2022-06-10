@@ -5,7 +5,7 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.logging.Logger;
 
-import test.laba.client.frontEnd.Frame;
+import test.laba.client.frontEnd.Frames.Frame;
 import test.laba.client.frontEnd.HomeFrame;
 import test.laba.client.productFillers.ConsoleParsing;
 import test.laba.client.productFillers.UpdateId;
@@ -41,53 +41,51 @@ public class ClientApp {
     private Wrapper wrapper;
     private boolean isNormalUpdateID = true;
     private final HashSet<String> executeScriptFiles = new HashSet<>();
-    private Frame frame;
+    private final Frame frame;
+    private final HomeFrame homeFrame;
     private boolean isExitInExecuteScript = false;
     private String login;
     private String password;
     private final Condition condition;
     private final Lock lock;
+    private ScriptConsole scriptConsole;
 
     ClientApp(Frame frame, Condition condition, Lock lock) {
         this.lock = lock;
         this.condition =condition;
         LOGGER.setLevel(Level.INFO);
         this.frame = frame;
+        this.homeFrame = new HomeFrame(condition, lock, login, frame.getResponse());
     }
 
     public void interactivelyMode() {
         LOGGER.log(Level.FINE, "The interactively Mode starts");
         try {
             registeringUser();
-            frame = new HomeFrame(condition, lock, login);
-            new Thread(frame).start();
+            frame.close();
+            new Thread(homeFrame).start();
             wrapper.sent(new Response(login, password, Values.COLLECTION.toString()));
             valuesOfCommands = wrapper.readWithMap();
+            System.out.println(valuesOfCommands.size());
             LOGGER.info(Util.giveColor(Colors.BlUE, "Program in an interactive module, for giving information about opportunities write help"));
-            String answer;
-            while (/*(answer = console.read()) != null*/ true) {
+            while (true) {
                 try {
-                    /*String[] command = answer.split(" ", 2);
-                    if (command.length < 2) {
-                        command = new String[]{command[0], ""};
-                    }*/
                     lock.lock();
                     condition.await();
                     lock.unlock();
-
-                    Response response = frame.getResponse();
-                    //sendAndReceiveCommand(command, console);
-                    sendAndReceiveCommand(response, console);
+                    
+                    System.out.println(homeFrame.getResponse());
+                    sendAndReceiveCommand(homeFrame.getResponse());
 
                 } catch (IOException e) {
-                    frame.exception("server was closed, app is finishing work :) \nSee you soon!");
+                    homeFrame.exception("server was closed, app is finishing work :) \nSee you soon!");
                     LOGGER.info(Util.giveColor(Colors.GREEN, "server was closed, app is finishing work :) \nSee you soon!"));
                     break;
                 } catch (CycleInTheScript | ClassNotFoundException e) {
-                    frame.exception(e.getMessage());
+                    homeFrame.exception(e.getMessage());
                     LOGGER.warning(e.getMessage());
                 }
-                if (ifReadyToClose(answer) || isExitInExecuteScript) {
+                if (/*ifReadyToClose(answer) || */isExitInExecuteScript) {
                     wrapper.close();
                     Util.toColor(Colors.GREEN, "see you soon :)");
                     break;
@@ -108,7 +106,7 @@ public class ClientApp {
         LOGGER.fine("update id is executing");
         long id = VariableParsing.toLongNumber(command[1]);
         Response response = new Response(login, password, command[0], id);
-        response.setFlag(false);
+        response.setFlagUdateID(false);
         wrapper.sent(response);
         response = wrapper.readResponse();
         if (response instanceof ResponseWithError) {
@@ -117,7 +115,6 @@ public class ClientApp {
         } else {
             Product product = response.getProduct();
             response = new Response(login, password, Values.PRODUCT_WITH_QUESTIONS.toString(), id, new UpdateId(new ConsoleParsing(console2), console2).execute(product));
-            response.setFlag(true);
         }
         LOGGER.fine("update id was execute");
         return response;
@@ -155,11 +152,47 @@ public class ClientApp {
         return response;
     }
 
-    public void sendAndReceiveCommand(Response response, Console console2) throws IOException, CycleInTheScript, ClassNotFoundException {
+    public void sendAndReceiveCommand(Response response) throws IOException, CycleInTheScript, ClassNotFoundException {
+        LOGGER.fine("send and receive starts ");
+        response.setLoginAndPassword(login, password);
+        if(response.getCommand().equals("execute_script")){
+            readScript(response);
+            homeFrame.prepeareAnswer(new Response(scriptConsole.getAnswer()));
+            lock.lock();
+            condition.signal();
+            lock.unlock();
+        } else {
+
+            if (isNormalUpdateID) {
+                wrapper.sent(response);
+                response = wrapper.readResponse();
+                console.print(response.getCommand());
+                homeFrame.prepeareAnswer(response);
+                /*if (response instanceof ResponseWithError) {
+                    homeFrame.soutAnswer(response, true);
+                } else {
+                    homeFrame.soutAnswer(response, false);
+                }*/
+                lock.lock();
+                condition.signal();
+                lock.unlock();
+                // TODO: 01.06.2022
+                isExitInExecuteScript = ifReadyToClose(response.getCommand().trim());
+                if (response.getCommand().equals(Values.SCRIPT.toString())) {
+                    readScript(response);
+                }
+            } else {
+                isNormalUpdateID = true;
+            }
+        }
+        LOGGER.fine("send and receive finishes");
+    }
+
+    public void sendAndReceiveCommandScript(String[] command, Console console) throws IOException, CycleInTheScript, ClassNotFoundException {
         LOGGER.fine("send and receive starts ");
         Response response;
         if (valuesOfCommands.containsKey(command[0].trim().toLowerCase())) {
-            response = sendUniqueCommand(command, console2);
+            response = sendUniqueCommand(command, scriptConsole);
             if (response == null) {
                 isNormalUpdateID = false;
             }
@@ -170,8 +203,7 @@ public class ClientApp {
         if (isNormalUpdateID) {
             wrapper.sent(response);
             response = wrapper.readResponse();
-            console.print(response.getCommand());
-            // TODO: 01.06.2022
+            scriptConsole.print(response.getCommand());
             isExitInExecuteScript = ifReadyToClose(response.getCommand().trim());
             if (response.getCommand().equals(Values.SCRIPT.toString())) {
                 readScript(response);
@@ -181,7 +213,6 @@ public class ClientApp {
         }
         LOGGER.fine("send and receive finishes");
     }
-
 
     public void run(String host, int port) throws IOException {
         LOGGER.fine("server runs");
@@ -202,14 +233,19 @@ public class ClientApp {
         try (FileReader fr = new FileReader(fileName)) {
             addToStack(fileName);
             try (BufferedReader reader = new BufferedReader(fr)) {
-                ScriptConsole scriptConsole = new ScriptConsole(reader, fr);
+                scriptConsole = new ScriptConsole(reader, fr);
                 Util.toColor(Colors.BlUE, "Start executing script: " + fileName);
                 while (reader.ready() && !isExitInExecuteScript) {
                     String[] command = (reader.readLine().trim() + " ").split(" ", 2);
                     if (command.length < 2) {
                         command = new String[]{command[0], ""};
                     }
-                    sendAndReceiveCommand(command, scriptConsole);
+                    // TODO: 01.06.2022
+                    try {
+                        sendAndReceiveCommandScript(command, scriptConsole);
+                    } catch (ClassNotFoundException e) {
+                        // TODO: 08.06.2022
+                    }
                 }
             }
         } catch (FileNotFoundException e) {
@@ -217,9 +253,9 @@ public class ClientApp {
         } catch (IOException e) {
             LOGGER.warning(Util.giveColor(Colors.RED, "failed to execute the script"));
             cleanStack();
-        } catch (ClassNotFoundException e) {
+        } /*catch (ClassNotFoundException e) {
             LOGGER.warning(Util.giveColor(Colors.RED, "Can not sent command"));
-        } catch (ScriptError e) {
+        } */catch (ScriptError e) {
             LOGGER.warning(Util.giveColor(Colors.RED, "the script was closed"));
         } finally {
             deleteFromStack(fileName);

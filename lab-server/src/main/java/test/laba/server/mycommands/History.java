@@ -44,7 +44,7 @@ public class History extends AbstractCommand {
     public Response execute(String arg, Root root) {
         lock.readLock().lock();
         try {
-            return new Response(Colors.BlUE + "History: " + Colors.END + history);
+            return new Response("History: " + history);
         } finally {
             lock.readLock().unlock();
         }

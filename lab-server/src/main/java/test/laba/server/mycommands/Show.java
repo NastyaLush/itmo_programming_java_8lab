@@ -20,6 +20,8 @@ public class Show extends AbstractCommand {
      */
     @Override
     public Response execute(String arg, Root root) {
-        return new Response(root.showCollection());
+        Response response = new Response(root.showCollection());
+        response.setProductHashMap(root.getProducts());
+        return response;
     }
 }
