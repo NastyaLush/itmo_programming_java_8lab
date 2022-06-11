@@ -1,7 +1,5 @@
 package test.laba.client.util;
 
-import java.util.HashMap;
-
 public enum Constants {
     TITLE("title"),
     AUTHORISATION("authorisation"),
@@ -12,7 +10,7 @@ public enum Constants {
     NOT_LOGIN_YET("notLoginYet"),
     SING_UP("singUp"),
     REGISTRATION("registration"),
-    SORT_BY("sortBy"),
+    FILTER("filter"),
     GROUP_COUNTING_BY_PRICE("groupCountingByPrice"),
     AVERAGE_OF_MANUFACTURE_COST("averageOfManufactureCost"),
     KEY("key"),
@@ -41,9 +39,6 @@ public enum Constants {
     PCS("pcs"),
     MILLILITERS("milliliters"),
     GRAMS("grams"),
-    RANDOM("random"),
-    SORT_A_TO_Z("sortAtoZ"),
-    SORT_Z_TO_A("sortZtoA"),
     ADD_OWNER("addOwner"),
     CAN_NOT_BE_NULL("canNOtBeNull"),
     MUST_BE_BIGGER("mustBeBigger"),
@@ -53,7 +48,9 @@ public enum Constants {
     SPANISH("spanish"),
     LANGUAGE("language"),
     FORMAT("format"),
-    HELP("help");
+    HELP("help"),
+    CANCEL("cancel"),
+    CHOOSE("choose");
 
     private final String string;
 

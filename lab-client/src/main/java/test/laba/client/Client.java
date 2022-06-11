@@ -1,11 +1,15 @@
 package test.laba.client;
 
+import test.laba.client.frontEnd.Frames.Filter;
 import test.laba.client.frontEnd.Frames.Frame;
 import test.laba.client.frontEnd.HomeFrame;
+import test.laba.client.frontEnd.Local;
+import test.laba.client.frontEnd.TableModule;
 import test.laba.common.IO.Colors;
 import test.laba.common.responses.Response;
 import test.laba.common.util.Util;
 
+import java.awt.event.ActionEvent;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Logger;
@@ -26,6 +30,7 @@ public final class Client {
      * the main class create for run
      */
     public static void main(String[] args) throws IOException {
+        //new Filter(new TableModule(Local.getResourceBundleDeafult()), Local.getResourceBundleDeafult()).actionPerformed(new ActionEvent(new Integer(3), 2, "filter"));
         final Logger logger = Logger.getLogger(Client.class.getName());
         logger.setLevel(Level.INFO);
         logger.info(Util.giveColor(Colors.BlUE, "the main method starts"));

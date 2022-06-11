@@ -110,10 +110,6 @@ public class Frame extends AbstractFrame implements Runnable{
         JPanel panel4 = new JPanel();
         JPanel panel5 = new JPanel();
 
-        panel2.setBackground(Color.BLACK);
-        panel5.setBackground(Color.PINK);
-        panel3.setBackground(Color.BLUE);
-        panel4.setBackground(Color.GREEN);
 
         mainPanel.setPreferredSize(new Dimension(jFrame.getWidth()/2,jFrame.getHeight()/2));
         panel2.setPreferredSize(new Dimension(jFrame.getWidth()/4,jFrame.getHeight()));
@@ -131,7 +127,6 @@ public class Frame extends AbstractFrame implements Runnable{
     }
 
     private void inisialization(){
-        System.out.println(resourceBundle.getString(Constants.AUTHORISATION.getString()));
         login = new JLabel(localisation(resourceBundle, Constants.LOGIN), 10);
         password = new JLabel(localisation(resourceBundle, Constants.PASSWORD));
         host = new JLabel(localisation(resourceBundle, Constants.HOST));
@@ -145,7 +140,6 @@ public class Frame extends AbstractFrame implements Runnable{
         public void actionPerformed(ActionEvent e) {
             userHost = textHost.getText();
             userPort = textPort.getText();
-            System.out.println(textLogin.getText());
             response = new Response(textLogin.getText(), new String(textPassword.getPassword()), "");
             lock.lock();
             condition.signal();

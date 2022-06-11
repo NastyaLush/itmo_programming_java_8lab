@@ -73,4 +73,8 @@ public class AbstractFrame implements FrameInterface, Localasiable {
     public void setResourceBundle(ResourceBundle resourceBundle) {
         this.resourceBundle = resourceBundle;
     }
+
+    protected String local(Constants constants) {
+        return localisation(resourceBundle, constants);
+    }
 }

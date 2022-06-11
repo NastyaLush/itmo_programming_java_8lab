@@ -63,7 +63,6 @@ public class ClientApp {
             new Thread(homeFrame).start();
             wrapper.sent(new Response(login, password, Values.COLLECTION.toString()));
             valuesOfCommands = wrapper.readWithMap();
-            System.out.println(valuesOfCommands.size());
             LOGGER.info(Util.giveColor(Colors.BlUE, "Program in an interactive module, for giving information about opportunities write help"));
             while (true) {
                 try {

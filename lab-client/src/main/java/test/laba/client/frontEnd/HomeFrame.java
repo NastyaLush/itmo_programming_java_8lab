@@ -1,8 +1,6 @@
 package test.laba.client.frontEnd;
 
-import test.laba.client.frontEnd.Frames.ChangeProductFrame;
-import test.laba.client.frontEnd.Frames.ChangeProductFrameTable;
-import test.laba.client.frontEnd.Frames.FrameProduct;
+import test.laba.client.frontEnd.Frames.*;
 import test.laba.client.util.VariableParsing;
 import test.laba.common.dataClasses.*;
 import test.laba.common.exception.VariableException;
@@ -19,7 +17,7 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 
 public class HomeFrame extends FrameProduct implements Runnable {
-    private JPanel mainPanel = new JPanel();
+    private TablePanel mainPanel;
     private final String login;
     private final JLabel userPicture = new JLabel();
     private TableModule tableModule;
@@ -41,7 +39,6 @@ public class HomeFrame extends FrameProduct implements Runnable {
     }
 
     public void run() {
-        System.out.println(resourceBundle.getLocale());
         UIManager.put("swing.boldMetal", Boolean.FALSE);
         jFrame.setName(localisation(resourceBundle, Constants.TITLE));
         jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -102,6 +99,7 @@ public class HomeFrame extends FrameProduct implements Runnable {
 
         JButton manCost = createButtonCommand(Command.AVERAGE_OF_MANUFACTURE_COST.getString(), Constants.AVERAGE_OF_MANUFACTURE_COST);
         JButton groupCountingByPrice = createButtonCommand(Command.GROUP_COUNTING_BY_PRICE.getString(), Constants.GROUP_COUNTING_BY_PRICE);
+        JButton filter = createFilter(Command.FILTER.getString(), Constants.FILTER);
 
 
         JMenu lang = new JMenu(localisation(resourceBundle, Constants.LANGUAGE));
@@ -130,10 +128,9 @@ public class HomeFrame extends FrameProduct implements Runnable {
 
         JMenuBar language = new JMenuBar();
         language.add(lang);
-        language.setBackground(green);
-        language.setForeground(Color.BLACK);
+        language.setBackground(Color.BLACK);
+        language.setForeground(Color.WHITE);
 
-        JMenuBar sortBy = createSortBy();
 
         JPanel leftPanel = new JPanel();
         JPanel upPanel = new JPanel();
@@ -143,7 +140,7 @@ public class HomeFrame extends FrameProduct implements Runnable {
         upPanel.add(Box.createRigidArea(new Dimension(5, 0)));
         upPanel.add(language, BorderLayout.WEST);
         upPanel.add(Box.createRigidArea(new Dimension(5, 0)));
-        upPanel.add(sortBy, BorderLayout.WEST);
+        upPanel.add(filter, BorderLayout.WEST);
         upPanel.add(Box.createRigidArea(new Dimension(5, 0)));
         upPanel.add(groupCountingByPrice, BorderLayout.WEST);
         upPanel.add(Box.createRigidArea(new Dimension(5, 0)));
@@ -153,7 +150,7 @@ public class HomeFrame extends FrameProduct implements Runnable {
         upPanel.add(Box.createRigidArea(new Dimension(5, 0)));
         upPanel.add(userPicture, BorderLayout.NORTH);
 
-        JButton picture = createPictureButton("graphics", green, "picture.png", new Picture());
+        JButton picture = createPictureButton("graphics", green, "picture.png", new Picture(jFrame,userName, userPicture));
         JButton restart = createPictureButton("show", green, "restart.png", new CommandWithoutAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -210,26 +207,6 @@ public class HomeFrame extends FrameProduct implements Runnable {
         jFrame.setVisible(true);
     }
 
-    private JMenuBar createSortBy() {
-        JMenu sort = new JMenu(localisation(resourceBundle, Constants.SORT_BY));
-        sort.setFont(new Font("Safari", Font.BOLD, 15));
-        sort.setPreferredSize(new Dimension(100, 250));
-        sort.setForeground(Color.WHITE);
-        JMenuItem aToZ = new JMenuItem(localisation(resourceBundle, Constants.SORT_A_TO_Z));
-        JMenuItem zToA = new JMenuItem(localisation(resourceBundle, Constants.SORT_Z_TO_A));
-        JMenuItem random = new JMenuItem(localisation(resourceBundle, Constants.RANDOM));
-
-        sort.add(aToZ);
-        sort.add(zToA);
-        sort.add(random);
-
-        JMenuBar sortBy = new JMenuBar();
-        sortBy.add(sort);
-        sortBy.setBackground(Color.BLACK);
-        sortBy.setForeground(Color.WHITE);
-
-        return sortBy;
-    }
 
     private void repaint() {
         response = new Response("show");
@@ -250,39 +227,10 @@ public class HomeFrame extends FrameProduct implements Runnable {
         tableModule.addProducts(response.getProductHashMap());
         repaint();
     }
-
-    private class Picture implements ActionListener {
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            JFrame pictureFrame = new JFrame();
-            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-            pictureFrame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-            pictureFrame.setSize(screenSize.width - 250, screenSize.height);
-            pictureFrame.setLocationRelativeTo(null);
-            pictureFrame.setMinimumSize(new Dimension(screenSize.width / 2, screenSize.height / 2));
-
-            JPanel upPanel = new JPanel();
-            pictureFrame.getContentPane().add(BorderLayout.NORTH, upPanel);
-            upPanel.setPreferredSize(new Dimension(jFrame.getWidth(), jFrame.getHeight() / 10));
-            upPanel.setLayout(new BoxLayout(upPanel, BoxLayout.X_AXIS));
-            upPanel.setBackground(Color.BLACK);
-
-            upPanel.add(Box.createRigidArea(new Dimension(screenSize.width - 500, 0)));
-            upPanel.add(userName);
-            upPanel.add(Box.createRigidArea(new Dimension(5, 0)));
-            upPanel.add(userPicture);
-            JPanel activePanel = new JPanel();
-
-
-            pictureFrame.setLayout(new BorderLayout());
-            pictureFrame.getContentPane().add(upPanel, BorderLayout.NORTH);
-            pictureFrame.getContentPane().add(activePanel, BorderLayout.CENTER);
-
-
-            pictureFrame.setVisible(true);
-        }
+    private void repaintFilter(){
+        repaint();
     }
+
 
     private class CommandWithoutAction implements ActionListener {
         @Override
@@ -547,7 +495,6 @@ public class HomeFrame extends FrameProduct implements Runnable {
             int result = fileChooser.showOpenDialog(null);
             // Если директория выбрана, покажем ее в сообщении
             if (result == JFileChooser.APPROVE_OPTION) {
-                System.out.println(fileChooser.getSelectedFile().getAbsolutePath());
                 response = new Response(Command.EXECUTE_SCRIPT.getString());
                 response.setMessage(fileChooser.getSelectedFile().getAbsolutePath());
 
@@ -594,13 +541,30 @@ public class HomeFrame extends FrameProduct implements Runnable {
         return button;
     }
 
+    private JButton createFilter(String name, Constants command) {
+        JButton jButton;
+        jButton = new JButton(localisation(resourceBundle, command));
+        jButton.setFont(new Font("Safari", Font.ITALIC, 20));
+        jButton.setBackground(Color.BLACK);
+        jButton.setForeground(Color.WHITE);
+        jButton.addActionListener(
+                new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        new Filter(tableModule, resourceBundle) {
+                            @Override
+                            public void repaint() {
+                                repaintFilter();
+                            }
+                        }.actionPerformed(e,jFrame);
+                    }
+                });
+        return jButton;
+    }
+
     private JButton createButtonCommand(String name, Constants command) {
         JButton jButton;
-        if (name.equals(Command.AVERAGE_OF_MANUFACTURE_COST.getString())) {
-            jButton = new JButton(localisation(resourceBundle, Constants.AVERAGE_OF_MANUFACTURE_COST));
-        } else {
-            jButton = new JButton(localisation(resourceBundle, Constants.GROUP_COUNTING_BY_PRICE));
-        }
+        jButton = new JButton(localisation(resourceBundle, command));
         jButton.setFont(new Font("Safari", Font.ITALIC, 20));
         jButton.setBackground(Color.BLACK);
         jButton.setForeground(Color.WHITE);
@@ -652,7 +616,6 @@ public class HomeFrame extends FrameProduct implements Runnable {
 
     private void showHelp(String s) {
         show(localisation(resourceBundle, Constants.HELP));
-        System.out.println(localisation(resourceBundle, Constants.HELP));
     }
 
     private interface IFunction {

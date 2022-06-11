@@ -11,8 +11,10 @@ import java.util.*;
 
 public class TableModule extends AbstractTableModel implements Localasiable {
     private int columnCount = 15;
-    private ArrayList<String[]> list = new ArrayList<>();
+    private ArrayList<ArrayList<?>> values = new ArrayList<>();
     private HashMap<Integer, String> head = new HashMap<>();
+    private HashMap<Integer, Class> classField = new HashMap<>();
+    private ArrayList<ArrayList<?>> constValues = new ArrayList<>();
     protected final ResourceBundle resourceBundle;
     private final DateFormat dateFormat;
     private final HashMap<UnitOfMeasure, Constants> unitOfMeasure = new HashMap<UnitOfMeasure, Constants>() {{
@@ -24,16 +26,15 @@ public class TableModule extends AbstractTableModel implements Localasiable {
     public TableModule(ResourceBundle resourceBundle) {
         this.resourceBundle = resourceBundle;
         this.dateFormat = DateFormat.getDateTimeInstance(DateFormat.DEFAULT, DateFormat.DEFAULT, resourceBundle.getLocale());
-        System.out.println("tyuiop");
         inizialization();
     }
 
     @Override
     public int getRowCount() {
-        if (list == null) {
-            list = new ArrayList<>();
+        if (constValues == null) {
+            constValues = new ArrayList<>();
         }
-        return list.size();
+        return values.size();
     }
 
     @Override
@@ -42,15 +43,20 @@ public class TableModule extends AbstractTableModel implements Localasiable {
     }
 
     @Override
-    public Object getValueAt(int rowIndex, int columnIndex) {
-        return list.get(rowIndex)[columnIndex];
+    public Class<?> getColumnClass(int columnIndex) {
+        return classField.get(columnIndex);
     }
 
-    public String getValueAt(String rowName, int columnIndex) {
+    @Override
+    public Object getValueAt(int rowIndex, int columnIndex) {
+        return values.get(rowIndex).get(columnIndex);
+    }
+
+    public Object getValueAt(String rowName, int columnIndex) {
         if (head.containsValue(rowName.trim())) {
             Optional<Map.Entry<Integer, String>> row = head.entrySet().stream().filter(e -> e.getValue().equals(rowName.trim())).findFirst();
             int rowIndex = row.get().getKey();
-            return list.get(columnIndex)[rowIndex];
+            return  constValues.get(columnIndex).get(rowIndex);
         }
         return null;
     }
@@ -71,30 +77,38 @@ public class TableModule extends AbstractTableModel implements Localasiable {
 
 
     public void addProducts(HashMap<Long, Product> products) {
-        list.clear();
+        values.clear();
         products.entrySet().forEach(e -> addProduct(e.getKey(), e.getValue()));
     }
 
     public void addProduct(Long key, Product product) {
-        String[] newProduct = new String[15];
-        newProduct[0] = String.valueOf(key);
-        newProduct[1] = String.valueOf(product.getId());
-        newProduct[2] = product.getName();
-        newProduct[3] = String.valueOf(product.getCoordinates().getX());
-        newProduct[4] = String.valueOf(product.getCoordinates().getY());
-        newProduct[5] = dateFormat.format(Date.from(product.getCreationDate().toInstant()));
-        newProduct[6] = String.valueOf(product.getPrice());
-        newProduct[7] = String.valueOf(product.getManufactureCost());
-        newProduct[8] = localisation(resourceBundle, unitOfMeasure.get(product.getUnitOfMeasure()));
+        ArrayList<Object> newProduct = new ArrayList<>(columnCount);
+        newProduct.add(key);
+        newProduct.add(product.getId());
+        newProduct.add(product.getName());
+        newProduct.add(product.getCoordinates().getX());
+        newProduct.add(product.getCoordinates().getY());
+        newProduct.add(dateFormat.format(Date.from(product.getCreationDate().toInstant())));
+        newProduct.add(product.getPrice());
+        newProduct.add(product.getManufactureCost());
+        newProduct.add(localisation(resourceBundle, unitOfMeasure.get(product.getUnitOfMeasure())));
         if (product.getOwner() != null) {
-            newProduct[9] = product.getOwner().getName();
-            newProduct[10] = dateFormat.format(Date.from(product.getOwner().getBirthday().toInstant()));
-            newProduct[11] = String.valueOf(product.getOwner().getHeight());
-            newProduct[12] = String.valueOf(product.getOwner().getLocation().getX());
-            newProduct[13] = String.valueOf(product.getOwner().getLocation().getY());
-            newProduct[14] = product.getOwner().getLocation().getName();
+            newProduct.add(product.getOwner().getName());
+            newProduct.add(dateFormat.format(Date.from(product.getOwner().getBirthday().toInstant())));
+            newProduct.add(product.getOwner().getHeight());
+            newProduct.add(product.getOwner().getLocation().getX());
+            newProduct.add(product.getOwner().getLocation().getY());
+            newProduct.add(product.getOwner().getLocation().getName());
+        } else {
+            newProduct.add(null);
+            newProduct.add(null);
+            newProduct.add(null);
+            newProduct.add(null);
+            newProduct.add(null);
+            newProduct.add(null);
         }
-        list.add(newProduct);
+        values.add(newProduct);
+        constValues.add(newProduct);
 
     }
 
@@ -114,7 +128,40 @@ public class TableModule extends AbstractTableModel implements Localasiable {
         head.put(12, localisation(resourceBundle, Constants.LOCATION_X));
         head.put(13, localisation(resourceBundle, Constants.LOCATION_Y));
         head.put(14, localisation(resourceBundle, Constants.LOCATION_NAME));
+
+        classField.put(0, Long.class);
+        classField.put(1, Long.class);
+        classField.put(2, String.class);
+        classField.put(3, Integer.class);
+        classField.put(4, Float.class);
+        classField.put(5, String.class);
+        classField.put(6, Long.class);
+        classField.put(7, Integer.class);
+        classField.put(8, String.class);
+        classField.put(9, String.class);
+        classField.put(10, String.class);
+        classField.put(11, Integer.class);
+        classField.put(12, Long.class);
+        classField.put(13, Integer.class);
+        classField.put(14, String.class);
     }
 
+    public HashMap<Integer, String> getHead() {
+        return head;
+    }
 
+    public ArrayList<ArrayList<?>> getValues() {
+        return values;
+    }
+
+    public ArrayList<ArrayList<?>> getConstValues() {
+        return constValues;
+    }
+
+    public void setFilterCollection(ArrayList<?> filter) {
+        this.values.add(filter);
+    }
+    public void clearFilter(){
+        this.values.clear();
+    }
 }

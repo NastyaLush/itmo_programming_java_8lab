@@ -231,7 +231,4 @@ public abstract class ChangeProductFrame extends FrameProduct implements ActionL
         }
     }
 
-    private String local(Constants constants) {
-        return localisation(resourceBundle, constants);
-    }
 }

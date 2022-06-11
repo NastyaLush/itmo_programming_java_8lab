@@ -23,6 +23,7 @@ public enum Command {
     HEIGHT("height"),
     LOCATION_X("location X"),
     LOCATION_Y("location Y"),
+    FILTER("filter"),
     LOCATION_NAME("location Name");
 
     private final String string;

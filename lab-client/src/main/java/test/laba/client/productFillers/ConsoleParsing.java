@@ -85,7 +85,6 @@ public class ConsoleParsing {
             console.ask(question);
             simpleField = console.scanner();
             if (simpleField != null) {
-                System.out.println(text(field) + " N" + simpleField);
                 value = (T) pars.function(text(field), simpleField);
             } else {
                 throw new VariableException("не может быть null");

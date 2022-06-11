@@ -29,11 +29,11 @@ package test.laba.client;
  * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ *//*
 
-/*
- * TableSelectionDemo.java requires no other files.
- */
+*//*
+ * NewFilterTable.java requires no other files.
+ *//*
 
 import test.laba.common.dataClasses.*;
 import test.laba.common.exception.CreateError;
@@ -43,15 +43,19 @@ import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.Dimension;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.stream.Stream;
+
+import static com.sun.glass.ui.Cursor.setVisible;
+
+*//*
 
 public class TableSelectionDemo extends JPanel
         implements ActionListener {
@@ -259,4 +263,45 @@ public class TableSelectionDemo extends JPanel
         });
     }
 
+}
+*/
+import java.awt.BorderLayout; import java.awt.event.ActionEvent; import java.awt.event.ActionListener;
+import java.util.Date;
+import javax.swing.JButton; import javax.swing.JFrame; import javax.swing.JLabel; import javax.swing.JPanel; import javax.swing.JScrollPane; import javax.swing.JTable; import javax.swing.JTextField; import javax.swing.RowFilter; import javax.swing.table.DefaultTableModel; import javax.swing.table.TableModel; import javax.swing.table.TableRowSorter;
+public class NewFilterTable extends JFrame {
+
+    public NewFilterTable() {
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        String[] columns = {"ID", "Des", "Date", "Fixed"};
+        Object[][] rows = {{1, "C", new Date(), new Date()}, {2, "G", new Date(), new Date()},
+                {5, "F", new Date(), new Date()}};
+        TableModel model = new DefaultTableModel(rows, columns);
+        JTable table = new JTable(model);
+        final TableRowSorter<TableModel> sorter;
+        sorter = new TableRowSorter<TableModel>(model);
+        table.setRowSorter(sorter);
+        getContentPane().add(new JScrollPane(table));
+        JPanel pnl = new JPanel();
+        pnl.add(new JLabel("Filter expression:"));
+        final JTextField txtFE = new JTextField(25);
+        pnl.add(txtFE);
+        JButton btnSetFE = new JButton("Set Filter Expression");
+        ActionListener al;
+        al = new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String expr = txtFE.getText();
+                sorter.setRowFilter(RowFilter.regexFilter(expr));
+                sorter.setSortKeys(null);
+            }
+        };
+        btnSetFE.addActionListener(al);
+        pnl.add(btnSetFE);
+        getContentPane().add(pnl, BorderLayout.SOUTH);
+        setSize(750, 150);
+        setVisible(true);
+    }
+
+    public static void main(String[] args) {
+        new NewFilterTable();
+    }
 }
