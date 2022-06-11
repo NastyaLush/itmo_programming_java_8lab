@@ -42,6 +42,7 @@ public abstract class ChangeProductFrameTable extends ChangeProductFrame {
         mainPlusPanel.add(enter);
         return textField;
     }
+
     protected JMenu unitOfMeas(String name, String description) {
         JLabel label = new JLabel(name + "(" + description + ")");
         label.setForeground(Color.gray);
@@ -57,7 +58,8 @@ public abstract class ChangeProductFrameTable extends ChangeProductFrame {
         mainPlusPanel.add(Box.createRigidArea(new Dimension(0, 13)));
         return menu;
     }
-    protected String getDescription(String name){
+
+    protected String getDescription(String name) {
         return tableModule.getValueAt(name, table.getColumnForChanging());
     }
 }

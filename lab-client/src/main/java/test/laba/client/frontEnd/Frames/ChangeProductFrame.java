@@ -1,7 +1,6 @@
 package test.laba.client.frontEnd.Frames;
 
-import test.laba.client.frontEnd.Constants;
-import test.laba.client.frontEnd.Local;
+import test.laba.client.util.Constants;
 import test.laba.client.util.VariableParsing;
 import test.laba.common.dataClasses.Coordinates;
 import test.laba.common.dataClasses.Location;
@@ -17,10 +16,11 @@ import java.util.HashSet;
 import java.util.ResourceBundle;
 import java.util.Set;
 
-public abstract class ChangeProductFrame extends FrameProduct implements ActionListener{
-    protected final JPanel mainPlusPanel = new JPanel();
+
+public abstract class ChangeProductFrame extends FrameProduct implements ActionListener {
+    protected JPanel mainPlusPanel;
     private final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-    protected final JButton ok;
+    protected JButton ok;
     private JTextField textKey;
     private JTextField textProductName;
     private JTextField textCoordinateX;
@@ -32,16 +32,20 @@ public abstract class ChangeProductFrame extends FrameProduct implements ActionL
     protected final Font labelFont = new Font("Safari", Font.CENTER_BASELINE, 13);
     protected final Set<Component> ownersLabels = new HashSet<>();
     private NeedOwner needOwner;
+
     public ChangeProductFrame(ResourceBundle resourceBundle) {
         super(new JFrame(), resourceBundle);
-        ok = new JButton(localisation(resourceBundle, Constants.OK));
     }
 
-
+    public void revalidate() {
+        jFrame = new JFrame();
+        ok = new JButton(localisation(resourceBundle, Constants.OK));
+        mainPlusPanel = new JPanel();
+    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-
+        revalidate();
         jFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         jFrame.setSize(screenSize.width / 2, screenSize.height / 4);
         jFrame.setLocation(30, 30);
@@ -72,21 +76,23 @@ public abstract class ChangeProductFrame extends FrameProduct implements ActionL
         jFrame.add(mainPlusPanel, BorderLayout.CENTER);
         jFrame.setVisible(true);
     }
+
     protected abstract void addOkListener();
+
     protected abstract class OkListener implements ActionListener {
         protected abstract void createResponse(Product product, Long key);
 
         protected Product addProduct() throws VariableException {
             Product product = new Product();
             //product.setId();
-            product.setName(VariableParsing.toRightName(textProductName.getText()));
+            product.setName(VariableParsing.toRightName(local(Constants.PRODUCT_NAME), textProductName.getText()));
             Coordinates coordinates = new Coordinates();
-            coordinates.setX(VariableParsing.toRightX(textCoordinateX.getText()));
-            coordinates.setY(VariableParsing.toRightY(textCoordinateY.getText()));
+            coordinates.setX(VariableParsing.toRightX(local(Constants.COORDINATE_X), textCoordinateX.getText()));
+            coordinates.setY(VariableParsing.toRightY(local(Constants.COORDINATE_Y), textCoordinateY.getText()));
             product.setCoordinates(coordinates);
-            product.setPrice(VariableParsing.toRightPrice(textPrice.getText()));
-            product.setManufactureCost(VariableParsing.toRightNumberInt(textManufactoreCost.getText()));
-            product.setUnitOfMeasure(VariableParsing.toRightUnitOfMeasure(textUM.getText()));
+            product.setPrice(VariableParsing.toRightPrice(local(Constants.PRICE), textPrice.getText()));
+            product.setManufactureCost(VariableParsing.toRightNumberInt(local(Constants.MANUFACTURE_COST), textManufactoreCost.getText()));
+            product.setUnitOfMeasure(VariableParsing.toRightUnitOfMeasure(local(Constants.UNIT_OF_MEASURE), textUM.getName()));
             if (addOwner.isSelected()) {
                 product.setOwner(needOwner.parsingDate());
             }
@@ -94,10 +100,11 @@ public abstract class ChangeProductFrame extends FrameProduct implements ActionL
         }
 
         protected abstract void sentProduct(Long key, Product product);
+
         @Override
         public void actionPerformed(ActionEvent e) {
             try {
-                Long key = VariableParsing.toRightNumberLong(textKey.getText());
+                Long key = VariableParsing.toRightNumberLong(local(Constants.KEY), textKey.getText());
                 Product product = addProduct();
 
                 createResponse(product, key);
@@ -136,16 +143,19 @@ public abstract class ChangeProductFrame extends FrameProduct implements ActionL
         JMenu menu = new JMenu(name);
         menu.setPreferredSize(new Dimension(400, 50));
         menu.setFont(new Font("Safari", Font.CENTER_BASELINE, 13));
-        JMenuItem rus = new JMenuItem("PCS");
-        changeMenuName(rus, menu);
-        JMenuItem nor = new JMenuItem("MILLILITERS");
-        changeMenuName(nor, menu);
-        JMenuItem fr = new JMenuItem("GRAMS");
-        changeMenuName(fr, menu);
+        JMenuItem pcs = new JMenuItem(localisation(resourceBundle, Constants.PCS));
+        pcs.setName(Constants.PCS.getString());
+        changeMenuName(pcs, menu);
+        JMenuItem millilitres = new JMenuItem(localisation(resourceBundle, Constants.MILLILITERS));
+        millilitres.setName(Constants.MILLILITERS.getString());
+        changeMenuName(millilitres, menu);
+        JMenuItem grams = new JMenuItem(localisation(resourceBundle, Constants.GRAMS));
+        grams.setName(Constants.GRAMS.getString());
+        changeMenuName(grams, menu);
 
-        menu.add(rus);
-        menu.add(nor);
-        menu.add(fr);
+        menu.add(pcs);
+        menu.add(millilitres);
+        menu.add(grams);
         return menu;
 
     }
@@ -189,12 +199,12 @@ public abstract class ChangeProductFrame extends FrameProduct implements ActionL
             jFrame.setMinimumSize(new Dimension(screenSize.width / 2, screenSize.height / 10 * 8));
             if (addOwner.isSelected()) {
                 mainPlusPanel.remove(ok);
-                textPersonName = createButtonGroupe(localisation(resourceBundle, Constants.PERSON_NAME), localisation(resourceBundle, Constants.CAN_NOT_BE_NULL), true);
-                textPersonBirthday = createButtonGroupe(localisation(resourceBundle, Constants.BIRTHDAY), localisation(resourceBundle, Constants.CAN_NOT_BE_NULL), true);
-                textPersonHeight = createButtonGroupe(localisation(resourceBundle, Constants.HEIGHT), localisation(resourceBundle, Constants.MUST_BE_BIGGER) + "0" + localisation(resourceBundle, Constants.CAN_NOT_BE_NULL), true);
-                textLocationX = createButtonGroupe(localisation(resourceBundle, Constants.LOCATION_X), "", true);
-                textLocationY = createButtonGroupe(localisation(resourceBundle, Constants.LOCATION_Y), "", true);
-                textLocationName = createButtonGroupe(localisation(resourceBundle, Constants.LOCATION_NAME), localisation(resourceBundle, Constants.CAN_NOT_BE_NULL), true);
+                textPersonName = createButtonGroupe(local(Constants.PERSON_NAME), local(Constants.CAN_NOT_BE_NULL), true);
+                textPersonBirthday = createButtonGroupe(local(Constants.BIRTHDAY), local(Constants.CAN_NOT_BE_NULL) + local(Constants.FORMAT), true);
+                textPersonHeight = createButtonGroupe(local(Constants.HEIGHT), local(Constants.MUST_BE_BIGGER) + "0" + local(Constants.CAN_NOT_BE_NULL), true);
+                textLocationX = createButtonGroupe(local(Constants.LOCATION_X), "", true);
+                textLocationY = createButtonGroupe(local(Constants.LOCATION_Y), "", true);
+                textLocationName = createButtonGroupe(local(Constants.LOCATION_NAME), local(Constants.CAN_NOT_BE_NULL), true);
                 mainPlusPanel.add(ok);
                 mainPlusPanel.validate();
                 jFrame.validate();
@@ -206,17 +216,22 @@ public abstract class ChangeProductFrame extends FrameProduct implements ActionL
 
         }
 
+
         public Person parsingDate() throws VariableException {
             Person person = new Person();
-            person.setName(VariableParsing.toRightName(textPersonName.getText()));
-            person.setBirthday(VariableParsing.toRightBirthday(textPersonBirthday.getText()));
-            person.setHeight(VariableParsing.toRightNumberInt(textPersonHeight.getText()));
+            person.setName(VariableParsing.toRightName(local(Constants.PERSON_NAME), textPersonName.getText()));
+            person.setBirthday(VariableParsing.toRightBirthday(local(Constants.BIRTHDAY), textPersonBirthday.getText()));
+            person.setHeight(VariableParsing.toRightNumberInt(local(Constants.HEIGHT), textPersonHeight.getText()));
             Location location = new Location();
-            location.setX(VariableParsing.toRightNumberLong(textLocationX.getText()));
-            location.setY(VariableParsing.toRightNumberInt(textLocationY.getText()));
-            location.setName(VariableParsing.toRightName(textLocationName.getText()));
+            location.setX(VariableParsing.toRightNumberLong(local(Constants.LOCATION_X), textLocationX.getText()));
+            location.setY(VariableParsing.toRightNumberInt(local(Constants.LOCATION_Y), textLocationY.getText()));
+            location.setName(VariableParsing.toRightName(local(Constants.LOCATION_NAME), textLocationName.getText()));
             person.setLocation(location);
             return person;
         }
+    }
+
+    private String local(Constants constants) {
+        return localisation(resourceBundle, constants);
     }
 }

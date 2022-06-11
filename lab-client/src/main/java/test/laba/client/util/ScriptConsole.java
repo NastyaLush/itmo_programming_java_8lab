@@ -14,7 +14,7 @@ import java.io.IOException;
  */
 public class ScriptConsole extends Console {
     private final BufferedReader reader;
-    private StringBuilder answer  = new StringBuilder();
+    private StringBuilder answer = new StringBuilder();
     private final FileReader fileReader;
 
     /**
@@ -64,6 +64,7 @@ public class ScriptConsole extends Console {
     public void printError(Object object) {
         System.out.println(Colors.RED + object.toString() + Colors.END);
         try {
+            answer.append(object);
             fileReader.close();
             reader.close();
         } catch (IOException e) {

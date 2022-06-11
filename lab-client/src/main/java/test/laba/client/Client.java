@@ -32,12 +32,12 @@ public final class Client {
         ReentrantLock lock = new ReentrantLock();
         Condition ready = lock.newCondition();
         Frame frame = new Frame(ready, lock);
-        ClientApp clientApp = new ClientApp(frame,ready,lock);
+        ClientApp clientApp = new ClientApp(frame, ready, lock);
         new Thread(frame).start();
         //new Thread(new HomeFrame(ready, lock, "test", new Response(""))).start();
         String port = frame.getPort();
         String host = frame.getHost();
-        while (true){
+        while (true) {
             try {
                 lock.lock();
                 ready.await();
@@ -48,10 +48,9 @@ public final class Client {
                 frame.exception(e.getMessage());
             }
             try {
-                if (checkPort(port) && checkHost(host)){
+                if (checkPort(port) && checkHost(host)) {
                     break;
-                }
-                else {
+                } else {
                     frame.exception("Please check port and host (port must be between 1 and 6553)");
                 }
             } catch (IOException e) {
@@ -74,20 +73,20 @@ public final class Client {
             default:
                 logger.severe(Util.giveColor(Colors.RED, "Please write port and host( default it's localhost)"));
         }*/
-            try {
-                /*if (checkPort(port) && checkHost(host)) {*/
-                    clientApp.run(host, getPort(port));
-                    //Frame frame = new Frame();
+        try {
+            /*if (checkPort(port) && checkHost(host)) {*/
+            clientApp.run(host, getPort(port));
+            //Frame frame = new Frame();
                 /*} else {
                     logger.severe(Util.giveColor(Colors.RED, "Can't connect to the server, please check host address and port"));
                 }*/
-            } catch (IOException e) {
-                frame.exception("Can't connect to the server, check host address and port, the reason (" + e.getMessage() + ")");
-                logger.severe(Util.giveColor(Colors.RED, "Can't connect to the server, check host address and port: " + e.getMessage()));
-            } catch (NumberFormatException e) {
-                frame.exception("impossible pars host address and port " + e.getMessage());
-                logger.severe(Util.giveColor(Colors.RED, "impossible pars host address and port "));
-            }
+        } catch (IOException e) {
+            frame.exception("Can't connect to the server, check host address and port, the reason (" + e.getMessage() + ")");
+            logger.severe(Util.giveColor(Colors.RED, "Can't connect to the server, check host address and port: " + e.getMessage()));
+        } catch (NumberFormatException e) {
+            frame.exception("impossible pars host address and port " + e.getMessage());
+            logger.severe(Util.giveColor(Colors.RED, "impossible pars host address and port "));
         }
+    }
 
 }

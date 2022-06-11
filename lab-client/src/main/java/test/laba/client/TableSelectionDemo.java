@@ -49,6 +49,9 @@ import java.awt.Dimension;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.stream.Stream;
 
 public class TableSelectionDemo extends JPanel
         implements ActionListener {
@@ -66,7 +69,7 @@ public class TableSelectionDemo extends JPanel
         product.setId(21);
         product.setCoordinates(new Coordinates(123, (float) 32L));
         try {
-            product.setOwner(new Person("sas", ZonedDateTime.now(), 123, new Location(12L, 12,"hh")));
+            product.setOwner(new Person("sas", ZonedDateTime.now(), 123, new Location(12L, 12, "hh")));
         } catch (CreateError e) {
             throw new RuntimeException(e);
         } catch (VariableException e) {
@@ -88,7 +91,6 @@ public class TableSelectionDemo extends JPanel
         output.setEditable(false);
         add(new JScrollPane(output));
     }
-
 
 
     public void actionPerformed(ActionEvent event) {
@@ -137,7 +139,7 @@ public class TableSelectionDemo extends JPanel
 
         @Override
         public int getRowCount() {
-            if(list == null) {
+            if (list == null) {
                 list = new ArrayList<>();
             }
             return list.size();
@@ -229,81 +231,6 @@ public class TableSelectionDemo extends JPanel
 
     }
 
-    /*class MyTableModel extends AbstractTableModel {
-        private String[] columnNames = {"First Name",
-                "Last Name",
-                "Sport",
-                "# of Years",
-                "Vegetarian"};
-        private Object[][] data = {
-                {"Kathy", "Smith",
-                        "Snowboarding", new Integer(5), new Boolean(false)},
-                {"John", "Doe",
-                        "Rowing", new Integer(3), new Boolean(true)},
-                {"Sue", "Black",
-                        "Knitting", new Integer(2), new Boolean(false)},
-                {"Jane", "White",
-                        "Speed reading", new Integer(20), new Boolean(true)},
-                {"Joe", "Brown",
-                        "Pool", new Integer(10), new Boolean(false)}
-        };
-
-        public int getColumnCount() {
-            return columnNames.length;
-        }
-
-        public int getRowCount() {
-            return data.length;
-        }
-
-        public String getColumnName(int col) {
-            return columnNames[col];
-        }
-
-        public Object getValueAt(int row, int col) {
-            return data[row][col];
-        }
-
-        *//*
-         * JTable uses this method to determine the default renderer/
-         * editor for each cell.  If we didn't implement this method,
-         * then the last column would contain text ("true"/"false"),
-         * rather than a check box.
-         *//*
-        public Class getColumnClass(int c) {
-            return getValueAt(0, c).getClass();
-        }
-
-        *//*
-         * Don't need to implement this method unless your table's
-         * editable.
-         *//*
-        public boolean isCellEditable(int row, int col) {
-            //Note that the data/cell address is constant,
-            //no matter where the cell appears onscreen.
-            if (col < 2) {
-                return false;
-            } else {
-                return true;
-            }
-        }
-
-        *//*
-         * Don't need to implement this method unless your table's
-         * data can change.
-         *//*
-        public void setValueAt(Object value, int row, int col) {
-            data[row][col] = value;
-            fireTableCellUpdated(row, col);
-        }
-
-    }*/
-
-    /**
-     * Create the GUI and show it.  For thread safety,
-     * this method should be invoked from the
-     * event-dispatching thread.
-     */
     private static void createAndShowGUI() {
         //Disable boldface controls.
         UIManager.put("swing.boldMetal", Boolean.FALSE);
@@ -323,7 +250,6 @@ public class TableSelectionDemo extends JPanel
     }
 
     public static void main(String[] args) {
-
         //Schedule a job for the event-dispatching thread:
         //creating and showing this application's GUI.
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
@@ -332,4 +258,5 @@ public class TableSelectionDemo extends JPanel
             }
         });
     }
+
 }

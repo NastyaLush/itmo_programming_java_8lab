@@ -188,7 +188,6 @@ public class BDManager extends TableOperations {
             }
         }
 
-
     }
 
     public int preparing(PreparedStatement preparedStatement, Product product, int beginning) throws SQLException {

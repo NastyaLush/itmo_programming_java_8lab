@@ -16,8 +16,7 @@ public class Response extends RegisterResponse {
     private Long keyOrID;
     private String message;
     private boolean flagUdateID;
-    private HashMap<Long,Product> productHashMap;
-
+    private HashMap<Long, Product> productHashMap;
 
 
     public Response(String login, String password, String command, UnitOfMeasure unitOfMeasure) {
@@ -136,8 +135,8 @@ public class Response extends RegisterResponse {
     @Override
     public String toString() {
         return "Response{"
-                + " login='" + login + '\''
-                + ", password='" + password + '\''
+                + " login='" + getLogin() + '\''
+                + ", password='" + getPassword() + '\''
                 + ", collection=" + collection
                 + ", product=" + product
                 + ", unitOfMeasure=" + unitOfMeasure

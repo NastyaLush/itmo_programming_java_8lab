@@ -1,7 +1,6 @@
 package test.laba.client.frontEnd.Frames;
 
-import test.laba.client.frontEnd.Constants;
-import test.laba.client.frontEnd.Frames.AbstractFrame;
+import test.laba.client.util.Constants;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,7 +19,7 @@ public class FrameProduct extends AbstractFrame {
         menu.setFont(new Font("Safari", Font.ITALIC, 13));
         JMenuItem pcs = new JMenuItem(localisation(resourceBundle, Constants.PCS));
         changeMenuName(pcs, menu);
-        JMenuItem millilitres = new JMenuItem(localisation(resourceBundle, Constants.MILLILITRES));
+        JMenuItem millilitres = new JMenuItem(localisation(resourceBundle, Constants.MILLILITERS));
         changeMenuName(millilitres, menu);
         JMenuItem grams = new JMenuItem(localisation(resourceBundle, Constants.GRAMS));
         changeMenuName(grams, menu);
@@ -31,8 +30,12 @@ public class FrameProduct extends AbstractFrame {
         return menu;
 
     }
+
     protected void changeMenuName(JMenuItem jMenuItem, JMenu menu) {
-        jMenuItem.addActionListener((ActionEvent e) -> menu.setText(jMenuItem.getText()));
+        jMenuItem.addActionListener((ActionEvent e) -> {
+            menu.setText(jMenuItem.getText());
+            menu.setName(jMenuItem.getName());
+        });
     }
 
     protected JMenuBar unitOfMeasureButton(JMenu menu) {

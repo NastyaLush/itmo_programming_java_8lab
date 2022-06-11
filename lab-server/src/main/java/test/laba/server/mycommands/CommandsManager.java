@@ -30,6 +30,7 @@ public class CommandsManager {
     private Clear clear;
     private final BDManager bdManager;
     private final BDUsersManager bdUsersManager;
+    private Response sendResponse = null;
 
     /**
      * create command classes
@@ -88,36 +89,35 @@ public class CommandsManager {
     }
 
     public Response chooseCommand(Response response) {
-        if(response.isAddToHistory()) {
+        if (response.isAddToHistory()) {
             history.addToHistory(response.getCommand());
         }
-        Response response1 = null;
         AbstractCommand command = this.commands.get(response.getCommand().toLowerCase());
         if (command != null) {
             if (commandValues.containsKey(command.getName().toLowerCase())) {
                 switch (command.getName()) {
                     case "Remove_Lower_Key":
-                        response1 = removeLowerKey.execute(response, bdUsersManager, bdManager, root);
+                        sendResponse = removeLowerKey.execute(response, bdUsersManager, bdManager, root);
                         break;
                     case "Remove_Lower":
-                        response1 = removeLower.execute(response, bdUsersManager, bdManager, root);
+                        sendResponse = removeLower.execute(response, bdUsersManager, bdManager, root);
                         break;
                     case "Remove_Key":
-                        response1 = removeKey.execute(response, root, bdManager, bdUsersManager);
+                        sendResponse = removeKey.execute(response, root, bdManager, bdUsersManager);
                         break;
                     case "Remove_any_by_unit_of_measure":
-                        response1 = removeAnyByUnitOfMeasure.execute(response.getUnitOfMeasure(), root, bdManager, bdUsersManager, response.getLogin());
+                        sendResponse = removeAnyByUnitOfMeasure.execute(response.getUnitOfMeasure(), root, bdManager, bdUsersManager, response.getLogin());
                         break;
                     case "Insert_Null":
-                        response1 = insertNull.execute(response.getKeyOrID(), response, root, bdManager, bdUsersManager);
+                        sendResponse = insertNull.execute(response.getKeyOrID(), response, root, bdManager, bdUsersManager);
                         break;
                     case "Update_ID":
-                        response1 = updateID.execute(response, root, bdUsersManager, response.getLogin(), bdManager);
+                        sendResponse = updateID.execute(response, root, bdUsersManager, response.getLogin(), bdManager);
                         break;
                     default:
                         break;
                 }
-                return response1;
+                return sendResponse;
             }
             if ("Clear".equals(command.getName())) {
                 return clear.execute(response, root, bdUsersManager, bdManager);

@@ -3,52 +3,31 @@ package test.laba.common.responses;
 
 public class RegisterResponse extends BasicResponse {
     private static final long serialVersionUID = 10;
-    protected  String login;
-    protected  String password;
 
     public RegisterResponse(String login, String password, String command) {
         super(command);
-        this.login = login;
-        this.password = password;
+        setLogin(login);
+        setPassword(password);
     }
 
     public RegisterResponse(String command) {
         super(command);
-        this.login = null;
-        this.password = null;
+        setLogin(null);
+        setPassword(null);
 
     }
 
-    public void setLoginAndPassword(String login, String password) {
-        this.login = login;
-        this.password = password;
+    public void setLoginAndPassword(String newlogin, String password) {
+        setLogin(newlogin);
+        setPassword(password);
     }
 
-
-    @Override
-    public String getLogin() {
-        return login;
-    }
-
-    @Override
-    public String getPassword() {
-        return password;
-    }
-
-
-    public void setLogin(String login) {
-        this.login = login;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
 
     @Override
     public String toString() {
         return "RegisterResponse{"
-                + " login='" + login + '\''
-                + ", password='" + password + '\''
+                + " login='" + getLogin() + '\''
+                + ", password='" + getPassword() + '\''
                 + ", command='" + getCommand() + '\''
                 + '}';
     }

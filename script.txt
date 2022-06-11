@@ -1,0 +1,19 @@
+show
+insert_null 2348456
+sdf
+23
+23
+23
+234
+pcs
+yes
+dfghj
+12-03-2004
+123
+6543
+6543
+looooooooo
+show
+info
+exit
+help

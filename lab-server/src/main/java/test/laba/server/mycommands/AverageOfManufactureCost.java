@@ -1,5 +1,4 @@
 package test.laba.server.mycommands;
-import test.laba.common.IO.Colors;
 import test.laba.server.mycommands.commands.AbstractCommand;
 import test.laba.common.responses.Response;
 
@@ -18,7 +17,7 @@ public final class AverageOfManufactureCost extends AbstractCommand {
      */
     @Override
     public Response execute(String arg, Root root) {
-        StringBuilder s = new StringBuilder("Average_of_manufacture_cost: " + Colors.END);
+        StringBuilder s = new StringBuilder(/*"Average_of_manufacture_cost: "*/);
         if (root.getProducts().size() != 0) {
             s.append(root.sumOfManufactureCost() / (root.getProducts().size()));
             return new Response(s.toString());

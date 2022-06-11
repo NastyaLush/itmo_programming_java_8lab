@@ -16,6 +16,7 @@ public abstract class TablePanel extends JPanel
         this.table = table;
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
+        table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         table.setPreferredScrollableViewportSize(new Dimension(500, 70));
         table.setFillsViewportHeight(true);
         table.getSelectionModel().addListSelectionListener(new RowListener());
@@ -24,6 +25,7 @@ public abstract class TablePanel extends JPanel
         add(new JScrollPane(table));
 
     }
+
     protected abstract void outputSelection();
 
     private class RowListener implements ListSelectionListener {

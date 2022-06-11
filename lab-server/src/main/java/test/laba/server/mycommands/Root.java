@@ -1,7 +1,5 @@
 package test.laba.server.mycommands;
 
-import test.laba.common.IO.Colors;
-
 import test.laba.common.dataClasses.Product;
 import test.laba.common.dataClasses.UnitOfMeasure;
 import test.laba.common.exception.AlreadyHaveTheseProduct;
@@ -187,7 +185,7 @@ public class Root {
      * @return string
      */
     public String showCollection() {
-        StringBuilder s = new StringBuilder(Colors.BlUE + "Products: \n" + Colors.END);
+        StringBuilder s = new StringBuilder("Products: \n");
         synchronized (this) {
             products.forEach((key, value) -> s.append("Ключ: ").append(key).append(" ").append(value).append("\n"));
         }

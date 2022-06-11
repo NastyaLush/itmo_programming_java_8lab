@@ -8,7 +8,7 @@ import javax.swing.*;
 import java.awt.event.ActionListener;
 import java.util.ResourceBundle;
 
-public abstract class OkListener extends AbstractFrame implements ActionListener{
+public abstract class OkListener extends AbstractFrame implements ActionListener {
     protected JComponent textKey;
     protected final String command;
 

@@ -5,5 +5,6 @@ import java.awt.*;
 
 public interface FrameInterface {
     public void exception(String exception);
+
     public void show(String message);
 }

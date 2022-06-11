@@ -17,8 +17,10 @@ import java.time.format.DateTimeFormatter;
  */
 public final class VariableParsing {
     private static final int FALSE_X = -233;
+
     private VariableParsing() {
     }
+
     /**
      * pars string name to right field name (not null)
      *
@@ -26,10 +28,10 @@ public final class VariableParsing {
      * @return string with right name
      * @throws VariableException throws when parsing is impossible
      */
-    public static String toRightName(String oldName) throws VariableException {
+    public static String toRightName(String field, String oldName) throws VariableException {
         String name = oldName.trim();
         if (name.isEmpty()) {
-            throw new VariableException("Данное поле не может быть пустым");
+            throw new VariableException(field, "Данное поле не может быть пустым");
         }
         return name;
     }
@@ -41,15 +43,15 @@ public final class VariableParsing {
      * @return integer
      * @throws VariableException throws when parsing is impossible
      */
-    public static Integer toRightX(String x) throws VariableException {
+    public static Integer toRightX(String name, String x) throws VariableException {
         int rightX;
         try {
             rightX = Integer.parseInt(x);
         } catch (NumberFormatException e) {
-            throw new VariableException("Должно быть введено целое число типа int");
+            throw new VariableException(name, "Должно быть введено целое число типа int");
         }
         if (rightX <= FALSE_X) {
-            throw new VariableException("Число должно быть больше -233");
+            throw new VariableException(name, "Число должно быть больше -233");
         }
         return rightX;
     }
@@ -61,12 +63,12 @@ public final class VariableParsing {
      * @return float
      * @throws VariableException throws when parsing is impossible
      */
-    public static Float toRightY(String y) throws VariableException {
+    public static Float toRightY(String name, String y) throws VariableException {
         float rightY;
         try {
             rightY = Float.parseFloat(y);
         } catch (NumberFormatException e) {
-            throw new VariableException("Должно быть введено число типа float");
+            throw new VariableException(name, "Должно быть введено число типа float");
         }
         return rightY;
     }
@@ -78,15 +80,15 @@ public final class VariableParsing {
      * @return long
      * @throws VariableException throws when parsing is impossible
      */
-    public static Long toRightPrice(String price) throws VariableException {
+    public static Long toRightPrice(String name, String price) throws VariableException {
         long rightPrice;
         try {
             rightPrice = Long.parseLong(price);
         } catch (NumberFormatException e) {
-            throw new VariableException("Должно быть введено целое число типа long, вы ввели: " + price);
+            throw new VariableException(name, "Должно быть введено целое число типа long, вы ввели: " + price);
         }
         if (rightPrice <= 0) {
-            throw new VariableException("Число должно быть больше 0, вы ввели: " + price);
+            throw new VariableException(name, "Число должно быть больше 0, вы ввели: " + price);
         }
         return rightPrice;
     }
@@ -98,12 +100,12 @@ public final class VariableParsing {
      * @return integer
      * @throws VariableException throws when parsing is impossible
      */
-    public static Integer toRightNumberInt(String number) throws VariableException {
+    public static Integer toRightNumberInt(String name, String number) throws VariableException {
         int manufactureCost;
         try {
             manufactureCost = Integer.parseInt(number);
         } catch (NumberFormatException e) {
-            throw new VariableException("Неправильный тип переменной, ожидалось целое число типа int, вы ввели: " + number);
+            throw new VariableException(name, "Неправильный тип переменной, ожидалось целое число типа int, вы ввели: " + number);
 
         }
         return manufactureCost;
@@ -116,11 +118,11 @@ public final class VariableParsing {
      * @return long
      * @throws VariableException throws when parsing is impossible
      */
-    public static Long toRightNumberLong(String number) throws VariableException {
+    public static Long toRightNumberLong(String name, String number) throws VariableException {
         try {
             return Long.valueOf(number);
         } catch (NumberFormatException e) {
-            throw new VariableException("Неправильный тип переменной, ожидалось целое число типа long, вы ввели: " + number);
+            throw new VariableException(name, "Неправильный тип переменной, ожидалось целое число типа long, вы ввели: " + number);
 
         }
     }
@@ -132,11 +134,11 @@ public final class VariableParsing {
      * @return UnitOfMeasure
      * @throws VariableException throws when parsing is impossible
      */
-    public static UnitOfMeasure toRightUnitOfMeasure(String unit) throws VariableException {
+    public static UnitOfMeasure toRightUnitOfMeasure(String name, String unit) throws VariableException {
         try {
             return UnitOfMeasure.valueOf(unit.toUpperCase());
         } catch (IllegalArgumentException e) {
-            throw new VariableException("Can't parse to Unit Of Measure, please chose one of: " + "PCS, MILLILITERS, GRAMS");
+            throw new VariableException(name, "Can't parse to Unit Of Measure, please chose one of: " + "PCS, MILLILITERS, GRAMS");
         }
     }
 
@@ -147,16 +149,16 @@ public final class VariableParsing {
      * @return UnitOfMeasure
      * @throws VariableException throws when parsing is impossible
      */
-    public static Integer toRightHeight(String height) throws VariableException {
+    public static Integer toRightHeight(String name, String height) throws VariableException {
         Integer rightHeight = null;
         if (height != null) {
             try {
                 rightHeight = Integer.valueOf(height);
             } catch (NumberFormatException e) {
-                throw new VariableException("Должно быть введено целое число, вы ввели: " + rightHeight);
+                throw new VariableException(name, "Должно быть введено целое число, вы ввели: " + rightHeight);
             }
             if (rightHeight <= 0) {
-                throw new VariableException("Число должно быть больше 0, вы ввели: " + rightHeight);
+                throw new VariableException(name, "Число должно быть больше 0, вы ввели: " + rightHeight);
             }
         }
         return rightHeight;
@@ -169,7 +171,7 @@ public final class VariableParsing {
      * @return ZonedDateTime
      * @throws VariableException throws when parsing is impossible
      */
-    public static ZonedDateTime toRightBirthday(String birthday) throws VariableException {
+    public static ZonedDateTime toRightBirthday(String name, String birthday) throws VariableException {
         ZonedDateTime birth;
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
@@ -181,7 +183,7 @@ public final class VariableParsing {
                 LocalDateTime parsed = LocalDateTime.parse(birthday, formatter);
                 birth = ZonedDateTime.of(parsed, ZoneId.of("Europe/Berlin"));
             } catch (DateTimeException exception) {
-                throw new VariableException("Неправильный формат данных, повторите ввод в формате ДД-MM-ГГГГ или ДД-ММ-ГГГГ ЧЧ:ММ:СС, вы ввели: " + birthday);
+                throw new VariableException(name, "Неправильный формат данных, повторите ввод в формате ДД-MM-ГГГГ или ДД-ММ-ГГГГ ЧЧ:ММ:СС, вы ввели: " + birthday);
             }
         }
         return birth;
@@ -193,11 +195,11 @@ public final class VariableParsing {
      * @param number number for parsing
      * @return long number
      */
-    public static Long toLongNumber(String number) throws VariableException {
+    public static Long toLongNumber(String name, String number) throws VariableException {
         try {
             return Long.valueOf(number.trim());
         } catch (NumberFormatException e) {
-            throw new VariableException("Неправильный формат данных. Вы ввели:\"" + number + "\", ожидалось число типа long");
+            throw new VariableException(name, "Неправильный формат данных. Вы ввели:\"" + number + "\", ожидалось число типа long");
         }
     }
 

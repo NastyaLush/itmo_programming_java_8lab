@@ -9,10 +9,7 @@ import test.laba.client.frontEnd.Frames.Frame;
 import test.laba.client.frontEnd.HomeFrame;
 import test.laba.client.productFillers.ConsoleParsing;
 import test.laba.client.productFillers.UpdateId;
-import test.laba.client.util.Console;
-import test.laba.client.util.ScriptConsole;
-import test.laba.client.util.VariableParsing;
-import test.laba.client.util.Wrapper;
+import test.laba.client.util.*;
 import test.laba.common.IO.Colors;
 import test.laba.common.dataClasses.Product;
 import test.laba.common.exception.CreateError;
@@ -52,7 +49,7 @@ public class ClientApp {
 
     ClientApp(Frame frame, Condition condition, Lock lock) {
         this.lock = lock;
-        this.condition =condition;
+        this.condition = condition;
         LOGGER.setLevel(Level.INFO);
         this.frame = frame;
         this.homeFrame = new HomeFrame(condition, lock, login, frame.getResponse());
@@ -73,8 +70,7 @@ public class ClientApp {
                     lock.lock();
                     condition.await();
                     lock.unlock();
-                    
-                    System.out.println(homeFrame.getResponse());
+
                     sendAndReceiveCommand(homeFrame.getResponse());
 
                 } catch (IOException e) {
@@ -104,7 +100,7 @@ public class ClientApp {
 
     public Response updateID(String[] command, Console console2) throws VariableException, IOException, ClassNotFoundException {
         LOGGER.fine("update id is executing");
-        long id = VariableParsing.toLongNumber(command[1]);
+        long id = VariableParsing.toLongNumber(command[1], Constants.KEY.getString());
         Response response = new Response(login, password, command[0], id);
         response.setFlagUdateID(false);
         wrapper.sent(response);
@@ -124,30 +120,31 @@ public class ClientApp {
         LOGGER.fine("sent unit command starts");
         Values value = valuesOfCommands.get(command[0]);
         Response response = null;
-            try {
-                switch (value) {
-                    case PRODUCT:
-                        response = new Response(login, password, command[0], VariableParsing.toLongNumber(command[1]), new ConsoleParsing(console2).parsProductFromConsole());
-                        break;
-                    case UNIT_OF_MEASURE:
-                        response = new Response(login, password, command[0], VariableParsing.toRightUnitOfMeasure(command[1]));
-                        break;
-                    case KEY:
-                        response = new Response(login, password, command[0], VariableParsing.toLongNumber(command[1]));
-                        break;
-                    case PRODUCT_WITH_QUESTIONS:
-                        response = updateID(command, console2);
-                        break;
+        try {
+            switch (value) {
+                case PRODUCT:
+                    response = new Response(login, password, command[0], VariableParsing.toLongNumber(Constants.ID.getString(), command[1]), new ConsoleParsing(console2).parsProductFromConsole());
+                    break;
+                case UNIT_OF_MEASURE:
+                    response = new Response(login, password, command[0], VariableParsing.toRightUnitOfMeasure(Constants.UNIT_OF_MEASURE.getString(), command[1]));
+                    break;
+                case KEY:
+                    response = new Response(login, password, command[0], VariableParsing.toLongNumber(Constants.KEY.getString(), command[1]));
+                    break;
+                case PRODUCT_WITH_QUESTIONS:
+                    response = updateID(command, console2);
+                    break;
 
-                    case PRODUCT_WITHOUT_KEY:
-                        response = new Response(login, password, command[0], new ConsoleParsing(console2).parsProductFromConsole());
-                        break;
-                    default:
-                        break;
-                }
-            } catch (VariableException | IllegalArgumentException | CreateError | NullPointerException | ClassNotFoundException e) {
-                console2.printError("repeat writing\n" + e.getMessage());
+                case PRODUCT_WITHOUT_KEY:
+                    response = new Response(login, password, command[0], new ConsoleParsing(console2).parsProductFromConsole());
+                    break;
+                default:
+                    break;
             }
+        } catch (VariableException | IllegalArgumentException | CreateError | NullPointerException |
+                 ClassNotFoundException e) {
+            console2.printError("repeat writing\n" + e.getMessage());
+        }
         LOGGER.fine("the unique command was send");
         return response;
     }
@@ -155,7 +152,7 @@ public class ClientApp {
     public void sendAndReceiveCommand(Response response) throws IOException, CycleInTheScript, ClassNotFoundException {
         LOGGER.fine("send and receive starts ");
         response.setLoginAndPassword(login, password);
-        if(response.getCommand().equals("execute_script")){
+        if (response.getCommand().equals("execute_script")) {
             readScript(response);
             homeFrame.prepeareAnswer(new Response(scriptConsole.getAnswer()));
             lock.lock();
@@ -255,7 +252,7 @@ public class ClientApp {
             cleanStack();
         } /*catch (ClassNotFoundException e) {
             LOGGER.warning(Util.giveColor(Colors.RED, "Can not sent command"));
-        } */catch (ScriptError e) {
+        } */ catch (ScriptError e) {
             LOGGER.warning(Util.giveColor(Colors.RED, "the script was closed"));
         } finally {
             deleteFromStack(fileName);

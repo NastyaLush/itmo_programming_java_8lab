@@ -1,8 +1,7 @@
 package test.laba.client.frontEnd.Frames;
 
 
-import test.laba.client.frontEnd.Constants;
-import test.laba.client.frontEnd.Frames.AbstractFrame;
+import test.laba.client.util.Constants;
 import test.laba.client.frontEnd.Local;
 import test.laba.common.responses.Response;
 

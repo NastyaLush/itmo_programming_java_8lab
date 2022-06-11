@@ -8,10 +8,10 @@ import test.laba.common.dataClasses.*;
 import test.laba.common.exception.VariableException;
 import test.laba.common.responses.Response;
 import test.laba.common.responses.ResponseWithError;
+import test.laba.client.util.Command;
+import test.laba.client.util.Constants;
 
 import javax.swing.*;
-import javax.swing.event.AncestorEvent;
-import javax.swing.event.AncestorListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ResourceBundle;
@@ -29,6 +29,7 @@ public class HomeFrame extends FrameProduct implements Runnable {
     private final Lock lock;
     private final Color green = Color.getHSBColor((float) 0.40034366, (float) 0.8362069, (float) 0.9098039);
 
+
     ///////////
 
     public HomeFrame(Condition condition, Lock lock, String login, Response response) {
@@ -40,6 +41,7 @@ public class HomeFrame extends FrameProduct implements Runnable {
     }
 
     public void run() {
+        System.out.println(resourceBundle.getLocale());
         UIManager.put("swing.boldMetal", Boolean.FALSE);
         jFrame.setName(localisation(resourceBundle, Constants.TITLE));
         jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -66,20 +68,21 @@ public class HomeFrame extends FrameProduct implements Runnable {
                             @Override
                             protected void sentProduct(Long key, Product product) {
                             }
+
                             @Override
                             public void actionPerformed(ActionEvent e) {
                                 try {
                                     Product product = addProduct();
-                                    System.out.println(product);
-                                    createResponse(product, Long.valueOf(getDescription(Constants.ID.getString())));
+                                    createResponse(product, Long.valueOf(getDescription(localisation(resourceBundle, Constants.ID))));
                                     sentProduct();
                                 } catch (VariableException ex) {
                                     exception(ex.getMessage());
                                 }
                             }
+
                             private void sentProduct() {
                                 jFrame.dispatchEvent(new WindowEvent(jFrame, WindowEvent.WINDOW_CLOSING));
-                                treatmentResponseWithoutFrame(HomeFrame.this :: show);
+                                treatmentResponseWithoutFrame(HomeFrame.this::show);
                             }
                         });
                     }
@@ -97,20 +100,22 @@ public class HomeFrame extends FrameProduct implements Runnable {
         userName.setForeground(Color.WHITE);
         userName.setFont(underLine(new Font("Safari", Font.BOLD, 38)));
 
-        JButton manCost = createButtonCommand(localisation(resourceBundle, Constants.AVERAGE_OF_MANUFACTURE_COST));
-        JButton groupCountingByPrice = createButtonCommand(localisation(resourceBundle, Constants.GROUP_COUNTING_BY_PRICE));
+        JButton manCost = createButtonCommand(Command.AVERAGE_OF_MANUFACTURE_COST.getString(), Constants.AVERAGE_OF_MANUFACTURE_COST);
+        JButton groupCountingByPrice = createButtonCommand(Command.GROUP_COUNTING_BY_PRICE.getString(), Constants.GROUP_COUNTING_BY_PRICE);
 
-        System.out.println(resourceBundle.getString("key"));
-        System.out.println(resourceBundle);
 
         JMenu lang = new JMenu(localisation(resourceBundle, Constants.LANGUAGE));
         lang.setPreferredSize(new Dimension(jFrame.getWidth() / 15, 250));
         lang.setFont(new Font("Safari", Font.PLAIN, 20));
 
         JMenuItem rus = new JMenuItem(localisation(resourceBundle, Constants.RUSSIAN));
+        rus.setName(Local.russian);
         JMenuItem nor = new JMenuItem(localisation(resourceBundle, Constants.NORWEGIAN));
+        nor.setName(Local.norwegian);
         JMenuItem fr = new JMenuItem(localisation(resourceBundle, Constants.FRENCH));
+        fr.setName(Local.france);
         JMenuItem sp = new JMenuItem(localisation(resourceBundle, Constants.SPANISH));
+        sp.setName(Local.spanish);
 
 
         changeMenuAndLAg(rus, lang);
@@ -149,13 +154,18 @@ public class HomeFrame extends FrameProduct implements Runnable {
         upPanel.add(userPicture, BorderLayout.NORTH);
 
         JButton picture = createPictureButton("graphics", green, "picture.png", new Picture());
-        JButton restart = createPictureButton("show", green, "restart.png", new CommandWithoutAction(){
+        JButton restart = createPictureButton("show", green, "restart.png", new CommandWithoutAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 treatmentResponseWithCommandName(((JButton) e.getSource()).getName(), HomeFrame.this::showNothing);
             }
         });
-        JButton help = createPictureButton("help", green, "question.png", new CommandWithoutAction());
+        JButton help = createPictureButton("help", green, "question.png", new CommandWithoutAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                treatmentResponseWithCommandName(((JButton) e.getSource()).getName(), HomeFrame.this::showHelp);
+            }
+        });
         JButton history = createPictureButton("history", green, "history.png", new CommandWithoutAction());
         JButton script = createPictureButton("script", green, "script.png", new Script());
         JButton info = createPictureButton("info", green, "info.png", new CommandWithoutAction());
@@ -199,7 +209,8 @@ public class HomeFrame extends FrameProduct implements Runnable {
         jFrame.pack();
         jFrame.setVisible(true);
     }
-    private JMenuBar createSortBy(){
+
+    private JMenuBar createSortBy() {
         JMenu sort = new JMenu(localisation(resourceBundle, Constants.SORT_BY));
         sort.setFont(new Font("Safari", Font.BOLD, 15));
         sort.setPreferredSize(new Dimension(100, 250));
@@ -219,38 +230,6 @@ public class HomeFrame extends FrameProduct implements Runnable {
 
         return sortBy;
     }
-   /* private JMenuBar createLanguageButton(){
-        JMenu lang = new JMenu(localisation(resourceBundle, Constants.LANGUAGE));
-        lang.setPreferredSize(new Dimension(jFrame.getWidth() / 16, 250));
-        lang.setFont(new Font("Safari", Font.PLAIN, 20));
-        lang.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("mkk");
-            }
-        });
-        JMenuItem rus = new JMenuItem(localisation(resourceBundle, Constants.RUSSIAN));
-        JMenuItem nor = new JMenuItem(localisation(resourceBundle, Constants.NORWEGIAN));
-        JMenuItem fr = new JMenuItem(localisation(resourceBundle, Constants.FRENCH));
-        JMenuItem sp = new JMenuItem(localisation(resourceBundle, Constants.SPANISH));
-
-        changeMenuName(rus, lang);
-        changeMenuName(nor, lang);
-        changeMenuName(fr, lang);
-        changeMenuName(sp, lang);
-
-        lang.add(rus);
-        lang.add(nor);
-        lang.add(fr);
-        lang.add(sp);
-
-        JMenuBar language = new JMenuBar();
-        language.add(lang);
-        language.setBackground(green);
-        language.setForeground(Color.BLACK);
-
-        return language;
-    }*/
 
     private void repaint() {
         response = new Response("show");
@@ -424,10 +403,11 @@ public class HomeFrame extends FrameProduct implements Runnable {
                             exception(ex.getMessage());
                         }
                     }
+
                     @Override
                     public Response createResponse() throws VariableException {
                         Response createdResponse = new Response(command);
-                        Long key = VariableParsing.toLongNumber(((JTextField) textKey).getText());
+                        Long key = VariableParsing.toLongNumber(((JTextField) textKey).getText(), localisation(resourceBundle, Constants.KEY));
                         createdResponse.setKeyOrID(key);
                         return createdResponse;
                     }
@@ -481,10 +461,11 @@ public class HomeFrame extends FrameProduct implements Runnable {
                             exception(ex.getMessage());
                         }
                     }
+
                     @Override
                     public Response createResponse() throws VariableException {
                         Response createdResponse = new Response(command);
-                        UnitOfMeasure unitOfMeasure1 = VariableParsing.toRightUnitOfMeasure(((JMenu) textKey).getText());
+                        UnitOfMeasure unitOfMeasure1 = VariableParsing.toRightUnitOfMeasure(((JMenu) textKey).getText(), localisation(resourceBundle, Constants.UNIT_OF_MEASURE));
                         createdResponse.setUnitOfMeasure(unitOfMeasure1);
                         return createdResponse;
                     }
@@ -513,8 +494,9 @@ public class HomeFrame extends FrameProduct implements Runnable {
             }
 
             @Override
-            protected void addKey(){
+            protected void addKey() {
             }
+
             @Override
             protected void addOkListener() {
                 ok.addActionListener(new OkListener() {
@@ -538,6 +520,7 @@ public class HomeFrame extends FrameProduct implements Runnable {
                             exception(ex.getMessage());
                         }
                     }
+
                     private void createResponse(Product product) {
                         response = new Response(Command.REMOVE_LOWER.getString());
                         response.setProduct(product);
@@ -563,27 +546,30 @@ public class HomeFrame extends FrameProduct implements Runnable {
             // Определение режима - только каталог
             int result = fileChooser.showOpenDialog(null);
             // Если директория выбрана, покажем ее в сообщении
-            if (result == JFileChooser.APPROVE_OPTION ) {
+            if (result == JFileChooser.APPROVE_OPTION) {
                 System.out.println(fileChooser.getSelectedFile().getAbsolutePath());
                 response = new Response(Command.EXECUTE_SCRIPT.getString());
                 response.setMessage(fileChooser.getSelectedFile().getAbsolutePath());
 
-                treatmentResponseWithFrame(HomeFrame.this::showScript);
+                treatmentResponseWithoutFrame(HomeFrame.this::showScript);
             }
         }
     }
-    private void treatmentResponseWithFrame(IFunction show){
-        if(jFrame != null) {
+
+    private void treatmentResponseWithFrame(IFunction show) {
+        if (jFrame != null) {
             close(jFrame);
         }
         treatmentResponseWithoutFrame(show);
     }
-    private void treatmentResponseWithCommandName(String name, IFunction show){
+
+    private void treatmentResponseWithCommandName(String name, IFunction show) {
         response = new Response(name);
         treatmentResponseWithoutFrame(show);
 
     }
-    private void treatmentResponseWithoutFrame(IFunction showResponse){
+
+    private void treatmentResponseWithoutFrame(IFunction showResponse) {
         lock.lock();
         condition.signal();
         try {
@@ -599,19 +585,26 @@ public class HomeFrame extends FrameProduct implements Runnable {
         }
         lock.unlock();
     }
-    private JButton createPictureButton(String name, java.awt.Color colorBackground, String picturePath, ActionListener actionListener ){
+
+    private JButton createPictureButton(String name, java.awt.Color colorBackground, String picturePath, ActionListener actionListener) {
         JButton button = new JButton(new ImageIcon(picturePath));
         button.setName(name);
         button.setBackground(colorBackground);
         button.addActionListener(actionListener);
         return button;
     }
-    private JButton createButtonCommand(String name){
-        JButton manCost = new JButton(name);
-        manCost.setFont(new Font("Safari", Font.ITALIC, 20));
-        manCost.setBackground(Color.BLACK);
-        manCost.setForeground(Color.WHITE);
-        manCost.addActionListener((ActionEvent actionEvent) -> {
+
+    private JButton createButtonCommand(String name, Constants command) {
+        JButton jButton;
+        if (name.equals(Command.AVERAGE_OF_MANUFACTURE_COST.getString())) {
+            jButton = new JButton(localisation(resourceBundle, Constants.AVERAGE_OF_MANUFACTURE_COST));
+        } else {
+            jButton = new JButton(localisation(resourceBundle, Constants.GROUP_COUNTING_BY_PRICE));
+        }
+        jButton.setFont(new Font("Safari", Font.ITALIC, 20));
+        jButton.setBackground(Color.BLACK);
+        jButton.setForeground(Color.WHITE);
+        jButton.addActionListener((ActionEvent actionEvent) -> {
             response = new Response(name);
             lock.lock();
             condition.signal();
@@ -625,35 +618,45 @@ public class HomeFrame extends FrameProduct implements Runnable {
             if (response instanceof ResponseWithError) {
                 exception(response.getCommand());
             } else {
-                show(response.getCommand());
+                show(localisation(resourceBundle, command) + '\n' + response.getCommand());
             }
 
         });
-        return manCost;
+        return jButton;
     }
-    private void showNothing(String message){}
+
+    private void showNothing(String message) {
+    }
 
     public Response getResponse() {
         return response;
     }
-    public void prepeareAnswer(Response response){
+
+    public void prepeareAnswer(Response response) {
         this.response = response;
     }
 
-    private interface IFunction {
-        void function(String oldField);
-    }
-    private void repaintFrame(){
+    private void repaintFrame() {
         close();
         jFrame = new JFrame();
         run();
     }
-    private void changeMenuAndLAg(JMenuItem jMenuItem, JMenu menu){
+
+    private void changeMenuAndLAg(JMenuItem jMenuItem, JMenu menu) {
         jMenuItem.addActionListener((ActionEvent e) -> {
-            menu.setText(jMenuItem.getText());
-            setResourceBundle(Local.getResourceBundleEnglish());
+            menu.setText(jMenuItem.getName());
+            resourceBundle = Local.locals.get(jMenuItem.getName());
             repaintFrame();
         });
+    }
+
+    private void showHelp(String s) {
+        show(localisation(resourceBundle, Constants.HELP));
+        System.out.println(localisation(resourceBundle, Constants.HELP));
+    }
+
+    private interface IFunction {
+        void function(String oldField);
     }
 
 }

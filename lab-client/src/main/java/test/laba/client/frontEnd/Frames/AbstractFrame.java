@@ -1,6 +1,6 @@
 package test.laba.client.frontEnd.Frames;
 
-import test.laba.client.frontEnd.Constants;
+import test.laba.client.util.Constants;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,51 +20,51 @@ public class AbstractFrame implements FrameInterface, Localasiable {
         this.resourceBundle = resourceBundle;
     }
 
-    public void exception(String exception){
-        JOptionPane.showMessageDialog(jFrame,exception, localisation(resourceBundle, Constants.ERROR), JOptionPane.ERROR_MESSAGE);
+    public void exception(String exception) {
+        JOptionPane.showMessageDialog(jFrame, exception, localisation(resourceBundle, Constants.ERROR), JOptionPane.ERROR_MESSAGE);
     }
-    public void show (String message){
-        JOptionPane.showConfirmDialog(jFrame,message,localisation(resourceBundle, Constants.INFO),  JOptionPane.CANCEL_OPTION);
+
+    public void show(String message) {
+        JOptionPane.showConfirmDialog(jFrame, message, localisation(resourceBundle, Constants.INFO), JOptionPane.CANCEL_OPTION);
     }
-    public void showScript(String message){
-        JPanel panel;
-        if(message.length()>500) {
-            panel = new JPanel() {
-                @Override
-                public Dimension getPreferredSize() {
-                    return new Dimension(screenSize.width / 2, screenSize.height / 2);
-                }
-            };
-        } else {
-            panel = new JPanel();
-        }
-        panel.setMaximumSize(new Dimension(screenSize.width/2, screenSize.height/2));
+
+    public void showScript(String message) {
+        JPanel panel = new JPanel() {
+            @Override
+            public Dimension getPreferredSize() {
+                return new Dimension(screenSize.width / 2, screenSize.height / 2);
+            }
+        };
+        panel.setMaximumSize(new Dimension(screenSize.width / 2, screenSize.height / 2));
 
         JTextArea textArea = new JTextArea();
         textArea.setEditable(false);
         panel.setLayout(new BorderLayout());
         panel.add(new JScrollPane(textArea));
         textArea.setText(message);
-        JOptionPane.showConfirmDialog(null,panel, message,  JOptionPane.CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showConfirmDialog(null, panel, message, JOptionPane.OK_OPTION, JOptionPane.INFORMATION_MESSAGE);
     }
-    protected Font underLine(Font font){
+
+    protected Font underLine(Font font) {
         Map<TextAttribute, Object> map = new HashMap<>();
         map.put(TextAttribute.FONT, font);
         map.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
         return Font.getFont(map);
     }
-    public void close(){
+
+    public void close() {
         //jFrame.setVisible();
         jFrame.removeAll();
         jFrame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         close(jFrame);
     }
 
-    public void close(JFrame frame){
+    public void close(JFrame frame) {
         frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         frame.dispatchEvent(new WindowEvent(jFrame, WindowEvent.WINDOW_CLOSING));
     }
-    protected void revalidate(JPanel panel){
+
+    protected void revalidate(JPanel panel) {
         panel.removeAll();
         panel.revalidate();
         panel.repaint();

@@ -2,26 +2,35 @@ package test.laba.client.frontEnd;
 
 import test.laba.client.frontEnd.Frames.Localasiable;
 import test.laba.common.dataClasses.Product;
+import test.laba.common.dataClasses.UnitOfMeasure;
+import test.laba.client.util.Constants;
 
 import javax.swing.table.AbstractTableModel;
+import java.text.DateFormat;
 import java.util.*;
-import javax.swing.table.*;
 
 public class TableModule extends AbstractTableModel implements Localasiable {
     private int columnCount = 15;
     private ArrayList<String[]> list = new ArrayList<>();
-    private  HashMap<Integer, String> head = new HashMap<>();
+    private HashMap<Integer, String> head = new HashMap<>();
     protected final ResourceBundle resourceBundle;
+    private final DateFormat dateFormat;
+    private final HashMap<UnitOfMeasure, Constants> unitOfMeasure = new HashMap<UnitOfMeasure, Constants>() {{
+        put(UnitOfMeasure.PCS, Constants.PCS);
+        put(UnitOfMeasure.MILLILITERS, Constants.MILLILITERS);
+        put(UnitOfMeasure.GRAMS, Constants.GRAMS);
+    }};
 
     public TableModule(ResourceBundle resourceBundle) {
         this.resourceBundle = resourceBundle;
+        this.dateFormat = DateFormat.getDateTimeInstance(DateFormat.DEFAULT, DateFormat.DEFAULT, resourceBundle.getLocale());
         System.out.println("tyuiop");
         inizialization();
     }
 
     @Override
     public int getRowCount() {
-        if(list == null) {
+        if (list == null) {
             list = new ArrayList<>();
         }
         return list.size();
@@ -38,7 +47,7 @@ public class TableModule extends AbstractTableModel implements Localasiable {
     }
 
     public String getValueAt(String rowName, int columnIndex) {
-        if(head.containsValue(rowName.trim())){
+        if (head.containsValue(rowName.trim())) {
             Optional<Map.Entry<Integer, String>> row = head.entrySet().stream().filter(e -> e.getValue().equals(rowName.trim())).findFirst();
             int rowIndex = row.get().getKey();
             return list.get(columnIndex)[rowIndex];
@@ -48,7 +57,7 @@ public class TableModule extends AbstractTableModel implements Localasiable {
 
     @Override
     public String getColumnName(int columnIndex) {
-        if(head.containsKey(columnIndex)){
+        if (head.containsKey(columnIndex)) {
             return head.get(columnIndex);
         }
         return "";
@@ -73,13 +82,13 @@ public class TableModule extends AbstractTableModel implements Localasiable {
         newProduct[2] = product.getName();
         newProduct[3] = String.valueOf(product.getCoordinates().getX());
         newProduct[4] = String.valueOf(product.getCoordinates().getY());
-        newProduct[5] = String.valueOf(product.getCreationDate());
+        newProduct[5] = dateFormat.format(Date.from(product.getCreationDate().toInstant()));
         newProduct[6] = String.valueOf(product.getPrice());
         newProduct[7] = String.valueOf(product.getManufactureCost());
-        newProduct[8] = String.valueOf(product.getUnitOfMeasure());
+        newProduct[8] = localisation(resourceBundle, unitOfMeasure.get(product.getUnitOfMeasure()));
         if (product.getOwner() != null) {
             newProduct[9] = product.getOwner().getName();
-            newProduct[10] = String.valueOf(product.getOwner().getBirthday());
+            newProduct[10] = dateFormat.format(Date.from(product.getOwner().getBirthday().toInstant()));
             newProduct[11] = String.valueOf(product.getOwner().getHeight());
             newProduct[12] = String.valueOf(product.getOwner().getLocation().getX());
             newProduct[13] = String.valueOf(product.getOwner().getLocation().getY());
@@ -89,7 +98,7 @@ public class TableModule extends AbstractTableModel implements Localasiable {
 
     }
 
-    private void inizialization(){
+    private void inizialization() {
         head.put(0, localisation(resourceBundle, Constants.KEY));
         head.put(1, localisation(resourceBundle, Constants.ID));
         head.put(2, localisation(resourceBundle, Constants.PRODUCT_NAME));

@@ -1,4 +1,6 @@
-package test.laba.client.frontEnd;
+package test.laba.client.util;
+
+import java.util.HashMap;
 
 public enum Constants {
     TITLE("title"),
@@ -37,7 +39,7 @@ public enum Constants {
     ERROR("error"),
     INFO("info"),
     PCS("pcs"),
-    MILLILITRES("millilitres"),
+    MILLILITERS("milliliters"),
     GRAMS("grams"),
     RANDOM("random"),
     SORT_A_TO_Z("sortAtoZ"),
@@ -49,8 +51,9 @@ public enum Constants {
     NORWEGIAN("norwegian"),
     FRENCH("french"),
     SPANISH("spanish"),
-    LANGUAGE("language")
-    ;
+    LANGUAGE("language"),
+    FORMAT("format"),
+    HELP("help");
 
     private final String string;
 
