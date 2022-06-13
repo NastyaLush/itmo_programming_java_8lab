@@ -64,13 +64,38 @@ public class ClientApp {
             wrapper.sent(new Response(login, password, Values.COLLECTION.toString()));
             valuesOfCommands = wrapper.readWithMap();
             LOGGER.info(Util.giveColor(Colors.BlUE, "Program in an interactive module, for giving information about opportunities write help"));
+            Response show = new Response("show");
+            show.setAddToHistory(false);
+            new Thread(() -> {
+                try {
+                    Thread.sleep(3000);
+                    homeFrame.setGraphicCollection(sendAndReceiveCommand(show).getProductHashMap());
+                } catch (IOException e) {
+                    homeFrame.exception("server was closed, app is finishing work :) \nSee you soon!");
+                    LOGGER.info(Util.giveColor(Colors.GREEN, "server was closed, app is finishing work :) \nSee you soon!"));
+                } catch (CycleInTheScript | ClassNotFoundException | InterruptedException e) {
+                    homeFrame.exception(e.getMessage());
+                    LOGGER.warning(e.getMessage());
+                }
+                if (/*ifReadyToClose(answer) || */isExitInExecuteScript) {
+                    Util.toColor(Colors.GREEN, "see you soon :)");
+                }
+            });
             while (true) {
                 try {
                     lock.lock();
                     condition.await();
                     lock.unlock();
 
-                    sendAndReceiveCommand(homeFrame.getResponse());
+                    Response response = sendAndReceiveCommand(homeFrame.getResponse());
+
+                    if(response != null) {
+                        homeFrame.prepeareAnswer(response);
+                    }
+                    lock.lock();
+                    condition.signal();
+                    lock.unlock();
+
 
                 } catch (IOException e) {
                     homeFrame.exception("server was closed, app is finishing work :) \nSee you soon!");
@@ -148,40 +173,36 @@ public class ClientApp {
         return response;
     }
 
-    public void sendAndReceiveCommand(Response response) throws IOException, CycleInTheScript, ClassNotFoundException {
+    public Response sendAndReceiveCommand(Response response) throws IOException, CycleInTheScript, ClassNotFoundException {
         LOGGER.fine("send and receive starts ");
         response.setLoginAndPassword(login, password);
         if (response.getCommand().equals("execute_script")) {
             readScript(response);
-            homeFrame.prepeareAnswer(new Response(scriptConsole.getAnswer()));
-            lock.lock();
+            return new Response(scriptConsole.getAnswer());
+            /*lock.lock();
             condition.signal();
-            lock.unlock();
+            lock.unlock();*/
         } else {
 
             if (isNormalUpdateID) {
                 wrapper.sent(response);
                 response = wrapper.readResponse();
                 console.print(response.getCommand());
-                homeFrame.prepeareAnswer(response);
-                /*if (response instanceof ResponseWithError) {
-                    homeFrame.soutAnswer(response, true);
-                } else {
-                    homeFrame.soutAnswer(response, false);
-                }*/
-                lock.lock();
-                condition.signal();
-                lock.unlock();
-                // TODO: 01.06.2022
                 isExitInExecuteScript = ifReadyToClose(response.getCommand().trim());
+                return response;
+                /*lock.lock();
+                condition.signal();
+                lock.unlock();*/
+                /*// TODO: 01.06.2022
                 if (response.getCommand().equals(Values.SCRIPT.toString())) {
                     readScript(response);
-                }
+                }*/
             } else {
                 isNormalUpdateID = true;
             }
         }
         LOGGER.fine("send and receive finishes");
+        return null;
     }
 
     public void sendAndReceiveCommandScript(String[] command, Console console) throws IOException, CycleInTheScript, ClassNotFoundException {

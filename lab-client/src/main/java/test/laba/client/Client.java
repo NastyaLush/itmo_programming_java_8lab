@@ -2,6 +2,7 @@ package test.laba.client;
 
 import test.laba.client.frontEnd.Frames.Filter;
 import test.laba.client.frontEnd.Frames.Frame;
+import test.laba.client.frontEnd.Frames.Grafics;
 import test.laba.client.frontEnd.HomeFrame;
 import test.laba.client.frontEnd.Local;
 import test.laba.client.frontEnd.TableModule;
@@ -9,8 +10,11 @@ import test.laba.common.IO.Colors;
 import test.laba.common.responses.Response;
 import test.laba.common.util.Util;
 
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Logger;
 
@@ -30,7 +34,6 @@ public final class Client {
      * the main class create for run
      */
     public static void main(String[] args) throws IOException {
-        //new Filter(new TableModule(Local.getResourceBundleDeafult()), Local.getResourceBundleDeafult()).actionPerformed(new ActionEvent(new Integer(3), 2, "filter"));
         final Logger logger = Logger.getLogger(Client.class.getName());
         logger.setLevel(Level.INFO);
         logger.info(Util.giveColor(Colors.BlUE, "the main method starts"));
@@ -38,8 +41,12 @@ public final class Client {
         Condition ready = lock.newCondition();
         Frame frame = new Frame(ready, lock);
         ClientApp clientApp = new ClientApp(frame, ready, lock);
-        new Thread(frame).start();
+        SwingUtilities.invokeLater(frame);
+        //new Thread(frame).start();
         //new Thread(new HomeFrame(ready, lock, "test", new Response(""))).start();
+        connection(clientApp, frame, lock, ready, logger);
+    }
+    private static void connection(ClientApp clientApp, Frame frame, Lock lock, Condition ready, Logger logger){
         String port = frame.getPort();
         String host = frame.getHost();
         while (true) {
@@ -88,9 +95,11 @@ public final class Client {
         } catch (IOException e) {
             frame.exception("Can't connect to the server, check host address and port, the reason (" + e.getMessage() + ")");
             logger.severe(Util.giveColor(Colors.RED, "Can't connect to the server, check host address and port: " + e.getMessage()));
+            connection(clientApp, frame, lock, ready,logger);
         } catch (NumberFormatException e) {
             frame.exception("impossible pars host address and port " + e.getMessage());
             logger.severe(Util.giveColor(Colors.RED, "impossible pars host address and port "));
+            connection(clientApp, frame, lock, ready,logger);
         }
     }
 

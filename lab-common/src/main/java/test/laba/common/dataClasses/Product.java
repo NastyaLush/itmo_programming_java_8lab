@@ -189,12 +189,20 @@ public class  Product implements Comparable<Product>, Serializable {
 
     @Override
     public int compareTo(Product o) {
-        return Comparator.comparing(Product :: getName).
-                thenComparing(Product :: getPrice).
-                thenComparing(Product :: getManufactureCost).
-                thenComparing(Product :: getUnitOfMeasure).
-                thenComparing(Product :: getCoordinates).
-                thenComparing(Product :: getOwner).compare(this, o);
+        if(getOwner() != null) {
+            return Comparator.comparing(Product::getName).
+                    thenComparing(Product::getPrice).
+                    thenComparing(Product::getManufactureCost).
+                    thenComparing(Product::getUnitOfMeasure).
+                    thenComparing(Product::getCoordinates).
+                    thenComparing(Product :: getOwner).compare(this, o);
+        } else {
+            return Comparator.comparing(Product::getName).
+                    thenComparing(Product::getPrice).
+                    thenComparing(Product::getManufactureCost).
+                    thenComparing(Product::getUnitOfMeasure).
+                    thenComparing(Product::getCoordinates).compare(this, o);
+        }
 
     }
 
@@ -202,5 +210,6 @@ public class  Product implements Comparable<Product>, Serializable {
     public void setCreationDate(ZonedDateTime creationDate) {
         this.creationDate = creationDate;
     }
+
 }
 

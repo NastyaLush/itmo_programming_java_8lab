@@ -39,6 +39,7 @@ public class Frame extends AbstractFrame implements Runnable{
         super(new JFrame(/*name*/), Local.getResourceBundleDeafult());
         this.lock = lock;
         this.condition = condition;
+        //start();
     }
 
     private void start() {

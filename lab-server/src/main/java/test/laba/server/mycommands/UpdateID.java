@@ -34,10 +34,10 @@ public class UpdateID extends AbstractCommand {
             Long productID = response.getKeyOrID();
             try {
                 Long id = bdUsersManager.getId(login);
-                System.out.println(productID + " " + id);
                 if (root.containsIDAndBelongsToUser(productID, id)) {
                     try {
                         Long key = root.getKeyOnIDIfBelongsToUser(response.getKeyOrID(), bdUsersManager.getId(login));
+                        response.getProduct().setOwnerID(id);
                         bdManager.updateID(response.getProduct(), key);
                         root.updateProductWithKey(key, response.getProduct());
                         answer = new Response("the object was update");

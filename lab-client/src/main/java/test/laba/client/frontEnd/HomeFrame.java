@@ -12,9 +12,11 @@ import test.laba.client.util.Constants;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ResourceBundle;
+import java.util.*;
+import java.util.List;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
+import java.util.stream.Collectors;
 
 public class HomeFrame extends FrameProduct implements Runnable {
     private TablePanel mainPanel;
@@ -24,6 +26,7 @@ public class HomeFrame extends FrameProduct implements Runnable {
     private final JLabel userName = new JLabel();
     private Response response;
     private final Condition condition;
+    private HashMap<Long, Product> graphicCollection;
     private final Lock lock;
     private final Color green = Color.getHSBColor((float) 0.40034366, (float) 0.8362069, (float) 0.9098039);
 
@@ -42,7 +45,7 @@ public class HomeFrame extends FrameProduct implements Runnable {
         UIManager.put("swing.boldMetal", Boolean.FALSE);
         jFrame.setName(localisation(resourceBundle, Constants.TITLE));
         jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        jFrame.setSize(screenSize.width - 250, screenSize.height - 150);
+        //jFrame.setPreferredSize(new Dimension(screenSize.width - 150, screenSize.height - 50));
         jFrame.setMinimumSize(new Dimension(screenSize.width / 2, screenSize.height / 2));
         jFrame.setLayout(new BorderLayout());
         tableModule = new TableModule(resourceBundle);
@@ -150,7 +153,8 @@ public class HomeFrame extends FrameProduct implements Runnable {
         upPanel.add(Box.createRigidArea(new Dimension(5, 0)));
         upPanel.add(userPicture, BorderLayout.NORTH);
 
-        JButton picture = createPictureButton("graphics", green, "picture.png", new Picture(jFrame,userName, userPicture));
+        repaintAll();
+        JButton picture = createPictureButton("graphics", green, "picture.png", new Picture(this,userName, userPicture));
         JButton restart = createPictureButton("show", green, "restart.png", new CommandWithoutAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -174,6 +178,7 @@ public class HomeFrame extends FrameProduct implements Runnable {
         leftPanel.add(info);
         leftPanel.add(history);
         leftPanel.add(script);
+
 
 /////////////////
 
@@ -225,6 +230,7 @@ public class HomeFrame extends FrameProduct implements Runnable {
         }
         lock.unlock();
         tableModule.addProducts(response.getProductHashMap());
+        graphicCollection = response.getProductHashMap();
         repaint();
     }
     private void repaintFilter(){
@@ -612,6 +618,17 @@ public class HomeFrame extends FrameProduct implements Runnable {
             resourceBundle = Local.locals.get(jMenuItem.getName());
             repaintFrame();
         });
+    }
+    public HashMap<Long, Product> showGraphics(){
+        return graphicCollection;
+    }
+
+    public void setGraphicCollection(HashMap<Long, Product> graphicCollection) {
+        this.graphicCollection = graphicCollection;
+    }
+
+    public HashMap<Long, Product> getGraphicMap() {
+        return graphicCollection;
     }
 
     private void showHelp(String s) {
