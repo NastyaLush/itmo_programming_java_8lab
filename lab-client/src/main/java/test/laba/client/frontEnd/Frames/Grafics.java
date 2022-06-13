@@ -1,21 +1,19 @@
 package test.laba.client.frontEnd.Frames;
 
 import test.laba.client.frontEnd.HomeFrame;
-import test.laba.common.dataClasses.Coordinates;
 import test.laba.common.dataClasses.Product;
-import test.laba.common.dataClasses.UnitOfMeasure;
-import test.laba.common.exception.CreateError;
 
 import javax.swing.*;
 import javax.swing.Timer;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
+import java.awt.geom.Arc2D;
+import java.awt.geom.Line2D;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class Grafics extends JComponent implements ActionListener {
+public class Grafics extends JComponent implements ActionListener, MouseListener {
     private static final double MULTI_FOR_UMBRELLA_HANDLE = 0.6;
     private static final int START_UMBRELLA_ROUND = 0;
     private static final int FINISH_UMBRELLA_ROUND = 180;
@@ -32,20 +30,22 @@ public class Grafics extends JComponent implements ActionListener {
     private HashMap<Long, Umbrella> collection = new HashMap<>();
     javax.swing.Timer timer = new Timer(5,this);
 
+
     public Grafics(HomeFrame homeFrame) {
         this.homeFrame = homeFrame;
+        addMouseListener(this);
     }
 
     public void paint(Graphics g) {
         Graphics2D graphics = (Graphics2D) g;
-
-        graphics.drawLine(homeFrame.screenSize.width / 2, 0, homeFrame.screenSize.width / 2, homeFrame.screenSize.height);
-        graphics.drawLine(0, homeFrame.screenSize.height / 2, homeFrame.screenSize.width, homeFrame.screenSize.height / 2);
+        
+        graphics.drawLine(this.getSize().width/2, 0, this.getSize().width/2, this.getSize().height);
+        graphics.drawLine(0, this.getSize().height/2, this.getSize().width, this.getSize().height/2);
 
 
         if(collection != null){
             sort(collection).stream().forEach(e ->{
-                e.draw(graphics);
+                e.paint(graphics);
                 //System.out.println(e.getValue().getCondition()+ " " + e.getKey());
             });
             Iterator<Map.Entry<Long, Umbrella>> iterator = collection.entrySet().iterator();
@@ -57,15 +57,8 @@ public class Grafics extends JComponent implements ActionListener {
         }
 
         timer.start();
-        paintCollection();
         update();
-        //changeAll(graphics);
 
-    }
-    private void paintCollection(){
-        collection.entrySet().stream().forEach(e ->{
-            //e.getValue().draw(g);
-        });
     }
 
 
@@ -90,6 +83,7 @@ public class Grafics extends JComponent implements ActionListener {
                     if(!collection.containsKey(e.getKey())){
                         e.getValue().setCondition(Condition.INSERT);
                         collection.put(e.getKey(), e.getValue());
+                        //addMouseListener(e.getValue());
                     } else {
                         if (e.getValue().getProduct().compareTo(collection.get(e.getKey()).getProduct())!=0) {
                             collection.get(e.getKey()).setCondition(Condition.UPDATE);
@@ -111,7 +105,46 @@ public class Grafics extends JComponent implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         repaint();
     }
-    private class Umbrella extends JComponent implements Comparable<Umbrella>{
+
+    @Override
+    public void mouseClicked(MouseEvent mouseEvent) {
+        collection.entrySet().forEach(e ->
+        {
+            if(e.getValue().contains(mouseEvent.getX(),mouseEvent.getY())){
+                new ChangeProductFrameAnimation(homeFrame.resourceBundle, e.getValue().getProduct(), e.getKey()) {
+                    @Override
+                    protected void addRemoveListener() {
+                        homeFrame.treatmentAnimation(this::createResponse, this.jFrame);
+                    }
+                    private void treatmentResponse(){
+                        homeFrame.treatmentAnimation(this::createUpdateResponse, this.jFrame);
+                    }
+                    @Override
+                    protected void addOkListener() {
+                        ok.addActionListener(e1 -> treatmentResponse());
+                    }
+                }.actionPerformed(new ActionEvent(this,5,"tr"));
+            }
+        });
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+    }
+
+    private class Umbrella extends JComponent implements Comparable<Umbrella> {
         public final int colorWhite = 255;
         private Integer moveX = 0;
         private int productX;
@@ -123,24 +156,37 @@ public class Grafics extends JComponent implements ActionListener {
         private Product product;
         private HashMap<Condition, IFunction> function = new HashMap<>();
 
+        private Arc2D umbrellaRound;
+        private Arc2D umbrellaRoundSmall;
+        private Line2D umbrellaHandle;
+        private Arc2D umbrellaRoundContur;
+        private Line2D umbrellaHandleContur;
+
         public Umbrella(Product product) {
             this.product = product;
             inisialization(product);
-            function.put(Condition.SHOW,this::paint);
+            function.put(Condition.SHOW,this::draw);
             function.put(Condition.INSERT,this::insert);
             function.put(Condition.REMOVE,this::remove);
             function.put(Condition.UPDATE,this::update);
             function.put(Condition.DEAD,this::dead);
+
+           // addMouseListener(this);
         }
         private void inisialization(Product product){
             this.productX =check(product.getCoordinates().getX(), MIN_SIZE_X, MAX_X, OFFSET_X);
             this.y= check(Math.round(product.getCoordinates().getY()), MIN_SIZE_Y, MAX_Y);
             this.widthOrHeight = check(Math.toIntExact(product.getPrice()), MIN_SIZE_PRICE, MAX_UMBRELLA);
-            System.out.println(product);
             this.color = createColor(product.getOwnerID().hashCode());
         }
 
-        public void paint(Graphics2D graphics) {
+        @Override
+        protected void paintComponent(Graphics g) {
+            function.get(condition).drawing((Graphics2D) g);
+        }
+
+
+        public void draw(Graphics2D graphics) {
             final int startUmbrellaHandleX = moveX + (widthOrHeight / 2);
             final int startUmbrellaHandleY = y + (widthOrHeight / 2);
             final int finishUmbrellaHandleX = startUmbrellaHandleX;
@@ -160,19 +206,33 @@ public class Grafics extends JComponent implements ActionListener {
 
             graphics.setColor(color);
             graphics.setStroke(new BasicStroke(thicknessForUmbrellaHandle));
-            graphics.fillArc(moveX, y, widthOrHeight, widthOrHeight, START_UMBRELLA_ROUND, FINISH_UMBRELLA_ROUND);
-            graphics.drawLine(startUmbrellaHandleX, startUmbrellaHandleY, finishUmbrellaHandleX, finishUmbrellaHandleY);
-            graphics.drawArc(startUmbrellaHandleRoundX, startUmbrellaHandleRoundY, widthOrHeightUmbrellaHandle, widthOrHeightUmbrellaHandle, START_UMBRELLA_ROUND, finishUmbrellaHandleRound);
-
+            umbrellaRound = new Arc2D.Float(moveX, y,widthOrHeight,widthOrHeight, START_UMBRELLA_ROUND, FINISH_UMBRELLA_ROUND, Arc2D.PIE);
+            graphics.fill(umbrellaRound);
+            umbrellaHandle = new Line2D.Float(startUmbrellaHandleX, startUmbrellaHandleY, finishUmbrellaHandleX, finishUmbrellaHandleY);
+            graphics.draw(umbrellaHandle);
+            umbrellaRoundSmall = new Arc2D.Float(startUmbrellaHandleRoundX, startUmbrellaHandleRoundY, widthOrHeightUmbrellaHandle, widthOrHeightUmbrellaHandle, START_UMBRELLA_ROUND, finishUmbrellaHandleRound, Arc2D.OPEN);
+            graphics.draw(umbrellaRoundSmall);
             graphics.setColor(Color.WHITE);
             graphics.setStroke(new BasicStroke(thicknessForUmbrellaRound));
 
-            graphics.drawArc(moveX, y, widthOrHeight, widthOrHeight, START_UMBRELLA_ROUND, FINISH_UMBRELLA_ROUND);
-            graphics.drawLine(lineRoundUmbrellaHandleX, startUmbrellaHandleY, lineRoundUmbrellaHandleX, finishUmbrellaHandleY);
-
+            umbrellaRoundContur = new Arc2D.Float(moveX, y, widthOrHeight, widthOrHeight, START_UMBRELLA_ROUND, FINISH_UMBRELLA_ROUND, Arc2D.PIE);
+            umbrellaHandleContur = new Line2D.Float(lineRoundUmbrellaHandleX, startUmbrellaHandleY, lineRoundUmbrellaHandleX, finishUmbrellaHandleY);
+            graphics.draw(umbrellaHandleContur);
+            graphics.draw(umbrellaRoundContur);
         }
-        public void draw(Graphics2D graphics){
-           function.get(condition).drawing(graphics);
+
+        @Override
+        public boolean contains(int x, int y) {
+            return umbrellaRound.contains(x,y) ||
+                    umbrellaRoundSmall.contains(x,y) ||
+                    umbrellaHandle.contains(x,y) ||
+                    umbrellaRoundContur.contains(x,y) ||
+                    umbrellaHandleContur.contains(x,y);
+        }
+
+        public void paint(Graphics graphics){
+            super.paint(graphics);
+           function.get(condition).drawing((Graphics2D) graphics);
         }
         private void update(Graphics2D graphics){
             if(trembling!=0) {
@@ -180,7 +240,7 @@ public class Grafics extends JComponent implements ActionListener {
                 moveX += (int) Math.pow(-1, trembling--);
                 y += (int) Math.pow(-1, trembling);
                 widthOrHeight += (int) Math.pow(-1, trembling);
-                paint(graphics);
+                draw(graphics);
             } else {
                 condition = Condition.SHOW;
                 trembling =100;
@@ -192,7 +252,7 @@ public class Grafics extends JComponent implements ActionListener {
         public void insert(Graphics2D graphics){
             if(productX > moveX){
                 moveX++;
-                paint(graphics);
+                draw(graphics);
                 color = createColor(moveX.hashCode());
             } else {
                 condition = Condition.SHOW;
@@ -202,7 +262,7 @@ public class Grafics extends JComponent implements ActionListener {
         public void remove(Graphics2D graphics2D){
             if(!changeColor()){
                 widthOrHeight += color.getGreen()%2;
-                paint(graphics2D);
+                draw(graphics2D);
 
             } else {
                 condition = Condition.DEAD;
@@ -225,7 +285,6 @@ public class Grafics extends JComponent implements ActionListener {
                     random.nextInt(MAX_RGB)
             );
         }
-
 
         private int check(int price, int min, int max) {
             return (price < min) ? (price<0)?0:price + min : ((price>max) ? max:price);
@@ -263,12 +322,12 @@ public class Grafics extends JComponent implements ActionListener {
                     '}';
         }
 
-
         public int compareTo(Umbrella o) {
             return Comparator.comparing(Umbrella::getWidthOrHeight).compare(this, o);
         }
+
     }
     private interface IFunction{
-        public void drawing(Graphics2D graphics2D);
+        void drawing(Graphics2D graphics2D);
     }
 }

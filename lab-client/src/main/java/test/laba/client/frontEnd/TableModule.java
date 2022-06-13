@@ -69,6 +69,19 @@ public class TableModule extends AbstractTableModel implements Localasiable {
         return "";
     }
 
+    public String delocalisationUnitOfMeasure(String name){
+        if(resourceBundle.getString(Constants.PCS.getString()).equals(name)){
+            return Constants.PCS.getString();
+        }
+        if(resourceBundle.getString(Constants.GRAMS.getString()).equals(name)){
+            return Constants.GRAMS.getString();
+        }
+        if(resourceBundle.getString(Constants.MILLILITERS.getString()).equals(name)){
+            return Constants.MILLILITERS.getString();
+        }
+        return null;
+    }
+
 
     @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {

@@ -50,7 +50,8 @@ public enum Constants {
     FORMAT("format"),
     HELP("help"),
     CANCEL("cancel"),
-    CHOOSE("choose");
+    CHOOSE("choose"),
+    BACK("back");
 
     private final String string;
 

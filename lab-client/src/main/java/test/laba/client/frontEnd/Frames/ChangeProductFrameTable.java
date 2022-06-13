@@ -1,8 +1,8 @@
 package test.laba.client.frontEnd.Frames;
 
-import test.laba.client.frontEnd.Frames.ChangeProductFrame;
 import test.laba.client.frontEnd.TableModule;
 import test.laba.client.frontEnd.TablePanel;
+import test.laba.client.util.Constants;
 
 import javax.swing.*;
 import java.awt.*;
@@ -42,6 +42,9 @@ public abstract class ChangeProductFrameTable extends ChangeProductFrame {
         mainPlusPanel.add(enter);
         return textField;
     }
+    @Override
+    protected void addKey() {
+    }
 
     protected JMenu unitOfMeas(String name, String description) {
         JLabel label = new JLabel(name + "(" + description + ")");
@@ -51,6 +54,8 @@ public abstract class ChangeProductFrameTable extends ChangeProductFrame {
 
 
         JMenu menu = createUMMenu(getDescription(name));
+        System.out.println(tableModule.delocalisationUnitOfMeasure(getDescription(name)));
+        menu.setName(tableModule.delocalisationUnitOfMeasure(getDescription(name)));
         JMenuBar menuBar = unitOfMeasureButton(menu);
 
         mainPlusPanel.add(label);
@@ -61,5 +66,10 @@ public abstract class ChangeProductFrameTable extends ChangeProductFrame {
 
     protected String getDescription(String name) {
         return String.valueOf(tableModule.getValueAt(name, table.getColumnForChanging()));
+    }
+
+    @Override
+    protected String getID(){
+        return getDescription(local(Constants.ID));
     }
 }

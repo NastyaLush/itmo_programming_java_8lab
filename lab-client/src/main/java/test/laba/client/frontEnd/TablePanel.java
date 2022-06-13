@@ -37,20 +37,10 @@ public abstract class TablePanel extends JPanel
             if (event.getValueIsAdjusting()) {
                 return;
             }
-            columnForChanging = event.getFirstIndex();
+            columnForChanging = table.getSelectedRow();
             outputSelection();
         }
     }
-
-    /*private class ColumnListener implements ListSelectionListener {
-        public void valueChanged(ListSelectionEvent event) {
-            if (event.getValueIsAdjusting()) {
-                return;
-            }
-            columnForChanging = event.getFirstIndex();
-            outputSelection();
-        }
-    }*/
 
     @Override
     public void actionPerformed(ActionEvent e) {

@@ -53,8 +53,9 @@ public abstract class ChangeProductFrame extends FrameProduct implements ActionL
         jFrame.setLayout(new BorderLayout());
 
         ok.setFont(labelFont);
-        ok.setBackground(Color.green);
+        ok.setBackground(Color.gray);
         addOkListener();
+        System.out.println("hh");
 
         addKey();
         textProductName = createButtonGroupe(localisation(resourceBundle, Constants.PRODUCT_NAME), localisation(resourceBundle, Constants.CAN_NOT_BE_NULL), false);
@@ -71,20 +72,29 @@ public abstract class ChangeProductFrame extends FrameProduct implements ActionL
         addOwner.addActionListener(needOwner);
 
         mainPlusPanel.add(addOwner);
-        mainPlusPanel.add(ok);
+        addActionButtons();
         mainPlusPanel.setLayout(new BoxLayout(mainPlusPanel, BoxLayout.Y_AXIS));
         jFrame.add(mainPlusPanel, BorderLayout.CENTER);
         jFrame.setVisible(true);
     }
+    protected void addActionButtons(){
+        mainPlusPanel.add(ok);
+    }
+    protected void removeActionButtons(){
+        mainPlusPanel.remove(ok);
+    }
 
     protected abstract void addOkListener();
 
+    protected String getID(){
+        return "0";
+    }
     protected abstract class OkListener implements ActionListener {
         protected abstract void createResponse(Product product, Long key);
 
         protected Product addProduct() throws VariableException {
             Product product = new Product();
-            //product.setId();
+            product.setId(VariableParsing.toLongNumber(local(Constants.ID), getID()));
             product.setName(VariableParsing.toRightName(local(Constants.PRODUCT_NAME), textProductName.getText()));
             Coordinates coordinates = new Coordinates();
             coordinates.setX(VariableParsing.toRightX(local(Constants.COORDINATE_X), textCoordinateX.getText()));
@@ -198,14 +208,14 @@ public abstract class ChangeProductFrame extends FrameProduct implements ActionL
         public void actionPerformed(ActionEvent e) {
             jFrame.setMinimumSize(new Dimension(screenSize.width / 2, screenSize.height / 10 * 8));
             if (addOwner.isSelected()) {
-                mainPlusPanel.remove(ok);
+                removeActionButtons();
                 textPersonName = createButtonGroupe(local(Constants.PERSON_NAME), local(Constants.CAN_NOT_BE_NULL), true);
                 textPersonBirthday = createButtonGroupe(local(Constants.BIRTHDAY), local(Constants.CAN_NOT_BE_NULL) + local(Constants.FORMAT), true);
                 textPersonHeight = createButtonGroupe(local(Constants.HEIGHT), local(Constants.MUST_BE_BIGGER) + "0" + local(Constants.CAN_NOT_BE_NULL), true);
                 textLocationX = createButtonGroupe(local(Constants.LOCATION_X), "", true);
                 textLocationY = createButtonGroupe(local(Constants.LOCATION_Y), "", true);
                 textLocationName = createButtonGroupe(local(Constants.LOCATION_NAME), local(Constants.CAN_NOT_BE_NULL), true);
-                mainPlusPanel.add(ok);
+                addActionButtons();
                 mainPlusPanel.validate();
                 jFrame.validate();
             } else {

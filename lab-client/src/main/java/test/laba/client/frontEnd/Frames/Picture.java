@@ -14,7 +14,7 @@ public class Picture extends JFrame implements ActionListener {
     private final Dimension screenSize;
     private final JPanel upPanel;
 
-    public Picture(HomeFrame jFrame, JLabel userName, JLabel userPicture) {
+    public Picture(HomeFrame jFrame, JLabel userName) {
         this.homeFrame = jFrame;
         this.userName = userName;
         this.pictureFrame = new JFrame();
@@ -39,12 +39,10 @@ public class Picture extends JFrame implements ActionListener {
 
         pictureFrame.getContentPane().add(BorderLayout.NORTH, upPanel);
         upPanel.setPreferredSize(new Dimension((int) homeFrame.screenSize.getWidth(), (int)homeFrame.screenSize.getHeight() / 10));
-        upPanel.setLayout(new BoxLayout(upPanel, BoxLayout.X_AXIS));
+        upPanel.setLayout(new BorderLayout());
         upPanel.setBackground(Color.BLACK);
 
-        upPanel.add(Box.createRigidArea(new Dimension(screenSize.width - 500, 0)));
-        upPanel.add(userName);
-        upPanel.add(Box.createRigidArea(new Dimension(5, 0)));
+        upPanel.add(userName, BorderLayout.AFTER_LINE_ENDS);
 
 
         pictureFrame.setLayout(new BorderLayout());

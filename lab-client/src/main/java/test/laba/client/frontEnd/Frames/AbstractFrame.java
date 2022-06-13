@@ -1,5 +1,6 @@
 package test.laba.client.frontEnd.Frames;
 
+import test.laba.client.frontEnd.Local;
 import test.laba.client.util.Constants;
 
 import javax.swing.*;
@@ -10,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-public class AbstractFrame implements FrameInterface, Localasiable {
+public class AbstractFrame extends Local implements FrameInterface, Localasiable {
     protected final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     protected JFrame jFrame;
     protected ResourceBundle resourceBundle;
@@ -72,6 +73,10 @@ public class AbstractFrame implements FrameInterface, Localasiable {
 
     public void setResourceBundle(ResourceBundle resourceBundle) {
         this.resourceBundle = resourceBundle;
+    }
+
+    public ResourceBundle getResourceBundle() {
+        return resourceBundle;
     }
 
     protected String local(Constants constants) {

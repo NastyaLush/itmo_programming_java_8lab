@@ -24,7 +24,8 @@ public enum Command {
     LOCATION_X("location X"),
     LOCATION_Y("location Y"),
     FILTER("filter"),
-    LOCATION_NAME("location Name");
+    LOCATION_NAME("location Name"),
+    SHOW("show");
 
     private final String string;
 

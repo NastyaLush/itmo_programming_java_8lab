@@ -7,11 +7,12 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.ResourceBundle;
 
-public class FrameProduct extends AbstractFrame {
+public abstract class FrameProduct extends LanguageInterface {
 
     public FrameProduct(JFrame jFrame, ResourceBundle resourceBundle) {
         super(jFrame, resourceBundle);
     }
+
 
     protected JMenu createUMMenu(String name) {
         JMenu menu = new JMenu(name);

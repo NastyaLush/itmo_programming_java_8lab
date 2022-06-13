@@ -10,6 +10,8 @@ import test.laba.client.util.Command;
 import test.laba.client.util.Constants;
 
 import javax.swing.*;
+import javax.swing.plaf.TableHeaderUI;
+import javax.swing.table.JTableHeader;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
@@ -20,40 +22,148 @@ import java.util.stream.Collectors;
 
 public class HomeFrame extends FrameProduct implements Runnable {
     private TablePanel mainPanel;
-    private final String login;
-    private final JLabel userPicture = new JLabel();
+    private String login = "test";
     private TableModule tableModule;
-    private final JLabel userName = new JLabel();
+    private JLabel nameUser;
     private Response response;
     private final Condition condition;
     private HashMap<Long, Product> graphicCollection;
     private final Lock lock;
-    private final Color green = Color.getHSBColor((float) 0.40034366, (float) 0.8362069, (float) 0.9098039);
+    private final Color green = Color.getHSBColor((float) 0.44, (float) 0.60, (float) 0.80);
+    private final Color blue = Color.getHSBColor(0.67F, 0.30F, 0.84F);
 
 
     ///////////
 
-    public HomeFrame(Condition condition, Lock lock, String login, Response response) {
-        super(new JFrame(), Local.getResourceBundleDeafult());
+    public HomeFrame(Condition condition, Lock lock, String login, Response response, ResourceBundle resourceBundle) {
+        super(new JFrame(),resourceBundle);
         this.login = login;
         this.response = response;
         this.lock = lock;
         this.condition = condition;
+        this.nameUser = createUserName();
     }
 
     public void run() {
+        System.out.println(resourceBundle);
         UIManager.put("swing.boldMetal", Boolean.FALSE);
         jFrame.setName(localisation(resourceBundle, Constants.TITLE));
         jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        //jFrame.setPreferredSize(new Dimension(screenSize.width - 150, screenSize.height - 50));
-        jFrame.setMinimumSize(new Dimension(screenSize.width / 2, screenSize.height / 2));
+        jFrame.setPreferredSize(new Dimension(screenSize.width - 150, screenSize.height - 50));
+        jFrame.setMinimumSize(new Dimension((int)(screenSize.width / 1.2), (int)(screenSize.height / 1.2)));
+        jFrame.setLocation(100, 100);
         jFrame.setLayout(new BorderLayout());
         tableModule = new TableModule(resourceBundle);
 
-        mainPanel = new TablePanel(new JTable(tableModule)) {
+        mainPanel = createTable();
+        mainPanel.setOpaque(true);
+        jFrame.getContentPane().add(BorderLayout.CENTER, mainPanel);
+
+        JButton manCost = createButtonCommand(Command.AVERAGE_OF_MANUFACTURE_COST.getString(), Constants.AVERAGE_OF_MANUFACTURE_COST);
+        JButton groupCountingByPrice = createButtonCommand(Command.GROUP_COUNTING_BY_PRICE.getString(), Constants.GROUP_COUNTING_BY_PRICE);
+        JButton filter = createFilter(Command.FILTER.getString(), Constants.FILTER);
+
+
+
+
+
+        JPanel leftPanel = new JPanel();
+        JPanel upPanel = new JPanel();
+        JPanel downPAnel = new JPanel();
+
+        upPanel.setLayout(new BoxLayout(upPanel, BoxLayout.X_AXIS));
+        upPanel.add(createLanguage(Color.white), BorderLayout.WEST);
+        upPanel.add(Box.createRigidArea(new Dimension(5, 0)));
+        upPanel.add(filter, BorderLayout.WEST);
+        upPanel.add(Box.createRigidArea(new Dimension(5, 0)));
+        upPanel.add(groupCountingByPrice, BorderLayout.WEST);
+        upPanel.add(Box.createRigidArea(new Dimension(5, 0)));
+        upPanel.add(manCost, BorderLayout.WEST);
+        JPanel jPanel = new JPanel();
+        jPanel.setLayout(new BorderLayout());
+        jPanel.setBackground(Color.BLACK);
+
+        jPanel.add(nameUser, BorderLayout.EAST);
+        upPanel.add(jPanel, BorderLayout.AFTER_LINE_ENDS);
+        upPanel.add(Box.createRigidArea(new Dimension(5, 0)));
+
+
+        repaintAll();
+        JButton picture = createPictureButton("graphics", green, "picture.png", new Picture(this,createUserName()));
+        JButton restart = createPictureButton("show", green, "restart.png", new CommandWithoutAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                treatmentResponseWithCommandName(((JButton) e.getSource()).getName(), HomeFrame.this::showNothing);
+            }
+        });
+        JButton help = createPictureButton("help", green, "question.png", new CommandWithoutAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                treatmentResponseWithCommandName(((JButton) e.getSource()).getName(), HomeFrame.this::showHelp);
+            }
+        });
+        JButton history = createPictureButton("history", green, "history.png", new CommandWithoutAction());
+        JButton script = createPictureButton("script", green, "script.png", new Script());
+        JButton info = createPictureButton("info", green, "info.png", new CommandWithoutAction());
+
+        leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
+        leftPanel.add(picture);
+        leftPanel.add(restart);
+        leftPanel.add(help);
+        leftPanel.add(info);
+        leftPanel.add(history);
+        leftPanel.add(script);
+
+
+/////////////////
+
+        JButton trash = createPictureButton("trash", green, "trash.png", e -> treatmentResponseWithCommandName("clear", this::show));
+        trash.setPreferredSize(new Dimension(95, 95));
+        JButton minus = createPictureButton("minus", Color.white, "minus.png", new Minus());
+        JButton plus = createPictureButton("plus", Color.white, "plus.png", new Plus(resourceBundle));
+
+
+        downPAnel.setLayout(new BorderLayout());
+        downPAnel.setBackground(Color.WHITE);
+        downPAnel.add(trash, BorderLayout.WEST);
+        JPanel panel = new JPanel();
+        panel.setBackground(Color.WHITE);
+        panel.add(minus);
+        panel.add(plus);
+        downPAnel.add(panel, BorderLayout.EAST);
+
+        leftPanel.setBackground(green);
+        upPanel.setBackground(Color.BLACK);
+
+        mainPanel.setPreferredSize(new Dimension(jFrame.getWidth() / 2, jFrame.getHeight() / 2));
+        upPanel.setPreferredSize(new Dimension(jFrame.getWidth(), 85));
+        downPAnel.setPreferredSize(new Dimension(jFrame.getWidth(), 115));
+        leftPanel.setPreferredSize(new Dimension(95, jFrame.getHeight()));
+
+        jFrame.getContentPane().add(BorderLayout.CENTER, mainPanel);
+        jFrame.getContentPane().add(BorderLayout.WEST, leftPanel);
+        jFrame.getContentPane().add(BorderLayout.NORTH, upPanel);
+        jFrame.getContentPane().add(BorderLayout.SOUTH, downPAnel);
+
+        jFrame.repaint();
+        repaintAll();
+        jFrame.setVisible(true);
+    }
+
+
+    private TablePanel createTable(){
+        JTable table = new JTable(tableModule);
+        table.setFont(new Font("Safari", Font.BOLD, 13));
+        JTableHeader tableHeader = table.getTableHeader();
+        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        tableHeader.setBackground(blue);
+        tableHeader.setFont(new Font("Safari", Font.PLAIN, 13));
+        tableHeader.setFocusable(false);
+        return new TablePanel(table) {
             @Override
             protected void outputSelection() {
                 new ChangeProductFrameTable(this, tableModule, resourceBundle) {
+
                     @Override
                     protected void addOkListener() {
                         ok.addActionListener(new OkListener() {
@@ -89,127 +199,13 @@ public class HomeFrame extends FrameProduct implements Runnable {
                 }.actionPerformed(new ActionEvent(this, 1, Command.UPDATE_ID.getString()));
             }
         };
-        mainPanel.setOpaque(true);
-        jFrame.getContentPane().add(BorderLayout.CENTER, mainPanel);
+    }
 
-
-        ImageIcon imageIcon = new ImageIcon("user1.png");
-        userPicture.setIcon(imageIcon);
-
-        userName.setText(login);
+    private JLabel createUserName(){
+        JLabel userName = new JLabel(login);
         userName.setForeground(Color.WHITE);
         userName.setFont(underLine(new Font("Safari", Font.BOLD, 38)));
-
-        JButton manCost = createButtonCommand(Command.AVERAGE_OF_MANUFACTURE_COST.getString(), Constants.AVERAGE_OF_MANUFACTURE_COST);
-        JButton groupCountingByPrice = createButtonCommand(Command.GROUP_COUNTING_BY_PRICE.getString(), Constants.GROUP_COUNTING_BY_PRICE);
-        JButton filter = createFilter(Command.FILTER.getString(), Constants.FILTER);
-
-
-        JMenu lang = new JMenu(localisation(resourceBundle, Constants.LANGUAGE));
-        lang.setPreferredSize(new Dimension(jFrame.getWidth() / 15, 250));
-        lang.setFont(new Font("Safari", Font.PLAIN, 20));
-
-        JMenuItem rus = new JMenuItem(localisation(resourceBundle, Constants.RUSSIAN));
-        rus.setName(Local.russian);
-        JMenuItem nor = new JMenuItem(localisation(resourceBundle, Constants.NORWEGIAN));
-        nor.setName(Local.norwegian);
-        JMenuItem fr = new JMenuItem(localisation(resourceBundle, Constants.FRENCH));
-        fr.setName(Local.france);
-        JMenuItem sp = new JMenuItem(localisation(resourceBundle, Constants.SPANISH));
-        sp.setName(Local.spanish);
-
-
-        changeMenuAndLAg(rus, lang);
-        changeMenuAndLAg(nor, lang);
-        changeMenuAndLAg(fr, lang);
-        changeMenuAndLAg(sp, lang);
-
-        lang.add(rus);
-        lang.add(nor);
-        lang.add(fr);
-        lang.add(sp);
-
-        JMenuBar language = new JMenuBar();
-        language.add(lang);
-        language.setBackground(Color.BLACK);
-        language.setForeground(Color.WHITE);
-
-
-        JPanel leftPanel = new JPanel();
-        JPanel upPanel = new JPanel();
-        JPanel downPAnel = new JPanel();
-
-        upPanel.setLayout(new BoxLayout(upPanel, BoxLayout.X_AXIS));
-        upPanel.add(Box.createRigidArea(new Dimension(5, 0)));
-        upPanel.add(language, BorderLayout.WEST);
-        upPanel.add(Box.createRigidArea(new Dimension(5, 0)));
-        upPanel.add(filter, BorderLayout.WEST);
-        upPanel.add(Box.createRigidArea(new Dimension(5, 0)));
-        upPanel.add(groupCountingByPrice, BorderLayout.WEST);
-        upPanel.add(Box.createRigidArea(new Dimension(5, 0)));
-        upPanel.add(manCost, BorderLayout.WEST);
-        upPanel.add(Box.createRigidArea(new Dimension(screenSize.width / 3, 0)));
-        upPanel.add(userName, BorderLayout.EAST);
-        upPanel.add(Box.createRigidArea(new Dimension(5, 0)));
-        upPanel.add(userPicture, BorderLayout.NORTH);
-
-        repaintAll();
-        JButton picture = createPictureButton("graphics", green, "picture.png", new Picture(this,userName, userPicture));
-        JButton restart = createPictureButton("show", green, "restart.png", new CommandWithoutAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                treatmentResponseWithCommandName(((JButton) e.getSource()).getName(), HomeFrame.this::showNothing);
-            }
-        });
-        JButton help = createPictureButton("help", green, "question.png", new CommandWithoutAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                treatmentResponseWithCommandName(((JButton) e.getSource()).getName(), HomeFrame.this::showHelp);
-            }
-        });
-        JButton history = createPictureButton("history", green, "history.png", new CommandWithoutAction());
-        JButton script = createPictureButton("script", green, "script.png", new Script());
-        JButton info = createPictureButton("info", green, "info.png", new CommandWithoutAction());
-
-        leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
-        leftPanel.add(picture);
-        leftPanel.add(restart);
-        leftPanel.add(help);
-        leftPanel.add(info);
-        leftPanel.add(history);
-        leftPanel.add(script);
-
-
-/////////////////
-
-        JButton trash = createPictureButton("trash", green, "trash.png", e -> treatmentResponseWithCommandName("clear", this::show));
-        JButton minus = createPictureButton("minus", Color.white, "minus.png", new Minus());
-        JButton plus = createPictureButton("plus", Color.white, "plus.png", new Plus(resourceBundle));
-
-
-        downPAnel.setLayout(new BoxLayout(downPAnel, BoxLayout.X_AXIS));
-        downPAnel.add(trash, BorderLayout.EAST);
-        downPAnel.add(Box.createRigidArea(new Dimension(screenSize.width - 700, 0)));
-        downPAnel.add(minus, BorderLayout.WEST);
-        downPAnel.add(plus, BorderLayout.WEST);
-
-        leftPanel.setBackground(green);
-        upPanel.setBackground(Color.BLACK);
-
-        mainPanel.setPreferredSize(new Dimension(jFrame.getWidth() / 2, jFrame.getHeight() / 2));
-        leftPanel.setPreferredSize(new Dimension(jFrame.getWidth() / 16, jFrame.getHeight()));
-        upPanel.setPreferredSize(new Dimension(jFrame.getWidth(), jFrame.getHeight() / 10));
-        downPAnel.setPreferredSize(new Dimension(jFrame.getWidth(), jFrame.getHeight() / 8));
-
-        jFrame.getContentPane().add(BorderLayout.CENTER, mainPanel);
-        jFrame.getContentPane().add(BorderLayout.WEST, leftPanel);
-        jFrame.getContentPane().add(BorderLayout.NORTH, upPanel);
-        jFrame.getContentPane().add(BorderLayout.SOUTH, downPAnel);
-
-        jFrame.repaint();
-        repaintAll();
-        jFrame.pack();
-        jFrame.setVisible(true);
+        return userName;
     }
 
 
@@ -351,17 +347,18 @@ public class HomeFrame extends FrameProduct implements Runnable {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         try {
+                            lock.lock();
                             response = createResponse();
-                            treatmentResponseWithFrame(HomeFrame.this::show);
+                            treatmentResponseWithFrame(HomeFrame.this::show, jFrame);
+                            lock.unlock();
                         } catch (VariableException ex) {
                             exception(ex.getMessage());
                         }
                     }
-
                     @Override
                     public Response createResponse() throws VariableException {
                         Response createdResponse = new Response(command);
-                        Long key = VariableParsing.toLongNumber(((JTextField) textKey).getText(), localisation(resourceBundle, Constants.KEY));
+                        Long key = VariableParsing.toLongNumber(localisation(resourceBundle, Constants.KEY), ((JTextField) textKey).getText());
                         createdResponse.setKeyOrID(key);
                         return createdResponse;
                     }
@@ -410,7 +407,7 @@ public class HomeFrame extends FrameProduct implements Runnable {
                     public void actionPerformed(ActionEvent e) {
                         try {
                             response = createResponse();
-                            treatmentResponseWithFrame(HomeFrame.this::show);
+                            treatmentResponseWithFrame(HomeFrame.this::show, jFrame);
                         } catch (VariableException ex) {
                             exception(ex.getMessage());
                         }
@@ -509,17 +506,31 @@ public class HomeFrame extends FrameProduct implements Runnable {
         }
     }
 
-    private void treatmentResponseWithFrame(IFunction show) {
+    private void treatmentResponseWithFrame(IFunction show, JFrame jFrame) {
         if (jFrame != null) {
             close(jFrame);
         }
         treatmentResponseWithoutFrame(show);
     }
 
-    private void treatmentResponseWithCommandName(String name, IFunction show) {
+    public void treatmentResponseWithCommandName(String name, IFunction show) {
+        lock.lock();
         response = new Response(name);
         treatmentResponseWithoutFrame(show);
+        lock.unlock();
 
+    }
+    public void treatmentAnimation(String name, JFrame jFrame){
+        lock.lock();
+        response = new Response(name);
+        treatmentResponseWithFrame(this::show, jFrame);
+        lock.unlock();
+    }
+    public void treatmentAnimation(IFunctionResponse newResponse, JFrame jFrame){
+        lock.lock();
+        response = newResponse.createResponse();
+        treatmentResponseWithFrame(this::show, jFrame);
+        lock.unlock();
     }
 
     private void treatmentResponseWithoutFrame(IFunction showResponse) {
@@ -542,6 +553,8 @@ public class HomeFrame extends FrameProduct implements Runnable {
     private JButton createPictureButton(String name, java.awt.Color colorBackground, String picturePath, ActionListener actionListener) {
         JButton button = new JButton(new ImageIcon(picturePath));
         button.setName(name);
+        button.setBorderPainted(false);
+        button.setFocusPainted(false);
         button.setBackground(colorBackground);
         button.addActionListener(actionListener);
         return button;
@@ -553,6 +566,8 @@ public class HomeFrame extends FrameProduct implements Runnable {
         jButton.setFont(new Font("Safari", Font.ITALIC, 20));
         jButton.setBackground(Color.BLACK);
         jButton.setForeground(Color.WHITE);
+        jButton.setFocusPainted(false);
+        jButton.setBorderPainted(false);
         jButton.addActionListener(
                 new ActionListener() {
                     @Override
@@ -569,11 +584,12 @@ public class HomeFrame extends FrameProduct implements Runnable {
     }
 
     private JButton createButtonCommand(String name, Constants command) {
-        JButton jButton;
-        jButton = new JButton(localisation(resourceBundle, command));
+        JButton jButton = new JButton(localisation(resourceBundle, command));
         jButton.setFont(new Font("Safari", Font.ITALIC, 20));
         jButton.setBackground(Color.BLACK);
         jButton.setForeground(Color.WHITE);
+        jButton.setFocusPainted(false);
+        jButton.setBorderPainted(false);
         jButton.addActionListener((ActionEvent actionEvent) -> {
             response = new Response(name);
             lock.lock();
@@ -606,22 +622,7 @@ public class HomeFrame extends FrameProduct implements Runnable {
         this.response = response;
     }
 
-    private void repaintFrame() {
-        close();
-        jFrame = new JFrame();
-        run();
-    }
 
-    private void changeMenuAndLAg(JMenuItem jMenuItem, JMenu menu) {
-        jMenuItem.addActionListener((ActionEvent e) -> {
-            menu.setText(jMenuItem.getName());
-            resourceBundle = Local.locals.get(jMenuItem.getName());
-            repaintFrame();
-        });
-    }
-    public HashMap<Long, Product> showGraphics(){
-        return graphicCollection;
-    }
 
     public void setGraphicCollection(HashMap<Long, Product> graphicCollection) {
         this.graphicCollection = graphicCollection;
@@ -637,6 +638,9 @@ public class HomeFrame extends FrameProduct implements Runnable {
 
     private interface IFunction {
         void function(String oldField);
+    }
+    public interface IFunctionResponse {
+        Response createResponse();
     }
 
 }

@@ -39,7 +39,7 @@ public class ClientApp {
     private boolean isNormalUpdateID = true;
     private final HashSet<String> executeScriptFiles = new HashSet<>();
     private final Frame frame;
-    private final HomeFrame homeFrame;
+    private HomeFrame homeFrame;
     private boolean isExitInExecuteScript = false;
     private String login;
     private String password;
@@ -52,13 +52,13 @@ public class ClientApp {
         this.condition = condition;
         LOGGER.setLevel(Level.INFO);
         this.frame = frame;
-        this.homeFrame = new HomeFrame(condition, lock, login, frame.getResponse());
     }
 
     public void interactivelyMode() {
         LOGGER.log(Level.FINE, "The interactively Mode starts");
         try {
             registeringUser();
+            this.homeFrame = new HomeFrame(condition, lock, login, frame.getResponse(), frame.getResourceBundle());
             frame.close();
             new Thread(homeFrame).start();
             wrapper.sent(new Response(login, password, Values.COLLECTION.toString()));

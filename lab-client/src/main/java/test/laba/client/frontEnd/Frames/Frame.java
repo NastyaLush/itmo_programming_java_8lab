@@ -13,23 +13,25 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 
 
-public class Frame extends AbstractFrame implements Runnable{
+public class Frame extends LanguageInterface implements Runnable{
     private JLabel login;
-    private final JTextField textLogin = new JTextField(10);
+    private final JTextField textLogin = new JTextField();
     private JLabel password;
-    private final JPasswordField textPassword = new JPasswordField(10);
+    private final JPasswordField textPassword = new JPasswordField();
     private JLabel host;
-    private final JTextField textHost = new JTextField("localhost",10);
+    private final JTextField textHost = new JTextField("localhost");
     private JLabel port;
-    private final JTextField textPort = new JTextField(10);
+    private final JTextField textPort = new JTextField();
     private JLabel authorisation;
     private JButton register;
     private final JPanel mainPanel = new JPanel();
+    private final JPanel upPanel = new JPanel();
     private String userHost = null;
     private String userPort = null;
     protected Response response = null;
     protected final Condition condition;
     protected final Lock lock;
+    private JMenuBar lang;
     private boolean isNewUser = false;
     protected boolean isException = false;
 
@@ -42,12 +44,14 @@ public class Frame extends AbstractFrame implements Runnable{
         //start();
     }
 
-    private void start() {
+    public void run() {
+        upPanel.removeAll();
+        mainPanel.removeAll();
         inisialization();
         jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        jFrame.setSize(screenSize.width - 250, screenSize.height - 250);
-        jFrame.setLocationRelativeTo(null);
-        jFrame.setMinimumSize(new Dimension(screenSize.width/2, screenSize.height/2));
+        jFrame.setLocation(100,100);
+        jFrame.setMinimumSize(new Dimension(screenSize.width /2, screenSize.height-300));
+        jFrame.setMaximumSize(new Dimension(screenSize.width/2, screenSize.height/2));
 
 
         authorisation.setFont(underLine(new Font("Safari", Font.ITALIC, 50)));
@@ -58,8 +62,6 @@ public class Frame extends AbstractFrame implements Runnable{
         login.setForeground(Color.gray);
         login.setFont(labelFont);
         login.setSize(23, 45);
-        textLogin.setPreferredSize(new Dimension(23,24));
-
 
         password.setForeground(Color.gray);
         password.setFont(labelFont);
@@ -73,11 +75,7 @@ public class Frame extends AbstractFrame implements Runnable{
         port.setFont(labelFont);
 
 
-        JButton signUp = new JButton(localisation(resourceBundle, Constants.SING_UP));
-        signUp.setFont(new Font("Safari", Font.CENTER_BASELINE, 15));
-        signUp.setBackground(Color.gray);
-        signUp.setPreferredSize(new Dimension(10000,40));
-        signUp.addActionListener(new SignUp());
+        JButton signUp = createButton(Constants.SING_UP, new SignUp());
 
         register.setBackground(Color.lightGray);
         register.setFont(underLine(new Font("Arial", Font.ITALIC, 13)));
@@ -86,7 +84,12 @@ public class Frame extends AbstractFrame implements Runnable{
         jFrame.setLayout(new BorderLayout());
 
         BoxLayout boxLayout = new BoxLayout(mainPanel,BoxLayout.Y_AXIS);
+        JPanel panel = new JPanel();
+        panel.setLayout(new BorderLayout());
+        panel.add(mainPanel, BorderLayout.WEST);
         mainPanel.setLayout(boxLayout);
+
+
 
         mainPanel.add(authorisation);
         mainPanel.add(Box.createRigidArea(new Dimension(0,50)));
@@ -106,25 +109,30 @@ public class Frame extends AbstractFrame implements Runnable{
         mainPanel.add(Box.createRigidArea(new Dimension(0,25)));
         mainPanel.add(signUp);
 
-        JPanel panel2 = new JPanel();
-        JPanel panel3 = new JPanel();
-        JPanel panel4 = new JPanel();
-        JPanel panel5 = new JPanel();
+        JPanel leftPanel = new JPanel();
+        JPanel downPanel = new JPanel();
 
+        upPanel.setLayout(new BorderLayout());
+        lang = createLanguage(Color.BLACK);
+        upPanel.add(lang, BorderLayout.WEST);
 
-        mainPanel.setPreferredSize(new Dimension(jFrame.getWidth()/2,jFrame.getHeight()/2));
-        panel2.setPreferredSize(new Dimension(jFrame.getWidth()/4,jFrame.getHeight()));
-        panel3.setPreferredSize(new Dimension(jFrame.getWidth(),jFrame.getHeight()/8));
-        panel4.setPreferredSize(new Dimension(jFrame.getWidth()/2,jFrame.getHeight()));
-        panel5.setPreferredSize(new Dimension(jFrame.getWidth()/4,jFrame.getHeight()/8));
+        mainPanel.setPreferredSize(new Dimension(415,417));
+        leftPanel.setPreferredSize(new Dimension(jFrame.getWidth()/8,jFrame.getHeight()));
+        upPanel.setPreferredSize(new Dimension(jFrame.getWidth()/8,jFrame.getHeight()/14));
+        downPanel.setPreferredSize(new Dimension(jFrame.getWidth()/8,jFrame.getHeight()/8));
 
-        jFrame.getContentPane().add(BorderLayout.CENTER, mainPanel);
-        jFrame.getContentPane().add(BorderLayout.WEST, panel2);
-        jFrame.getContentPane().add(BorderLayout.NORTH, panel3);
-        jFrame.getContentPane().add(BorderLayout.EAST, panel4);
-        jFrame.getContentPane().add(BorderLayout.SOUTH, panel5);
+        jFrame.getContentPane().add(BorderLayout.CENTER, panel);
+        jFrame.getContentPane().add(BorderLayout.WEST, leftPanel);
+        jFrame.getContentPane().add(BorderLayout.NORTH, upPanel);
+        jFrame.getContentPane().add(BorderLayout.SOUTH, downPanel);
         jFrame.setVisible(true);
-        //jFrame.addWindowStateListener();
+    }
+    private JButton createButton(Constants constants, ActionListener actionListener){
+        JButton signUp = new JButton(localisation(resourceBundle, constants));
+        signUp.setFont(new Font("Safari", Font.CENTER_BASELINE, 15));
+        signUp.setBackground(Color.gray);
+        signUp.addActionListener(actionListener);
+        return signUp;
     }
 
     private void inisialization(){
@@ -154,6 +162,9 @@ public class Frame extends AbstractFrame implements Runnable{
             isNewUser = true;
             authorisation.setText(localisation(resourceBundle, Constants.REGISTRATION));
             mainPanel.remove(register);
+            upPanel.remove(lang);
+            mainPanel.add(Box.createRigidArea(new Dimension(0,5)));
+            mainPanel.add(createButton(Constants.BACK, e1 -> run()));
             jFrame.repaint();
         }
     }
@@ -178,10 +189,6 @@ public class Frame extends AbstractFrame implements Runnable{
         return isNewUser;
     }
 
-    @Override
-    public void run() {
-        start();
-    }
     public void prepeareAnswer(Response response, boolean isException){
         this.response = response;
         this.isException = isException;
