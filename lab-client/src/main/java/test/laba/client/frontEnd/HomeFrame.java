@@ -1,6 +1,7 @@
 package test.laba.client.frontEnd;
 
 import test.laba.client.frontEnd.Frames.*;
+import test.laba.client.util.Pictures;
 import test.laba.client.util.VariableParsing;
 import test.laba.common.dataClasses.*;
 import test.laba.common.exception.VariableException;
@@ -91,22 +92,22 @@ public class HomeFrame extends FrameProduct implements Runnable {
 
 
         //repaintAll();
-        JButton picture = createPictureButton("graphics", green, "picture.png", new Picture(this,createUserName()));
-        JButton restart = createPictureButton("show", green, "restart.png", new CommandWithoutAction() {
+        JButton picture = createPictureButton("graphics", green, Pictures.ANIMATION.getPath(), new Picture(this,createUserName()));
+        JButton restart = createPictureButton("show", green, Pictures.SHOW.getPath(), new CommandWithoutAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 treatmentResponseWithCommandName(((JButton) e.getSource()).getName(), HomeFrame.this::showNothing);
             }
         });
-        JButton help = createPictureButton("help", green, "question.png", new CommandWithoutAction() {
+        JButton help = createPictureButton("help", green, Pictures.HELP.getPath(), new CommandWithoutAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 treatmentResponseWithCommandName(((JButton) e.getSource()).getName(), HomeFrame.this::showHelp);
             }
         });
-        JButton history = createPictureButton("history", green, "history.png", new CommandWithoutAction());
-        JButton script = createPictureButton("script", green, "script.png", new Script());
-        JButton info = createPictureButton("info", green, "info.png", new CommandWithoutAction());
+        JButton history = createPictureButton("history", green, Pictures.HISTORY.getPath(), new CommandWithoutAction());
+        JButton script = createPictureButton("script", green, Pictures.SCRIPT.getPath(), new Script());
+        JButton info = createPictureButton("info", green, Pictures.INFO.getPath(), new CommandWithoutAction());
 
         leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
         leftPanel.add(picture);
@@ -119,10 +120,10 @@ public class HomeFrame extends FrameProduct implements Runnable {
 
 /////////////////
 
-        JButton trash = createPictureButton("trash", green, "trash.png", e -> treatmentResponseWithCommandName("clear", this::show));
+        JButton trash = createPictureButton("trash", green, Pictures.TRASH.getPath(), e -> treatmentResponseWithCommandName("clear", this::show));
         trash.setPreferredSize(new Dimension(95, 95));
-        JButton minus = createPictureButton("minus", Color.white, "minus.png", new Minus());
-        JButton plus = createPictureButton("plus", Color.white, "plus.png", new Plus(resourceBundle));
+        JButton minus = createPictureButton("minus", Color.white, Pictures.MINUS.getPath(), new Minus());
+        JButton plus = createPictureButton("plus", Color.white, Pictures.PLUS.getPath(), new Plus(resourceBundle));
 
 
         downPAnel.setLayout(new BorderLayout());
