@@ -20,9 +20,9 @@ public class Grafics extends JComponent implements ActionListener, MouseListener
     private static final int FINISH_UMBRELLA_ROUND = 180;
     private static final int MAX_RGB = 256;
     private static final int MAX_UMBRELLA = Toolkit.getDefaultToolkit().getScreenSize().height / 4;
-    private static final int MAX_X = Toolkit.getDefaultToolkit().getScreenSize().width;
+    private int maxX = this.getSize().width;
     private static final int OFFSET_X = 233;
-    private static final int MAX_Y = Toolkit.getDefaultToolkit().getScreenSize().height;
+    private int maxY = this.getSize().height;
     private static final int MIN_SIZE_PRICE = 40;
     private static final int MIN_SIZE_X = -233;
     private static final int MIN_SIZE_Y = 0;
@@ -45,7 +45,7 @@ public class Grafics extends JComponent implements ActionListener, MouseListener
 
 
         if(collection != null){
-            sort(collection).stream().forEach(e ->{
+            sortOrdered(collection).stream().forEach(e ->{
                 e.paint(graphics);
             });
             Iterator<Map.Entry<Long, Umbrella>> iterator = collection.entrySet().iterator();
@@ -62,11 +62,17 @@ public class Grafics extends JComponent implements ActionListener, MouseListener
     }
 
 
-    private List<Umbrella> sort(HashMap<Long,Umbrella> map) {
+    private List<Umbrella> sortOrdered(HashMap<Long,Umbrella> map) {
         return map.entrySet()
                 .stream()
                 .map(e -> e.getValue())
                 .sorted(Collections.reverseOrder())
+                .collect(Collectors.toList());
+    }
+    private List<Umbrella> sort(HashMap<Long,Umbrella> map) {
+        return map.entrySet()
+                .stream()
+                .map(e -> e.getValue())
                 .collect(Collectors.toList());
     }
 
@@ -96,7 +102,11 @@ public class Grafics extends JComponent implements ActionListener, MouseListener
                 e.getValue().setCondition(Condition.REMOVE);
             }
         });
+    }
 
+    private void updateSize(){
+        maxX = this.getSize().width/2;
+        maxY = this.getSize().height/2;
     }
 
 
@@ -107,10 +117,10 @@ public class Grafics extends JComponent implements ActionListener, MouseListener
 
     @Override
     public void mouseClicked(MouseEvent mouseEvent) {
-        collection.entrySet().forEach(e ->
+        sort(collection).stream().filter(e ->e.contains(mouseEvent.getX(),mouseEvent.getY())).limit(1).forEach(e ->
         {
-            if(e.getValue().contains(mouseEvent.getX(),mouseEvent.getY())){
-                new ChangeProductFrameAnimation(homeFrame.getResourceBundle(), e.getValue().getProduct(), e.getKey()) {
+            long key = collection.entrySet().stream().filter(e2 -> e2.getValue().equals(e)).findFirst().get().getKey();
+                new ChangeProductFrameAnimation(homeFrame.getResourceBundle(), e.getProduct(), key) {
                     @Override
                     protected void addRemoveListener() {
                         homeFrame.treatmentAnimation(this::createResponse, this.jFrame);
@@ -123,7 +133,6 @@ public class Grafics extends JComponent implements ActionListener, MouseListener
                         ok.addActionListener(e1 -> treatmentResponse());
                     }
                 }.actionPerformed(new ActionEvent(this,5,"tr"));
-            }
         });
     }
 
@@ -173,8 +182,9 @@ public class Grafics extends JComponent implements ActionListener, MouseListener
            // addMouseListener(this);
         }
         private void inisialization(Product product){
-            this.productX =check(product.getCoordinates().getX(), MIN_SIZE_X, MAX_X, OFFSET_X);
-            this.y= check(Math.round(product.getCoordinates().getY()), MIN_SIZE_Y, MAX_Y);
+            updateSize();
+            this.productX =check(product.getCoordinates().getX(), MIN_SIZE_X, maxX, OFFSET_X);
+            this.y= check(Math.round(product.getCoordinates().getY()), MIN_SIZE_Y, maxY);
             this.widthOrHeight = check(Math.toIntExact(product.getPrice()), MIN_SIZE_PRICE, MAX_UMBRELLA);
             this.color = createColor(product.getOwnerID().hashCode());
         }
@@ -231,7 +241,7 @@ public class Grafics extends JComponent implements ActionListener, MouseListener
 
         public void paint(Graphics graphics){
             super.paint(graphics);
-           function.get(condition).drawing((Graphics2D) graphics);
+            function.get(condition).drawing((Graphics2D) graphics);
         }
         private void update(Graphics2D graphics){
             if(trembling!=0) {
@@ -286,7 +296,6 @@ public class Grafics extends JComponent implements ActionListener, MouseListener
         }
 
         private int check(int price, int min, int max) {
-            System.out.println((price < min) ? (price<0)?0:price + min : ((price>max) ? max:price));
             return (price < min) ? (price<0)?0:price + min : ((price>max) ? max:price);
         }
         private int check(int price, int min, int max, int offset) {
@@ -318,12 +327,24 @@ public class Grafics extends JComponent implements ActionListener, MouseListener
         @Override
         public String toString() {
             return "Umbrella{" +
-                    ", product=" + product +
+                    "moveX=" + moveX +
+                    ", y=" + y +
+                    ", widthOrHeight=" + widthOrHeight +
+                    ", product=" + product.getId() +
                     '}';
         }
 
+        public int getProductX() {
+            return productX;
+        }
+
+        @Override
+        public int getY() {
+            return y;
+        }
+
         public int compareTo(Umbrella o) {
-            return Comparator.comparing(Umbrella::getWidthOrHeight).compare(this, o);
+            return Comparator.comparing(Umbrella::getWidthOrHeight).thenComparing(Umbrella::getY).thenComparing(Umbrella::getProductX).compare(this, o);
         }
 
     }
