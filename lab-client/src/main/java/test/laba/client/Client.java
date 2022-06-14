@@ -41,10 +41,10 @@ public final class Client {
         Condition ready = lock.newCondition();
         Frame frame = new Frame(ready, lock);
         ClientApp clientApp = new ClientApp(frame, ready, lock);
-        //SwingUtilities.invokeLater(frame);
+        SwingUtilities.invokeLater(frame);
         //new Thread(frame).start();
-        new Thread(new HomeFrame(ready, lock, "test", new Response(""),Local.getResourceBundleDeafult())).start();
-        //connection(clientApp, frame, lock, ready, logger);
+        //new Thread(new HomeFrame(ready, lock, "test", new Response(""),Local.getResourceBundleDeafult())).start();
+        connection(clientApp, frame, lock, ready, logger);
     }
     private static void connection(ClientApp clientApp, Frame frame, Lock lock, Condition ready, Logger logger){
         String port = frame.getPort();

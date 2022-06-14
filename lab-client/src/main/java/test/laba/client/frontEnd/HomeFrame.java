@@ -62,12 +62,6 @@ public class HomeFrame extends FrameProduct implements Runnable {
         jFrame.setMinimumSize(new Dimension((int)(screenSize.width / 1.2), (int)(screenSize.height / 1.2)));
         jFrame.setLocation(100, 100);
         jFrame.setLayout(new BorderLayout());
-        tableModule = new TableModule(resourceBundle);
-
-        mainPanel = createTable();
-        mainPanel.setOpaque(true);
-        jFrame.getContentPane().add(BorderLayout.CENTER, mainPanel);
-
 
         JPanel leftPanel = new JPanel();
         JPanel downPAnel = new JPanel();
@@ -123,7 +117,11 @@ public class HomeFrame extends FrameProduct implements Runnable {
         leftPanel.setBackground(green);
         upPanel.setBackground(Color.BLACK);
 
+        createTable();
+        mainPanel.setOpaque(true);
+        jFrame.getContentPane().add(BorderLayout.CENTER, mainPanel);
         mainPanel.setPreferredSize(new Dimension(jFrame.getWidth() / 2, jFrame.getHeight() / 2));
+
         upPanel.setPreferredSize(new Dimension(jFrame.getWidth(), 85));
         downPAnel.setPreferredSize(new Dimension(jFrame.getWidth(), 115));
         leftPanel.setPreferredSize(new Dimension(95, jFrame.getHeight()));
@@ -134,7 +132,7 @@ public class HomeFrame extends FrameProduct implements Runnable {
         jFrame.getContentPane().add(BorderLayout.SOUTH, downPAnel);
 
         jFrame.repaint();
-      //  repaintAll();
+        repaintAll();
         jFrame.setVisible(true);
     }
 
@@ -143,9 +141,11 @@ public class HomeFrame extends FrameProduct implements Runnable {
         upPanel.removeAll();
         upPanel.revalidate();
         paintTextLabels();
+        jFrame.remove(mainPanel);
         createTable();
-
         upPanel.repaint();
+        jFrame.repaint();
+        repaintAll();
 
     }
     private void paintTextLabels(){
@@ -172,7 +172,8 @@ public class HomeFrame extends FrameProduct implements Runnable {
     }
 
 
-    private TablePanel createTable(){
+    private void createTable(){
+        tableModule = new TableModule(resourceBundle);
         JTable table = new JTable(tableModule);
         table.setFont(new Font("Safari", Font.BOLD, 13));
         JTableHeader tableHeader = table.getTableHeader();
@@ -182,7 +183,7 @@ public class HomeFrame extends FrameProduct implements Runnable {
         tableHeader.setBackground(blue);
         tableHeader.setFont(new Font("Safari", Font.PLAIN, 13));
         tableHeader.setFocusable(false);
-        return new TablePanel(table) {
+        mainPanel =  new TablePanel(table) {
             @Override
             protected void outputSelection() {
                 new ChangeProductFrameTable(this, tableModule, resourceBundle) {
@@ -222,6 +223,9 @@ public class HomeFrame extends FrameProduct implements Runnable {
                 }.actionPerformed(new ActionEvent(this, 1, Command.UPDATE_ID.getString()));
             }
         };
+        mainPanel.repaint();
+        jFrame.getContentPane().add(BorderLayout.CENTER, mainPanel);
+        jFrame.repaint();
     }
 
     private JLabel createUserName(){

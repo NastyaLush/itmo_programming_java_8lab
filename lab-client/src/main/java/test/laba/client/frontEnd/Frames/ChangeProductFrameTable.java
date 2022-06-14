@@ -9,18 +9,19 @@ import java.awt.*;
 import java.util.ResourceBundle;
 
 public abstract class ChangeProductFrameTable extends ChangeProductFrame {
-    private final TablePanel table;
+    private final TablePanel tablePanel;
     private final TableModule tableModule;
     private long id;
 
     public ChangeProductFrameTable(TablePanel table, TableModule tableModule, ResourceBundle resourceBundle) {
         super(resourceBundle);
-        this.table = table;
+        this.tablePanel = table;
         this.tableModule = tableModule;
     }
 
     @Override
     protected JTextField createButtonGroupe(String name, String description, boolean saveToDelete) {
+        tablePanel.getTable().getSelectedRow();
         JLabel label = new JLabel(name + "(" + description + ")");
         label.setForeground(Color.gray);
         label.setFont(labelFont);
@@ -65,7 +66,7 @@ public abstract class ChangeProductFrameTable extends ChangeProductFrame {
     }
 
     protected String getDescription(String name) {
-        return String.valueOf(table.getTable().getValueAt(table.getColumnForChanging(), tableModule.findColumn(name)));
+        return String.valueOf(tablePanel.getTable().getValueAt(tablePanel.getColumnForChanging(), tableModule.findColumn(name)));
     }
 
     @Override
