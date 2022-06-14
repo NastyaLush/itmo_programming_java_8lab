@@ -25,12 +25,14 @@ public class Frame extends LanguageInterface implements Runnable{
     private JLabel authorisation;
     private JButton register;
     private final JPanel mainPanel = new JPanel();
+    private final JPanel panel = new JPanel();
     private final JPanel upPanel = new JPanel();
     private String userHost = null;
     private String userPort = null;
     protected Response response = null;
     protected final Condition condition;
     protected final Lock lock;
+    private Registration registration;
     private JMenuBar lang;
     private boolean isNewUser = false;
     protected boolean isException = false;
@@ -45,18 +47,40 @@ public class Frame extends LanguageInterface implements Runnable{
     }
 
     public void run() {
-        upPanel.removeAll();
-        mainPanel.removeAll();
-        inisialization();
         jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         jFrame.setLocation(100,100);
         jFrame.setMinimumSize(new Dimension(screenSize.width /2, screenSize.height-300));
         jFrame.setMaximumSize(new Dimension(screenSize.width/2, screenSize.height/2));
 
+        paintMainPanels();
+
+        JPanel leftPanel = new JPanel();
+        JPanel downPanel = new JPanel();
+
+        mainPanel.setPreferredSize(new Dimension(415,417));
+        leftPanel.setPreferredSize(new Dimension(jFrame.getWidth()/8,jFrame.getHeight()));
+        upPanel.setPreferredSize(new Dimension(jFrame.getWidth()/8,jFrame.getHeight()/14));
+        downPanel.setPreferredSize(new Dimension(jFrame.getWidth()/8,jFrame.getHeight()/8));
+
+        jFrame.getContentPane().add(BorderLayout.CENTER, panel);
+        jFrame.getContentPane().add(BorderLayout.WEST, leftPanel);
+        jFrame.getContentPane().add(BorderLayout.NORTH, upPanel);
+        jFrame.getContentPane().add(BorderLayout.SOUTH, downPanel);
+
+
+        jFrame.setVisible(true);
+    }
+
+    public void paintMainPanels(){
+        mainPanel.removeAll();
+        upPanel.removeAll();
+        mainPanel.revalidate();
+        upPanel.revalidate();
+
+        inisialization();
 
         authorisation.setFont(underLine(new Font("Safari", Font.ITALIC, 50)));
         authorisation.setHorizontalAlignment(JLabel.LEFT);
-
 
         Font labelFont = new Font("Safari", Font.CENTER_BASELINE, 18);
         login.setForeground(Color.gray);
@@ -79,16 +103,16 @@ public class Frame extends LanguageInterface implements Runnable{
 
         register.setBackground(Color.lightGray);
         register.setFont(underLine(new Font("Arial", Font.ITALIC, 13)));
-        register.addActionListener(new Registration());
+        registration = new Registration();
+
+        register.addActionListener(registration);
 
         jFrame.setLayout(new BorderLayout());
 
         BoxLayout boxLayout = new BoxLayout(mainPanel,BoxLayout.Y_AXIS);
-        JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout());
         panel.add(mainPanel, BorderLayout.WEST);
         mainPanel.setLayout(boxLayout);
-
 
 
         mainPanel.add(authorisation);
@@ -109,23 +133,20 @@ public class Frame extends LanguageInterface implements Runnable{
         mainPanel.add(Box.createRigidArea(new Dimension(0,25)));
         mainPanel.add(signUp);
 
-        JPanel leftPanel = new JPanel();
-        JPanel downPanel = new JPanel();
-
         upPanel.setLayout(new BorderLayout());
         lang = createLanguage(Color.BLACK);
         upPanel.add(lang, BorderLayout.WEST);
 
-        mainPanel.setPreferredSize(new Dimension(415,417));
-        leftPanel.setPreferredSize(new Dimension(jFrame.getWidth()/8,jFrame.getHeight()));
-        upPanel.setPreferredSize(new Dimension(jFrame.getWidth()/8,jFrame.getHeight()/14));
-        downPanel.setPreferredSize(new Dimension(jFrame.getWidth()/8,jFrame.getHeight()/8));
 
-        jFrame.getContentPane().add(BorderLayout.CENTER, panel);
-        jFrame.getContentPane().add(BorderLayout.WEST, leftPanel);
-        jFrame.getContentPane().add(BorderLayout.NORTH, upPanel);
-        jFrame.getContentPane().add(BorderLayout.SOUTH, downPanel);
-        jFrame.setVisible(true);
+    }
+    public void repaintForLanguage(){
+            paintMainPanels();
+            if(isNewUser){
+                registration.actionPerformed(new ActionEvent(this,1,"repaint"));
+            }
+
+
+
     }
     private JButton createButton(Constants constants, ActionListener actionListener){
         JButton signUp = new JButton(localisation(resourceBundle, constants));
@@ -156,15 +177,16 @@ public class Frame extends LanguageInterface implements Runnable{
         }
     }
     private class Registration implements ActionListener {
-
         @Override
         public void actionPerformed(ActionEvent e) {
             isNewUser = true;
             authorisation.setText(localisation(resourceBundle, Constants.REGISTRATION));
             mainPanel.remove(register);
-            upPanel.remove(lang);
             mainPanel.add(Box.createRigidArea(new Dimension(0,5)));
-            mainPanel.add(createButton(Constants.BACK, e1 -> run()));
+            mainPanel.add(createButton(Constants.BACK, e1 -> {
+                isNewUser = false;
+                run();
+            }));
             jFrame.repaint();
         }
     }

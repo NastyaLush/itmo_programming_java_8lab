@@ -12,6 +12,8 @@ import test.laba.client.util.Constants;
 import javax.swing.*;
 import javax.swing.plaf.TableHeaderUI;
 import javax.swing.table.JTableHeader;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
@@ -31,6 +33,7 @@ public class HomeFrame extends FrameProduct implements Runnable {
     private final Lock lock;
     private final Color green = Color.getHSBColor((float) 0.44, (float) 0.60, (float) 0.80);
     private final Color blue = Color.getHSBColor(0.67F, 0.30F, 0.84F);
+    private int lastClick =-1;
 
 
     ///////////
@@ -45,7 +48,6 @@ public class HomeFrame extends FrameProduct implements Runnable {
     }
 
     public void run() {
-        System.out.println(resourceBundle);
         UIManager.put("swing.boldMetal", Boolean.FALSE);
         jFrame.setName(localisation(resourceBundle, Constants.TITLE));
         jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -88,7 +90,7 @@ public class HomeFrame extends FrameProduct implements Runnable {
         upPanel.add(Box.createRigidArea(new Dimension(5, 0)));
 
 
-        repaintAll();
+        //repaintAll();
         JButton picture = createPictureButton("graphics", green, "picture.png", new Picture(this,createUserName()));
         JButton restart = createPictureButton("show", green, "restart.png", new CommandWithoutAction() {
             @Override
@@ -146,7 +148,7 @@ public class HomeFrame extends FrameProduct implements Runnable {
         jFrame.getContentPane().add(BorderLayout.SOUTH, downPAnel);
 
         jFrame.repaint();
-        repaintAll();
+      //  repaintAll();
         jFrame.setVisible(true);
     }
 
@@ -155,6 +157,8 @@ public class HomeFrame extends FrameProduct implements Runnable {
         JTable table = new JTable(tableModule);
         table.setFont(new Font("Safari", Font.BOLD, 13));
         JTableHeader tableHeader = table.getTableHeader();
+        table.setAutoCreateRowSorter(true);
+        table.setUpdateSelectionOnSort(false);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         tableHeader.setBackground(blue);
         tableHeader.setFont(new Font("Safari", Font.PLAIN, 13));

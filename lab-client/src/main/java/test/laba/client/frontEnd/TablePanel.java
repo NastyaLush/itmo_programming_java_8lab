@@ -1,5 +1,6 @@
 package test.laba.client.frontEnd;
 
+import com.sun.xml.internal.ws.api.streaming.XMLStreamWriterFactory;
 import test.laba.client.frontEnd.Frames.AbstractFrame;
 import test.laba.client.util.Constants;
 
@@ -9,6 +10,8 @@ import java.util.ResourceBundle;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.RowSorterEvent;
+import javax.swing.event.RowSorterListener;
 import javax.swing.table.*;
 
 public abstract class TablePanel extends JPanel
@@ -23,6 +26,7 @@ public abstract class TablePanel extends JPanel
 
         table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         table.setAutoCreateRowSorter(true);
+
         table.setPreferredScrollableViewportSize(new Dimension(500, 70));
         table.setFillsViewportHeight(true);
         table.getSelectionModel().addListSelectionListener(new RowListener());

@@ -60,8 +60,9 @@ public class LanguageInterface extends AbstractFrame implements Localasiable {
         });
     }
     private void repaintFrame() {
-        close();
-        jFrame = new JFrame();
-        run();
+       /* close();*/
+        repaintForLanguage();
+        //jFrame = new JFrame();
+        //run();
     }
 }

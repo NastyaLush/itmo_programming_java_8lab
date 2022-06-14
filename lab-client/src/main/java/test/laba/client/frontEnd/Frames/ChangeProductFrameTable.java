@@ -65,7 +65,7 @@ public abstract class ChangeProductFrameTable extends ChangeProductFrame {
     }
 
     protected String getDescription(String name) {
-        return String.valueOf(tableModule.getValueAt(name, table.getColumnForChanging()));
+        return String.valueOf(table.getTable().getValueAt(table.getColumnForChanging(), tableModule.findColumn(name)));
     }
 
     @Override

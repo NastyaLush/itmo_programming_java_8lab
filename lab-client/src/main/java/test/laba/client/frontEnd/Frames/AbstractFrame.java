@@ -78,6 +78,9 @@ public class AbstractFrame extends Local implements FrameInterface, Localasiable
     public ResourceBundle getResourceBundle() {
         return resourceBundle;
     }
+    public void repaintForLanguage(){
+        jFrame.repaint();
+    }
 
     protected String local(Constants constants) {
         return localisation(resourceBundle, constants);

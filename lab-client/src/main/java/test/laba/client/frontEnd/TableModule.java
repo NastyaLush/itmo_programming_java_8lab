@@ -8,6 +8,7 @@ import test.laba.client.util.Constants;
 import javax.swing.table.AbstractTableModel;
 import java.text.DateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class TableModule extends AbstractTableModel implements Localasiable {
     private int columnCount = 15;
@@ -42,8 +43,8 @@ public class TableModule extends AbstractTableModel implements Localasiable {
         return columnCount;
     }
 
-    @Override
-    public Class<?> getColumnClass(int columnIndex) {
+
+    public Class<Comparable> getColumnClass(int columnIndex) {
         return classField.get(columnIndex);
     }
 
@@ -177,4 +178,6 @@ public class TableModule extends AbstractTableModel implements Localasiable {
     public void clearFilter(){
         this.values.clear();
     }
+
+
 }
