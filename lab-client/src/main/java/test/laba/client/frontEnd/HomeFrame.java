@@ -38,6 +38,8 @@ public class HomeFrame extends FrameProduct implements Runnable {
     private JButton manCost;
     private JButton groupCountingByPrice;
     private JButton filter;
+    private JButton plus;
+    private Plus plusListener;
     private final JPanel upPanel = new JPanel();
 
 
@@ -65,16 +67,12 @@ public class HomeFrame extends FrameProduct implements Runnable {
         mainPanel = createTable();
         mainPanel.setOpaque(true);
         jFrame.getContentPane().add(BorderLayout.CENTER, mainPanel);
-        
+
 
         JPanel leftPanel = new JPanel();
         JPanel downPAnel = new JPanel();
 
-        upPanel.setLayout(new BoxLayout(upPanel, BoxLayout.X_AXIS));
-        paintTextLabels();
 
-
-        //repaintAll();
         JButton picture = createPictureButton("graphics", green, Pictures.ANIMATION.getPath(), new Picture(this,createUserName()));
         JButton restart = createPictureButton("show", green, Pictures.SHOW.getPath(), new CommandWithoutAction() {
             @Override
@@ -106,7 +104,11 @@ public class HomeFrame extends FrameProduct implements Runnable {
         JButton trash = createPictureButton("trash", green, Pictures.TRASH.getPath(), e -> treatmentResponseWithCommandName("clear", this::show));
         trash.setPreferredSize(new Dimension(95, 95));
         JButton minus = createPictureButton("minus", Color.white, Pictures.MINUS.getPath(), new Minus());
-        JButton plus = createPictureButton("plus", Color.white, Pictures.PLUS.getPath(), new Plus(resourceBundle));
+        plusListener= new Plus(resourceBundle);
+        plus = createPictureButton("plus", Color.white, Pictures.PLUS.getPath(),plusListener);
+
+        upPanel.setLayout(new BoxLayout(upPanel, BoxLayout.X_AXIS));
+        paintTextLabels();
 
 
         downPAnel.setLayout(new BorderLayout());
@@ -165,6 +167,7 @@ public class HomeFrame extends FrameProduct implements Runnable {
         jPanel.add(nameUser, BorderLayout.EAST);
         upPanel.add(jPanel, BorderLayout.AFTER_LINE_ENDS);
         upPanel.add(Box.createRigidArea(new Dimension(5, 0)));
+        plusListener.setResourceBundle(resourceBundle);
 
     }
 
