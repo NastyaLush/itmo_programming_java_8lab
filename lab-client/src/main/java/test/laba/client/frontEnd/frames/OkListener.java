@@ -1,6 +1,6 @@
-package test.laba.client.frontEnd;
+package test.laba.client.frontEnd.frames;
 
-import test.laba.client.frontEnd.Frames.AbstractFrame;
+import test.laba.client.frontEnd.frames.AbstractFrame;
 import test.laba.common.exception.VariableException;
 import test.laba.common.responses.Response;
 

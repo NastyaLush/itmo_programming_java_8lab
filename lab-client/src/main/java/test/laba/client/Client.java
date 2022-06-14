@@ -1,18 +1,10 @@
 package test.laba.client;
 
-import test.laba.client.frontEnd.Frames.Filter;
-import test.laba.client.frontEnd.Frames.Frame;
-import test.laba.client.frontEnd.Frames.Grafics;
-import test.laba.client.frontEnd.HomeFrame;
-import test.laba.client.frontEnd.Local;
-import test.laba.client.frontEnd.TableModule;
+import test.laba.client.frontEnd.frames.Frame;
 import test.laba.common.IO.Colors;
-import test.laba.common.responses.Response;
 import test.laba.common.util.Util;
 
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;

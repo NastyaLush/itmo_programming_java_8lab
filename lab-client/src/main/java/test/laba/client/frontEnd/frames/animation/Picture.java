@@ -1,6 +1,6 @@
-package test.laba.client.frontEnd.Frames;
+package test.laba.client.frontEnd.frames.animation;
 
-import test.laba.client.frontEnd.HomeFrame;
+import test.laba.client.frontEnd.frames.HomeFrame;
 
 import javax.swing.*;
 import java.awt.*;
@@ -38,7 +38,7 @@ public class Picture extends JFrame implements ActionListener {
 
 
         pictureFrame.getContentPane().add(BorderLayout.NORTH, upPanel);
-        upPanel.setPreferredSize(new Dimension((int) homeFrame.screenSize.getWidth(), (int)homeFrame.screenSize.getHeight() / 10));
+        upPanel.setPreferredSize(new Dimension((int) homeFrame.getScreenSize().getWidth(), (int)homeFrame.getScreenSize().getHeight() / 10));
         upPanel.setLayout(new BorderLayout());
         upPanel.setBackground(Color.BLACK);
 

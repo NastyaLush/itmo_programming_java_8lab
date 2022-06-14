@@ -1,6 +1,7 @@
-package test.laba.client.frontEnd.Frames;
+package test.laba.client.frontEnd.frames.animation;
 
-import test.laba.client.frontEnd.HomeFrame;
+import test.laba.client.frontEnd.frames.HomeFrame;
+import test.laba.client.frontEnd.frames.changeProductFrames.ChangeProductFrameAnimation;
 import test.laba.common.dataClasses.Product;
 
 import javax.swing.*;
@@ -46,7 +47,6 @@ public class Grafics extends JComponent implements ActionListener, MouseListener
         if(collection != null){
             sort(collection).stream().forEach(e ->{
                 e.paint(graphics);
-                //System.out.println(e.getValue().getCondition()+ " " + e.getKey());
             });
             Iterator<Map.Entry<Long, Umbrella>> iterator = collection.entrySet().iterator();
             while (iterator.hasNext()){
@@ -83,7 +83,6 @@ public class Grafics extends JComponent implements ActionListener, MouseListener
                     if(!collection.containsKey(e.getKey())){
                         e.getValue().setCondition(Condition.INSERT);
                         collection.put(e.getKey(), e.getValue());
-                        //addMouseListener(e.getValue());
                     } else {
                         if (e.getValue().getProduct().compareTo(collection.get(e.getKey()).getProduct())!=0) {
                             collection.get(e.getKey()).setCondition(Condition.UPDATE);
@@ -111,7 +110,7 @@ public class Grafics extends JComponent implements ActionListener, MouseListener
         collection.entrySet().forEach(e ->
         {
             if(e.getValue().contains(mouseEvent.getX(),mouseEvent.getY())){
-                new ChangeProductFrameAnimation(homeFrame.resourceBundle, e.getValue().getProduct(), e.getKey()) {
+                new ChangeProductFrameAnimation(homeFrame.getResourceBundle(), e.getValue().getProduct(), e.getKey()) {
                     @Override
                     protected void addRemoveListener() {
                         homeFrame.treatmentAnimation(this::createResponse, this.jFrame);
@@ -287,6 +286,7 @@ public class Grafics extends JComponent implements ActionListener, MouseListener
         }
 
         private int check(int price, int min, int max) {
+            System.out.println((price < min) ? (price<0)?0:price + min : ((price>max) ? max:price));
             return (price < min) ? (price<0)?0:price + min : ((price>max) ? max:price);
         }
         private int check(int price, int min, int max, int offset) {

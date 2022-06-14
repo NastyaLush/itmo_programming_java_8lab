@@ -1,4 +1,4 @@
-package test.laba.client.frontEnd;
+package test.laba.client.frontEnd.frames.local;
 
 import java.util.HashMap;
 import java.util.Locale;

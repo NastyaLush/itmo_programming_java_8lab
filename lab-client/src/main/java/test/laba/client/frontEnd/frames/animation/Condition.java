@@ -1,4 +1,4 @@
-package test.laba.client.frontEnd.Frames;
+package test.laba.client.frontEnd.frames.animation;
 
 public enum Condition {
     SHOW,

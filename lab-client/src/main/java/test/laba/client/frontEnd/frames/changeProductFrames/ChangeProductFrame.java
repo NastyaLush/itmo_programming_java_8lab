@@ -1,4 +1,4 @@
-package test.laba.client.frontEnd.Frames;
+package test.laba.client.frontEnd.frames.changeProductFrames;
 
 import test.laba.client.util.Constants;
 import test.laba.client.util.VariableParsing;

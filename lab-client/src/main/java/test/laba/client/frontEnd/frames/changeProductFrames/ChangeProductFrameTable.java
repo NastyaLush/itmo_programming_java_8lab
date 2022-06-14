@@ -1,7 +1,7 @@
-package test.laba.client.frontEnd.Frames;
+package test.laba.client.frontEnd.frames.changeProductFrames;
 
-import test.laba.client.frontEnd.TableModule;
-import test.laba.client.frontEnd.TablePanel;
+import test.laba.client.frontEnd.frames.table.TableModule;
+import test.laba.client.frontEnd.frames.table.TablePanel;
 import test.laba.client.util.Constants;
 
 import javax.swing.*;

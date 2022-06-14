@@ -5,8 +5,8 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.logging.Logger;
 
-import test.laba.client.frontEnd.Frames.Frame;
-import test.laba.client.frontEnd.HomeFrame;
+import test.laba.client.frontEnd.frames.Frame;
+import test.laba.client.frontEnd.frames.HomeFrame;
 import test.laba.client.productFillers.ConsoleParsing;
 import test.laba.client.productFillers.UpdateId;
 import test.laba.client.util.*;

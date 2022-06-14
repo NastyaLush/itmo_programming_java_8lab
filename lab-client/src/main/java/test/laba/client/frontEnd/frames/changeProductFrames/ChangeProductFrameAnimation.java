@@ -1,7 +1,7 @@
-package test.laba.client.frontEnd.Frames;
+package test.laba.client.frontEnd.frames.changeProductFrames;
 
-import test.laba.client.frontEnd.TableModule;
-import test.laba.client.frontEnd.TablePanel;
+import test.laba.client.frontEnd.frames.IFunctionString;
+import test.laba.client.frontEnd.frames.changeProductFrames.ChangeProductFrame;
 import test.laba.client.util.Command;
 import test.laba.client.util.Constants;
 import test.laba.common.dataClasses.Product;
@@ -10,11 +10,10 @@ import test.laba.common.responses.Response;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.ResourceBundle;
 
-public abstract class ChangeProductFrameAnimation extends  ChangeProductFrame{
+public abstract class ChangeProductFrameAnimation extends ChangeProductFrame {
     private final Product product;
     private final Long key;
     private JButton remove;

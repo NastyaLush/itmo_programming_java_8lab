@@ -1,6 +1,7 @@
-package test.laba.client.frontEnd.Frames;
+package test.laba.client.frontEnd.frames;
 
-import test.laba.client.frontEnd.Local;
+import test.laba.client.frontEnd.frames.local.Local;
+import test.laba.client.frontEnd.frames.local.Localasiable;
 import test.laba.client.util.Constants;
 
 import javax.swing.*;
@@ -79,6 +80,10 @@ public abstract class AbstractFrame extends Local implements FrameInterface, Loc
         return resourceBundle;
     }
     public abstract void repaintForLanguage();
+
+    public Dimension getScreenSize() {
+        return screenSize;
+    }
 
     protected String local(Constants constants) {
         return localisation(resourceBundle, constants);

@@ -1,6 +1,6 @@
-package test.laba.client.frontEnd.Frames;
+package test.laba.client.frontEnd.frames;
 
-import test.laba.client.frontEnd.TableModule;
+import test.laba.client.frontEnd.frames.table.TableModule;
 import test.laba.client.util.Constants;
 
 import javax.swing.*;

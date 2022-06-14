@@ -1,6 +1,6 @@
-package test.laba.client.frontEnd;
+package test.laba.client.frontEnd.frames.table;
 
-import test.laba.client.frontEnd.Frames.Localasiable;
+import test.laba.client.frontEnd.frames.local.Localasiable;
 import test.laba.common.dataClasses.Product;
 import test.laba.common.dataClasses.UnitOfMeasure;
 import test.laba.client.util.Constants;
@@ -8,7 +8,6 @@ import test.laba.client.util.Constants;
 import javax.swing.table.AbstractTableModel;
 import java.text.DateFormat;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class TableModule extends AbstractTableModel implements Localasiable {
     private int columnCount = 15;

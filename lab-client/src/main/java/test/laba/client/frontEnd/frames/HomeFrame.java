@@ -1,6 +1,11 @@
-package test.laba.client.frontEnd;
+package test.laba.client.frontEnd.frames;
 
-import test.laba.client.frontEnd.Frames.*;
+import test.laba.client.frontEnd.frames.animation.Picture;
+import test.laba.client.frontEnd.frames.changeProductFrames.ChangeProductFrame;
+import test.laba.client.frontEnd.frames.changeProductFrames.ChangeProductFrameTable;
+import test.laba.client.frontEnd.frames.changeProductFrames.FrameProduct;
+import test.laba.client.frontEnd.frames.table.TableModule;
+import test.laba.client.frontEnd.frames.table.TablePanel;
 import test.laba.client.util.Pictures;
 import test.laba.client.util.VariableParsing;
 import test.laba.common.dataClasses.*;
@@ -11,17 +16,12 @@ import test.laba.client.util.Command;
 import test.laba.client.util.Constants;
 
 import javax.swing.*;
-import javax.swing.plaf.TableHeaderUI;
 import javax.swing.table.JTableHeader;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
-import java.util.List;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
-import java.util.stream.Collectors;
 
 public class HomeFrame extends FrameProduct implements Runnable {
     private TablePanel mainPanel;
@@ -661,6 +661,7 @@ public class HomeFrame extends FrameProduct implements Runnable {
     private void showHelp(String s) {
         show(localisation(resourceBundle, Constants.HELP));
     }
+
 
     private interface IFunction {
         void function(String oldField);

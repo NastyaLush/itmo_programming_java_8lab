@@ -1,8 +1,9 @@
-package test.laba.client.frontEnd.Frames;
+package test.laba.client.frontEnd.frames;
 
 
+import test.laba.client.frontEnd.frames.local.LanguageInterface;
 import test.laba.client.util.Constants;
-import test.laba.client.frontEnd.Local;
+import test.laba.client.frontEnd.frames.local.Local;
 import test.laba.common.responses.Response;
 
 import javax.swing.*;

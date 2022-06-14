@@ -1,7 +1,4 @@
-package test.laba.client.frontEnd.Frames;
-
-import javax.swing.*;
-import java.awt.*;
+package test.laba.client.frontEnd.frames;
 
 public interface FrameInterface {
     public void exception(String exception);
