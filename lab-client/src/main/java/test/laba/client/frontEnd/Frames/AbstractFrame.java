@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-public class AbstractFrame extends Local implements FrameInterface, Localasiable {
+public abstract class AbstractFrame extends Local implements FrameInterface, Localasiable {
     protected final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     protected JFrame jFrame;
     protected ResourceBundle resourceBundle;
@@ -78,9 +78,7 @@ public class AbstractFrame extends Local implements FrameInterface, Localasiable
     public ResourceBundle getResourceBundle() {
         return resourceBundle;
     }
-    public void repaintForLanguage(){
-        jFrame.repaint();
-    }
+    public abstract void repaintForLanguage();
 
     protected String local(Constants constants) {
         return localisation(resourceBundle, constants);

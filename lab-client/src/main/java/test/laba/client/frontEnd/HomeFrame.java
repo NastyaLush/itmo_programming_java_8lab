@@ -35,6 +35,10 @@ public class HomeFrame extends FrameProduct implements Runnable {
     private final Color green = Color.getHSBColor((float) 0.44, (float) 0.60, (float) 0.80);
     private final Color blue = Color.getHSBColor(0.67F, 0.30F, 0.84F);
     private int lastClick =-1;
+    private JButton manCost;
+    private JButton groupCountingByPrice;
+    private JButton filter;
+    private final JPanel upPanel = new JPanel();
 
 
     ///////////
@@ -61,34 +65,13 @@ public class HomeFrame extends FrameProduct implements Runnable {
         mainPanel = createTable();
         mainPanel.setOpaque(true);
         jFrame.getContentPane().add(BorderLayout.CENTER, mainPanel);
-
-        JButton manCost = createButtonCommand(Command.AVERAGE_OF_MANUFACTURE_COST.getString(), Constants.AVERAGE_OF_MANUFACTURE_COST);
-        JButton groupCountingByPrice = createButtonCommand(Command.GROUP_COUNTING_BY_PRICE.getString(), Constants.GROUP_COUNTING_BY_PRICE);
-        JButton filter = createFilter(Command.FILTER.getString(), Constants.FILTER);
-
-
-
-
+        
 
         JPanel leftPanel = new JPanel();
-        JPanel upPanel = new JPanel();
         JPanel downPAnel = new JPanel();
 
         upPanel.setLayout(new BoxLayout(upPanel, BoxLayout.X_AXIS));
-        upPanel.add(createLanguage(Color.white), BorderLayout.WEST);
-        upPanel.add(Box.createRigidArea(new Dimension(5, 0)));
-        upPanel.add(filter, BorderLayout.WEST);
-        upPanel.add(Box.createRigidArea(new Dimension(5, 0)));
-        upPanel.add(groupCountingByPrice, BorderLayout.WEST);
-        upPanel.add(Box.createRigidArea(new Dimension(5, 0)));
-        upPanel.add(manCost, BorderLayout.WEST);
-        JPanel jPanel = new JPanel();
-        jPanel.setLayout(new BorderLayout());
-        jPanel.setBackground(Color.BLACK);
-
-        jPanel.add(nameUser, BorderLayout.EAST);
-        upPanel.add(jPanel, BorderLayout.AFTER_LINE_ENDS);
-        upPanel.add(Box.createRigidArea(new Dimension(5, 0)));
+        paintTextLabels();
 
 
         //repaintAll();
@@ -151,6 +134,38 @@ public class HomeFrame extends FrameProduct implements Runnable {
         jFrame.repaint();
       //  repaintAll();
         jFrame.setVisible(true);
+    }
+
+    @Override
+    public void repaintForLanguage() {
+        upPanel.removeAll();
+        upPanel.revalidate();
+        paintTextLabels();
+        createTable();
+
+        upPanel.repaint();
+
+    }
+    private void paintTextLabels(){
+        manCost = createButtonCommand(Command.AVERAGE_OF_MANUFACTURE_COST.getString(), Constants.AVERAGE_OF_MANUFACTURE_COST);
+        groupCountingByPrice = createButtonCommand(Command.GROUP_COUNTING_BY_PRICE.getString(), Constants.GROUP_COUNTING_BY_PRICE);
+        filter = createFilter(Command.FILTER.getString(), Constants.FILTER);
+
+        upPanel.add(createLanguage(Color.white), BorderLayout.WEST);
+        upPanel.add(Box.createRigidArea(new Dimension(5, 0)));
+        upPanel.add(filter, BorderLayout.WEST);
+        upPanel.add(Box.createRigidArea(new Dimension(5, 0)));
+        upPanel.add(groupCountingByPrice, BorderLayout.WEST);
+        upPanel.add(Box.createRigidArea(new Dimension(5, 0)));
+        upPanel.add(manCost, BorderLayout.WEST);
+        JPanel jPanel = new JPanel();
+        jPanel.setLayout(new BorderLayout());
+        jPanel.setBackground(Color.BLACK);
+
+        jPanel.add(nameUser, BorderLayout.EAST);
+        upPanel.add(jPanel, BorderLayout.AFTER_LINE_ENDS);
+        upPanel.add(Box.createRigidArea(new Dimension(5, 0)));
+
     }
 
 
@@ -237,6 +252,7 @@ public class HomeFrame extends FrameProduct implements Runnable {
     private void repaintFilter(){
         repaint();
     }
+
 
 
     private class CommandWithoutAction implements ActionListener {
@@ -626,8 +642,6 @@ public class HomeFrame extends FrameProduct implements Runnable {
     public void prepeareAnswer(Response response) {
         this.response = response;
     }
-
-
 
     public void setGraphicCollection(HashMap<Long, Product> graphicCollection) {
         this.graphicCollection = graphicCollection;

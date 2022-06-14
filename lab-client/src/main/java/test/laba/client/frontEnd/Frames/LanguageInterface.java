@@ -8,7 +8,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.ResourceBundle;
 
-public class LanguageInterface extends AbstractFrame implements Localasiable {
+public abstract class LanguageInterface extends AbstractFrame implements Localasiable {
     public LanguageInterface(JFrame jFrame, ResourceBundle resourceBundle) {
         super(jFrame, resourceBundle);
     }
@@ -35,10 +35,10 @@ public class LanguageInterface extends AbstractFrame implements Localasiable {
         sp.setName(Local.spanish);
 
 
-        changeMenuAndLAg(rus, lang);
-        changeMenuAndLAg(nor, lang);
-        changeMenuAndLAg(fr, lang);
-        changeMenuAndLAg(sp, lang);
+        changeMenuAndLAg(rus);
+        changeMenuAndLAg(nor);
+        changeMenuAndLAg(fr);
+        changeMenuAndLAg(sp);
 
         lang.add(rus);
         lang.add(nor);
@@ -53,16 +53,13 @@ public class LanguageInterface extends AbstractFrame implements Localasiable {
         language.setBorderPainted(false);
         return language;
     }
-    private void changeMenuAndLAg(JMenuItem jMenuItem, JMenu menu) {
+    private void changeMenuAndLAg(JMenuItem jMenuItem) {
         jMenuItem.addActionListener((ActionEvent e) -> {
             resourceBundle = Local.locals.get(jMenuItem.getName());
             repaintFrame();
         });
     }
     private void repaintFrame() {
-       /* close();*/
         repaintForLanguage();
-        //jFrame = new JFrame();
-        //run();
     }
 }

@@ -104,4 +104,7 @@ public abstract class Filter extends AbstractFrame {
 
     public abstract void repaint();
 
+    @Override
+    public void repaintForLanguage() {
+    }
 }

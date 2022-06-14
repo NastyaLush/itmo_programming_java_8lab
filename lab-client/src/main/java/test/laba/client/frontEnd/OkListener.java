@@ -20,5 +20,7 @@ public abstract class OkListener extends AbstractFrame implements ActionListener
         this.command = command;
     }
 
-
+    @Override
+    public void repaintForLanguage() {
+    }
 }

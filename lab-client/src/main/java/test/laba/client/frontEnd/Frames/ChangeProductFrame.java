@@ -241,4 +241,9 @@ public abstract class ChangeProductFrame extends FrameProduct implements ActionL
         }
     }
 
+    @Override
+    public void repaintForLanguage() {
+        jFrame = new JFrame();
+        run();
+    }
 }

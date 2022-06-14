@@ -1,7 +1,6 @@
 package test.laba.client.util;
 
 
-import javafx.beans.binding.StringBinding;
 import test.laba.common.IO.Colors;
 import test.laba.common.exception.ScriptError;
 
