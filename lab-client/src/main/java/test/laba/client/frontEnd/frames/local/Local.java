@@ -4,50 +4,33 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-public class Local {
-    protected static final ResourceBundle resourceBundleDeafult = ResourceBundle.getBundle("lang");
-    protected static final ResourceBundle resourceBundleNorwegian = ResourceBundle.getBundle("lang", new Locale("nb", "NO"));
-    protected static final ResourceBundle resourceBundleEnglish = ResourceBundle.getBundle("lang", new Locale("en", "EN"));
-    protected static final ResourceBundle resourceBundleSpanish = ResourceBundle.getBundle("lang", new Locale("es", "NI"));
-    protected static final ResourceBundle resourceBundleFrance = ResourceBundle.getBundle("lang", new Locale("fr", "FR"));
-    protected static final ResourceBundle resourceBundleRussian = ResourceBundle.getBundle("lang", new Locale("ru", "RU"));
-    protected static final String russian = "russian";
-    protected static final String english = "english";
-    protected static final String norwegian = "norwegian";
-    protected static final String spanish = "spanish";
-    protected static final String france = "france";
-    protected static final HashMap<String, ResourceBundle> locals = new HashMap<String, ResourceBundle>() {{
-        put(russian, resourceBundleRussian);
-        put(english, resourceBundleEnglish);
-        put(norwegian, resourceBundleNorwegian);
-        put(spanish, resourceBundleSpanish);
-        put(france, resourceBundleFrance);
-    }};
+public final class Local {
+    public static final String RUSSIAN = "russian";
+    public static final String NORWEGIAN = "norwegian";
+    public static final String SPANISH = "spanish";
+    public static final String FRANCE = "france";
+    public static final HashMap<String, ResourceBundle> LOCALS;
+    private static final ResourceBundle RESOURCE_BUNDLE_DEFAULT = ResourceBundle.getBundle("lang");
+    private static final ResourceBundle RESOURCE_BUNDLE_NORWEGIAN = ResourceBundle.getBundle("lang", new Locale("nb", "NO"));
+    private static final ResourceBundle RESOURCE_BUNDLE_SPANISH = ResourceBundle.getBundle("lang", new Locale("es", "NI"));
+    private static final ResourceBundle RESOURCE_BUNDLE_FRANCE = ResourceBundle.getBundle("lang", new Locale("fr", "FR"));
+    private static final ResourceBundle RESOURCE_BUNDLE_RUSSIAN = ResourceBundle.getBundle("lang", new Locale("ru", "RU"));
 
-
-    public static ResourceBundle getResourceBundleDeafult() {
-        return resourceBundleDeafult;
+    static {
+        LOCALS = new HashMap<>();
+            LOCALS.put(RUSSIAN, RESOURCE_BUNDLE_RUSSIAN);
+            LOCALS.put(NORWEGIAN, RESOURCE_BUNDLE_NORWEGIAN);
+            LOCALS.put(SPANISH, RESOURCE_BUNDLE_SPANISH);
+            LOCALS.put(FRANCE, RESOURCE_BUNDLE_FRANCE);
     }
 
-    public static ResourceBundle getResourceBundleEnglish() {
-        return resourceBundleEnglish;
+    private Local() {
     }
 
-    public static ResourceBundle getResourceBundleNorwegian() {
-        return resourceBundleNorwegian;
+    public static ResourceBundle getResourceBundleDefault() {
+        return RESOURCE_BUNDLE_DEFAULT;
     }
 
-    public static ResourceBundle getResourceBundleFrance() {
-        return resourceBundleFrance;
-    }
-
-    public static ResourceBundle getResourceBundleRussian() {
-        return resourceBundleRussian;
-    }
-
-    public static ResourceBundle getResourceBundleSpanish() {
-        return resourceBundleSpanish;
-    }
 
 
 }

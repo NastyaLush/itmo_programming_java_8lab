@@ -1,29 +1,35 @@
 package test.laba.client.frontEnd.frames.changeProductFrames;
 
-import test.laba.client.frontEnd.frames.local.LanguageInterface;
+import java.awt.Dimension;
+import java.awt.Font;
+import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import test.laba.client.frontEnd.frames.local.LanguageAbstractClass;
 import test.laba.client.util.Constants;
 
-import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.ResourceBundle;
 
-public abstract class FrameProduct extends LanguageInterface {
+public abstract class FrameProduct extends LanguageAbstractClass {
+    private final Font umFont = new Font("Safari", Font.ITALIC, 13);
+    private final Dimension umSize = new Dimension(400, 50);
 
     public FrameProduct(JFrame jFrame, ResourceBundle resourceBundle) {
         super(jFrame, resourceBundle);
     }
 
 
-    protected JMenu createUMMenu(String name) {
+    public JMenu createUMMenu(String name) {
         JMenu menu = new JMenu(name);
-        menu.setPreferredSize(new Dimension(400, 50));
-        menu.setFont(new Font("Safari", Font.ITALIC, 13));
-        JMenuItem pcs = new JMenuItem(localisation(resourceBundle, Constants.PCS));
+        menu.setPreferredSize(umSize);
+        menu.setFont(umFont);
+        JMenuItem pcs = new JMenuItem(localisation(getResourceBundle(), Constants.PCS));
         changeMenuName(pcs, menu);
-        JMenuItem millilitres = new JMenuItem(localisation(resourceBundle, Constants.MILLILITERS));
+        JMenuItem millilitres = new JMenuItem(localisation(getResourceBundle(), Constants.MILLILITERS));
         changeMenuName(millilitres, menu);
-        JMenuItem grams = new JMenuItem(localisation(resourceBundle, Constants.GRAMS));
+        JMenuItem grams = new JMenuItem(localisation(getResourceBundle(), Constants.GRAMS));
         changeMenuName(grams, menu);
 
         menu.add(pcs);
@@ -40,7 +46,7 @@ public abstract class FrameProduct extends LanguageInterface {
         });
     }
 
-    protected JMenuBar unitOfMeasureButton(JMenu menu) {
+    public JMenuBar unitOfMeasureButton(JMenu menu) {
         JMenuBar menuBar = new JMenuBar();
         menuBar.add(menu);
         return menuBar;

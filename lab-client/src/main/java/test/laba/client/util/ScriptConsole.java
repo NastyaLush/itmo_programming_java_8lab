@@ -13,7 +13,7 @@ import java.io.IOException;
  */
 public class ScriptConsole extends Console {
     private final BufferedReader reader;
-    private StringBuilder answer = new StringBuilder();
+    private final StringBuilder answer = new StringBuilder();
     private final FileReader fileReader;
 
     /**
@@ -102,16 +102,16 @@ public class ScriptConsole extends Console {
      */
     @Override
     public boolean askQuestion(String question) {
-        String answer;
+        String newAnswer;
         ask(question);
-        answer = scanner().toLowerCase().trim();
-        if ("да".equals(answer) || "yes".equals(answer)) {
+        newAnswer = scanner().toLowerCase().trim();
+        if ("да".equals(newAnswer) || "yes".equals(newAnswer)) {
             return true;
         }
-        if ("нет".equals(answer) || "no".equals(answer)) {
+        if ("нет".equals(newAnswer) || "no".equals(newAnswer)) {
             return false;
         }
-        printError("Ответ не распознан, пожалуйста введите да или нет, вы ввели:" + answer);
+        printError("Ответ не распознан, пожалуйста введите да или нет, вы ввели:" + newAnswer);
         return askQuestion(question);
     }
 

@@ -1,7 +1,6 @@
 package test.laba.common.dataClasses;
 
 
-
 import test.laba.common.exception.CreateError;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -12,8 +11,8 @@ import java.util.Comparator;
 import java.util.Objects;
 
 @XmlRootElement(name = "product")
-@XmlType(propOrder = {"id", "name", "coordinates", "price", "manufactureCost", "unitOfMeasure", "owner" })
-public class  Product implements Comparable<Product>, Serializable {
+@XmlType(propOrder = {"id", "name", "coordinates", "price", "manufactureCost", "unitOfMeasure", "owner"})
+public class Product implements Comparable<Product>, Serializable {
     private long id; //Значение поля должно быть больше 0, Значение этого поля должно быть уникальным, Значение этого поля должно генерироваться автоматически
     private String name; //Поле не может быть null, Строка не может быть пустой
     private Coordinates coordinates; //Поле не может быть null
@@ -35,16 +34,17 @@ public class  Product implements Comparable<Product>, Serializable {
 
     /**
      * the constructor fill all fields and generate id
-     * @param name product name, type string, not null
-     * @param coordinates coordinates, not null
-     * @param price long price, not null and more than zero
+     *
+     * @param name            product name, type string, not null
+     * @param coordinates     coordinates, not null
+     * @param price           long price, not null and more than zero
      * @param manufactureCost integer manufactureCost
-     * @param unitOfMeasure unit of measure, not null
-     * @param owner person, not null
+     * @param unitOfMeasure   unit of measure, not null
+     * @param owner           person, not null
      * @throws CreateError if variables are not right throws createError
      */
     public Product(String name, Coordinates coordinates, Long price, Integer manufactureCost, UnitOfMeasure unitOfMeasure, Person owner) throws CreateError {
-        if (name == null || name.isEmpty() || coordinates == null || price == null || price <= 0  || unitOfMeasure == null) {
+        if (name == null || name.isEmpty() || coordinates == null || price == null || price <= 0 || unitOfMeasure == null) {
             throw new CreateError("Ошибка при создании объекта Product, обратите внимание:\n"
                     + "    Поле name может быть null и не может быть пустым\n"
                     + "    Поле coordinates не может быть null\n"
@@ -66,7 +66,7 @@ public class  Product implements Comparable<Product>, Serializable {
     }
 
     public Product(long id, String name, Coordinates coordinates, Long price, Integer manufactureCost, UnitOfMeasure unitOfMeasure) throws CreateError {
-        if (name == null || name.isEmpty() || coordinates == null || price == null || price <= 0  || unitOfMeasure == null) {
+        if (name == null || name.isEmpty() || coordinates == null || price == null || price <= 0 || unitOfMeasure == null) {
             throw new CreateError("Ошибка при создании объекта Product, обратите внимание:\n"
                     + "    Поле name может быть null и не может быть пустым\n"
                     + "    Поле coordinates не может быть null\n"
@@ -170,7 +170,6 @@ public class  Product implements Comparable<Product>, Serializable {
     }
 
 
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -182,6 +181,7 @@ public class  Product implements Comparable<Product>, Serializable {
         Product product = (Product) o;
         return getId() == product.getId() && getName().equals(product.getName()) && getCoordinates().equals(product.getCoordinates()) && getCreationDate().equals(product.getCreationDate()) && getPrice().equals(product.getPrice()) && getManufactureCost().equals(product.getManufactureCost()) && getUnitOfMeasure() == product.getUnitOfMeasure() && getOwner().equals(product.getOwner());
     }
+
     @Override
     public int hashCode() {
         return Objects.hash(getId(), getName(), getCoordinates(), getCreationDate(), getPrice(), getManufactureCost(), getUnitOfMeasure(), getOwner());
@@ -189,13 +189,13 @@ public class  Product implements Comparable<Product>, Serializable {
 
     @Override
     public int compareTo(Product o) {
-        if(getOwner() != null) {
+        if (getOwner() != null) {
             return Comparator.comparing(Product::getName).
                     thenComparing(Product::getPrice).
                     thenComparing(Product::getManufactureCost).
                     thenComparing(Product::getUnitOfMeasure).
                     thenComparing(Product::getCoordinates).
-                    thenComparing(Product :: getOwner).compare(this, o);
+                    thenComparing(Product::getOwner).compare(this, o);
         } else {
             return Comparator.comparing(Product::getName).
                     thenComparing(Product::getPrice).

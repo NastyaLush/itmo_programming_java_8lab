@@ -1,20 +1,32 @@
 package test.laba.client.frontEnd.frames;
 
 
-import test.laba.client.frontEnd.frames.local.LanguageInterface;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenuBar;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
+import test.laba.client.frontEnd.frames.local.LanguageAbstractClass;
 import test.laba.client.util.Constants;
 import test.laba.client.frontEnd.frames.local.Local;
 import test.laba.common.responses.Response;
 
-import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 
 
-public class Frame extends LanguageInterface implements Runnable{
+public class Frame extends LanguageAbstractClass implements Runnable {
     private JLabel login;
     private final JTextField textLogin = new JTextField();
     private JLabel password;
@@ -30,167 +42,147 @@ public class Frame extends LanguageInterface implements Runnable{
     private final JPanel upPanel = new JPanel();
     private String userHost = null;
     private String userPort = null;
-    protected Response response = null;
-    protected final Condition condition;
-    protected final Lock lock;
+    private Response response = null;
+    private final Condition condition;
+    private final Lock lock;
     private Registration registration;
     private JMenuBar lang;
+    private final int defaultLocation = 100;
+    private final Dimension minimumSizeFrame = new Dimension(screenSize.width / 2, screenSize.height - 300);
+    private final Dimension mainPanelSizeFrame = new Dimension(415, 417);
+    private final int eightPanelSmaller = 8;
+    private final int fourteenTwicePanelSmaller = 14;
+    private final int authorisationTextSize = 50;
+    private final int loginTextSize = 18;
+    private final int widthLogin = 23;
+    private final int heightLogin = 45;
+    private final int registerSize = 13;
+    private final int enterSize = 50;
+    private final int enterSizeAfterPort = 15;
+    private final int enterSizeAfterRegister = 25;
+    private final int enterSizeAfterSingUp = 5;
+    private final Font standardFont = new Font("Safari", Font.BOLD, 15);
     private boolean isNewUser = false;
-    protected boolean isException = false;
 
 
-
-    public Frame(Condition condition, Lock lock/*, String name*/) {
-        super(new JFrame(/*name*/), Local.getResourceBundleDeafult());
+    public Frame(Condition condition, Lock lock) {
+        super(new JFrame(), Local.getResourceBundleDefault());
         this.lock = lock;
         this.condition = condition;
-        //start();
     }
 
+    @Override
     public void run() {
-        jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        jFrame.setLocation(100,100);
-        jFrame.setMinimumSize(new Dimension(screenSize.width /2, screenSize.height-300));
-        jFrame.setMaximumSize(new Dimension(screenSize.width/2, screenSize.height/2));
+        getFrame().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        getFrame().setLocation(defaultLocation, defaultLocation);
+        getFrame().setMinimumSize(minimumSizeFrame);
 
         paintMainPanels();
 
         JPanel leftPanel = new JPanel();
         JPanel downPanel = new JPanel();
 
-        mainPanel.setPreferredSize(new Dimension(415,417));
-        leftPanel.setPreferredSize(new Dimension(jFrame.getWidth()/8,jFrame.getHeight()));
-        upPanel.setPreferredSize(new Dimension(jFrame.getWidth()/8,jFrame.getHeight()/14));
-        downPanel.setPreferredSize(new Dimension(jFrame.getWidth()/8,jFrame.getHeight()/8));
+        mainPanel.setPreferredSize(mainPanelSizeFrame);
+        leftPanel.setPreferredSize(new Dimension(getFrame().getWidth() / eightPanelSmaller, getFrame().getHeight()));
+        upPanel.setPreferredSize(new Dimension(getFrame().getWidth() / eightPanelSmaller, getFrame().getHeight() / fourteenTwicePanelSmaller));
+        downPanel.setPreferredSize(new Dimension(getFrame().getWidth() / eightPanelSmaller, getFrame().getHeight() / eightPanelSmaller));
 
-        jFrame.getContentPane().add(BorderLayout.CENTER, panel);
-        jFrame.getContentPane().add(BorderLayout.WEST, leftPanel);
-        jFrame.getContentPane().add(BorderLayout.NORTH, upPanel);
-        jFrame.getContentPane().add(BorderLayout.SOUTH, downPanel);
+        getFrame().getContentPane().add(BorderLayout.CENTER, panel);
+        getFrame().getContentPane().add(BorderLayout.WEST, leftPanel);
+        getFrame().getContentPane().add(BorderLayout.NORTH, upPanel);
+        getFrame().getContentPane().add(BorderLayout.SOUTH, downPanel);
 
 
-        jFrame.setVisible(true);
+        getFrame().setVisible(true);
     }
 
-    public void paintMainPanels(){
-        mainPanel.removeAll();
-        upPanel.removeAll();
-        mainPanel.revalidate();
-        upPanel.revalidate();
-
-        inisialization();
-
-        authorisation.setFont(underLine(new Font("Safari", Font.ITALIC, 50)));
+    private void paintMainPanels() {
+        revalidate();
+        initialization();
+        authorisation.setFont(underLine(new Font("Safari", Font.ITALIC, authorisationTextSize)));
         authorisation.setHorizontalAlignment(JLabel.LEFT);
 
-        Font labelFont = new Font("Safari", Font.CENTER_BASELINE, 18);
-        login.setForeground(Color.gray);
-        login.setFont(labelFont);
-        login.setSize(23, 45);
-
-        password.setForeground(Color.gray);
-        password.setFont(labelFont);
-
-
-        host.setForeground(Color.gray);
-        host.setFont(labelFont);
-        textHost.setBounds(2,3,4,5);
-
-        port.setForeground(Color.gray);
-        port.setFont(labelFont);
-
-
-        JButton signUp = createButton(Constants.SING_UP, new SignUp());
-
+        Font labelFont = new Font("Safari", Font.BOLD, loginTextSize);
+        login.setSize(widthLogin, heightLogin);
+        setFontAndColorToLabel(login, labelFont);
+        setFontAndColorToLabel(password, labelFont);
+        setFontAndColorToLabel(host, labelFont);
+        setFontAndColorToLabel(port, labelFont);
         register.setBackground(Color.lightGray);
-        register.setFont(underLine(new Font("Arial", Font.ITALIC, 13)));
+        register.setFont(underLine(new Font("Arial", Font.ITALIC, registerSize)));
         registration = new Registration();
-
         register.addActionListener(registration);
 
-        jFrame.setLayout(new BorderLayout());
-
-        BoxLayout boxLayout = new BoxLayout(mainPanel,BoxLayout.Y_AXIS);
+        getFrame().setLayout(new BorderLayout());
+        BoxLayout boxLayout = new BoxLayout(mainPanel, BoxLayout.Y_AXIS);
         panel.setLayout(new BorderLayout());
         panel.add(mainPanel, BorderLayout.WEST);
         mainPanel.setLayout(boxLayout);
 
-
-        mainPanel.add(authorisation);
-        mainPanel.add(Box.createRigidArea(new Dimension(0,50)));
+        addGroupButtonEnter(authorisation, createEnter(enterSize));
         mainPanel.add(login);
-        mainPanel.add(textLogin);
-        mainPanel.add(Box.createRigidArea(new Dimension(0,50)));
+        addGroupButtonEnter(textLogin, createEnter(enterSize));
         mainPanel.add(password);
-        mainPanel.add(textPassword);
-        mainPanel.add(Box.createRigidArea(new Dimension(0,50)));
+        addGroupButtonEnter(textPassword, createEnter(enterSize));
         mainPanel.add(host);
-        mainPanel.add(textHost);
-        mainPanel.add(Box.createRigidArea(new Dimension(0,50)));
+        addGroupButtonEnter(textHost, createEnter(enterSize));
         mainPanel.add(port);
-        mainPanel.add(textPort);
-        mainPanel.add(Box.createRigidArea(new Dimension(0,15)));
-        mainPanel.add(register);
-        mainPanel.add(Box.createRigidArea(new Dimension(0,25)));
-        mainPanel.add(signUp);
-
+        addGroupButtonEnter(textPort, createEnter(enterSizeAfterPort));
+        addGroupButtonEnter(register, createEnter(enterSizeAfterRegister));
+        mainPanel.add(createButton(Constants.SING_UP, new SignUp()));
         upPanel.setLayout(new BorderLayout());
         lang = createLanguage(Color.BLACK);
         upPanel.add(lang, BorderLayout.WEST);
+    }
+
+    private void revalidate() {
+        mainPanel.removeAll();
+        upPanel.removeAll();
+        mainPanel.revalidate();
+        upPanel.revalidate();
+    }
+
+    private void setFontAndColorToLabel(JLabel label, Font font) {
+        label.setFont(font);
+        label.setForeground(Color.gray);
+    }
+
+    private Component createEnter(int height) {
+        return Box.createRigidArea(new Dimension(0, height));
+    }
+
+    private void addGroupButtonEnter(Component label, Component enter) {
+        mainPanel.add(label);
+        mainPanel.add(enter);
+    }
+
+    @Override
+    public void repaintForLanguage() {
+        paintMainPanels();
+        if (isNewUser) {
+            registration.actionPerformed(new ActionEvent(this, 1, "repaint"));
+        }
 
 
     }
-    public void repaintForLanguage(){
-            paintMainPanels();
-            if(isNewUser){
-                registration.actionPerformed(new ActionEvent(this,1,"repaint"));
-            }
 
-
-
-    }
-    private JButton createButton(Constants constants, ActionListener actionListener){
-        JButton signUp = new JButton(localisation(resourceBundle, constants));
-        signUp.setFont(new Font("Safari", Font.CENTER_BASELINE, 15));
+    private JButton createButton(Constants constants, ActionListener actionListener) {
+        JButton signUp = new JButton(localisation(getResourceBundle(), constants));
+        signUp.setFont(standardFont);
         signUp.setBackground(Color.gray);
         signUp.addActionListener(actionListener);
         return signUp;
     }
 
-    private void inisialization(){
-        login = new JLabel(localisation(resourceBundle, Constants.LOGIN), 10);
-        password = new JLabel(localisation(resourceBundle, Constants.PASSWORD));
-        host = new JLabel(localisation(resourceBundle, Constants.HOST));
-        port = new JLabel(localisation(resourceBundle, Constants.PORT));
-        authorisation = new JLabel(localisation(resourceBundle, Constants.AUTHORISATION));
-        register = new JButton(localisation(resourceBundle, Constants.NOT_LOGIN_YET));
+    private void initialization() {
+        login = new JLabel(localisation(getResourceBundle(), Constants.LOGIN));
+        password = new JLabel(localisation(getResourceBundle(), Constants.PASSWORD));
+        host = new JLabel(localisation(getResourceBundle(), Constants.HOST));
+        port = new JLabel(localisation(getResourceBundle(), Constants.PORT));
+        authorisation = new JLabel(localisation(getResourceBundle(), Constants.AUTHORISATION));
+        register = new JButton(localisation(getResourceBundle(), Constants.NOT_LOGIN_YET));
     }
-    private class SignUp implements ActionListener {
 
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            userHost = textHost.getText();
-            userPort = textPort.getText();
-            response = new Response(textLogin.getText(), new String(textPassword.getPassword()), "");
-            lock.lock();
-            condition.signal();
-            lock.unlock();
-        }
-    }
-    private class Registration implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            isNewUser = true;
-            authorisation.setText(localisation(resourceBundle, Constants.REGISTRATION));
-            mainPanel.remove(register);
-            mainPanel.add(Box.createRigidArea(new Dimension(0,5)));
-            mainPanel.add(createButton(Constants.BACK, e1 -> {
-                isNewUser = false;
-                run();
-            }));
-            jFrame.repaint();
-        }
-    }
 
     public String getHost() {
         return userHost;
@@ -204,16 +196,36 @@ public class Frame extends LanguageInterface implements Runnable{
         return response;
     }
 
-    public JFrame getjFrame() {
-        return jFrame;
-    }
 
     public boolean isNewUser() {
         return isNewUser;
     }
 
-    public void prepeareAnswer(Response response, boolean isException){
-        this.response = response;
-        this.isException = isException;
+    private class SignUp implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            userHost = textHost.getText();
+            userPort = textPort.getText();
+            response = new Response(textLogin.getText(), new String(textPassword.getPassword()), "");
+            lock.lock();
+            condition.signal();
+            lock.unlock();
+        }
+    }
+
+    private class Registration implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            isNewUser = true;
+            authorisation.setText(localisation(getResourceBundle(), Constants.REGISTRATION));
+            mainPanel.remove(register);
+            mainPanel.add(createEnter(enterSizeAfterSingUp));
+            mainPanel.add(createButton(Constants.BACK, e1 -> {
+                isNewUser = false;
+                run();
+            }));
+            getFrame().repaint();
+        }
     }
 }

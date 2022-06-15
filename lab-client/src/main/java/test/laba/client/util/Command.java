@@ -25,7 +25,9 @@ public enum Command {
     LOCATION_Y("location Y"),
     FILTER("filter"),
     LOCATION_NAME("location Name"),
-    SHOW("show");
+    SHOW("show"),
+    CLEAR("clear"),
+    INSERT_NULL("insert_null");
 
     private final String string;
 

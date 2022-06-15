@@ -167,12 +167,11 @@ public class UpdateId {
         return value;
     }
 
-    private interface GetFunction<T> {
-        T getFunction();
-    }
-
     private String text(Command field) {
         return field.getString();
+    }
+    private interface GetFunction<T> {
+        T getFunction();
     }
 
     private interface IFunction<T> {

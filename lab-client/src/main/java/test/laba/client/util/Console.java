@@ -105,7 +105,7 @@ public class Console {
         return askFullQuestion(question);
     }
 
-    public int isAviable() throws IOException {
+    public int isAvailable() throws IOException {
         return System.in.available();
     }
 

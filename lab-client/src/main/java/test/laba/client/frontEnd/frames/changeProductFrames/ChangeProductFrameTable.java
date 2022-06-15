@@ -1,17 +1,26 @@
 package test.laba.client.frontEnd.frames.changeProductFrames;
 
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import javax.swing.Box;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JTextField;
 import test.laba.client.frontEnd.frames.table.TableModule;
 import test.laba.client.frontEnd.frames.table.TablePanel;
 import test.laba.client.util.Constants;
 
-import javax.swing.*;
-import java.awt.*;
 import java.util.ResourceBundle;
 
 public abstract class ChangeProductFrameTable extends ChangeProductFrame {
     private final TablePanel tablePanel;
     private final TableModule tableModule;
-    private long id;
+    private final Dimension unitOfMeasureSize = new Dimension(23, 24);
+    private final Dimension labelSize = new Dimension(23, 24);
+    private final Dimension textLabelSize = new Dimension(15, 24);
+    private final Component enter = Box.createRigidArea(new Dimension(0, 13));
 
     public ChangeProductFrameTable(TablePanel table, TableModule tableModule, ResourceBundle resourceBundle) {
         super(resourceBundle);
@@ -20,48 +29,41 @@ public abstract class ChangeProductFrameTable extends ChangeProductFrame {
     }
 
     @Override
-    protected JTextField createButtonGroupe(String name, String description, boolean saveToDelete) {
+    protected JTextField createButtonGroup(String name, String description, boolean saveToDelete) {
         tablePanel.getTable().getSelectedRow();
         JLabel label = new JLabel(name + "(" + description + ")");
         label.setForeground(Color.gray);
-        label.setFont(labelFont);
-        label.setPreferredSize(new Dimension(23, 24));
+        label.setFont(getLabelFont());
+        label.setPreferredSize(labelSize);
 
         JTextField textField = new JTextField(getDescription(name));
-        textField.setPreferredSize(new Dimension(15, 24));
-        Component enter = Box.createRigidArea(new Dimension(0, 13));
+        textField.setPreferredSize(textLabelSize);
 
+        addLabels(saveToDelete, label, textField, enter);
 
-        if (saveToDelete) {
-            ownersLabels.add(label);
-            ownersLabels.add(textField);
-            ownersLabels.add(enter);
-        }
-
-        mainPlusPanel.add(label);
-        mainPlusPanel.add(textField);
-        mainPlusPanel.add(enter);
         return textField;
     }
+
     @Override
     protected void addKey() {
     }
 
+    @Override
     protected JMenu unitOfMeas(String name, String description) {
         JLabel label = new JLabel(name + "(" + description + ")");
         label.setForeground(Color.gray);
-        label.setFont(labelFont);
-        label.setPreferredSize(new Dimension(23, 24));
+        label.setFont(getLabelFont());
+        label.setPreferredSize(unitOfMeasureSize);
 
 
         JMenu menu = createUMMenu(getDescription(name));
-        System.out.println(tableModule.delocalisationUnitOfMeasure(getDescription(name)));
-        menu.setName(tableModule.delocalisationUnitOfMeasure(getDescription(name)));
+        System.out.println(tableModule.delocalizationUnitOfMeasure(getDescription(name)));
+        menu.setName(tableModule.delocalizationUnitOfMeasure(getDescription(name)));
         JMenuBar menuBar = unitOfMeasureButton(menu);
 
-        mainPlusPanel.add(label);
-        mainPlusPanel.add(menuBar);
-        mainPlusPanel.add(Box.createRigidArea(new Dimension(0, 13)));
+        getMainPlusPanel().add(label);
+        getMainPlusPanel().add(menuBar);
+        getMainPlusPanel().add(enter);
         return menu;
     }
 
@@ -70,7 +72,7 @@ public abstract class ChangeProductFrameTable extends ChangeProductFrame {
     }
 
     @Override
-    protected String getID(){
+    protected String getID() {
         return getDescription(local(Constants.ID));
     }
 }

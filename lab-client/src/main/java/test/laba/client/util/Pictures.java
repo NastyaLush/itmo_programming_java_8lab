@@ -9,10 +9,9 @@ public enum Pictures {
     INFO("pictures/info.png"),
     TRASH("pictures/trash.png"),
     MINUS("pictures/minus.png"),
-    PLUS("pictures/plus.png")
-    ;
+    PLUS("pictures/plus.png");
 
-    String path;
+    private final String path;
 
     Pictures(String path) {
         this.path = path;

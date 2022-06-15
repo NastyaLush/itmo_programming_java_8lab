@@ -1,5 +1,22 @@
 package test.laba.client.frontEnd.frames.changeProductFrames;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Toolkit;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 import test.laba.client.util.Constants;
 import test.laba.client.util.VariableParsing;
 import test.laba.common.dataClasses.Coordinates;
@@ -8,8 +25,6 @@ import test.laba.common.dataClasses.Person;
 import test.laba.common.dataClasses.Product;
 import test.laba.common.exception.VariableException;
 
-import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashSet;
@@ -18,19 +33,28 @@ import java.util.Set;
 
 
 public abstract class ChangeProductFrame extends FrameProduct implements ActionListener {
-    protected JPanel mainPlusPanel;
+    private JPanel mainPlusPanel;
     private final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-    protected JButton ok;
+    private JButton ok;
     private JTextField textKey;
     private JTextField textProductName;
     private JTextField textCoordinateX;
     private JTextField textCoordinateY;
     private JTextField textPrice;
-    private JTextField textManufactoreCost;
+    private JTextField textManufactureCost;
     private JCheckBox addOwner;
     private JMenu textUM;
-    protected final Font labelFont = new Font("Safari", Font.CENTER_BASELINE, 13);
-    protected final Set<Component> ownersLabels = new HashSet<>();
+    private final Set<Component> ownersLabels = new HashSet<>();
+    private final int startLocation = 30;
+    private final int howSmallerSizeHeight = 4;
+    private final Dimension standardDimension = new Dimension(23, 24);
+    private final int heightBoxArea = 13;
+    private final int widthUM = 400;
+    private final int heightUM = 50;
+    private final int widthButton = 15;
+    private final int heightButton = 24;
+    private final int heightStandardButton = 13;
+    private final Font labelFont = new Font("Safari", Font.BOLD, heightStandardButton);
     private NeedOwner needOwner;
 
     public ChangeProductFrame(ResourceBundle resourceBundle) {
@@ -38,57 +62,164 @@ public abstract class ChangeProductFrame extends FrameProduct implements ActionL
     }
 
     public void revalidate() {
-        jFrame = new JFrame();
-        ok = new JButton(localisation(resourceBundle, Constants.OK));
+        setFrame(new JFrame());
+        ok = new JButton(localisation(getResourceBundle(), Constants.OK));
         mainPlusPanel = new JPanel();
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         revalidate();
-        jFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        jFrame.setSize(screenSize.width / 2, screenSize.height / 4);
-        jFrame.setLocation(30, 30);
-        jFrame.setMinimumSize(new Dimension(screenSize.width / 2, screenSize.height / 10 * 5));
-        jFrame.setLayout(new BorderLayout());
+        getFrame().setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        getFrame().setSize(screenSize.width / 2, screenSize.height / howSmallerSizeHeight);
+        getFrame().setLocation(startLocation, startLocation);
+        getFrame().setMinimumSize(new Dimension(screenSize.width / 2, screenSize.height / 2));
+        getFrame().setLayout(new BorderLayout());
 
         ok.setFont(labelFont);
         ok.setBackground(Color.gray);
         addOkListener();
-        System.out.println("hh");
 
         addKey();
-        textProductName = createButtonGroupe(localisation(resourceBundle, Constants.PRODUCT_NAME), localisation(resourceBundle, Constants.CAN_NOT_BE_NULL), false);
-        textCoordinateX = createButtonGroupe(localisation(resourceBundle, Constants.COORDINATE_X), localisation(resourceBundle, Constants.MUST_BE_BIGGER) + "-233" + localisation(resourceBundle, Constants.CAN_NOT_BE_NULL), false);
-        textCoordinateY = createButtonGroupe(localisation(resourceBundle, Constants.COORDINATE_Y), localisation(resourceBundle, Constants.CAN_NOT_BE_NULL), false);
-        textPrice = createButtonGroupe(localisation(resourceBundle, Constants.PRICE), localisation(resourceBundle, Constants.MUST_BE_BIGGER) + "0" + localisation(resourceBundle, Constants.CAN_NOT_BE_NULL), false);
-        textManufactoreCost = createButtonGroupe(localisation(resourceBundle, Constants.MANUFACTURE_COST), localisation(resourceBundle, Constants.CAN_NOT_BE_NULL), false);
-        textUM = unitOfMeas(localisation(resourceBundle, Constants.UNIT_OF_MEASURE), localisation(resourceBundle, Constants.CAN_NOT_BE_NULL));
+        textProductName = createButtonGroup(localisation(getResourceBundle(), Constants.PRODUCT_NAME), localisation(getResourceBundle(), Constants.CAN_NOT_BE_NULL), false);
+        textCoordinateX = createButtonGroup(localisation(getResourceBundle(), Constants.COORDINATE_X), localisation(getResourceBundle(), Constants.MUST_BE_BIGGER) + " -233 " + localisation(getResourceBundle(), Constants.CAN_NOT_BE_NULL), false);
+        textCoordinateY = createButtonGroup(localisation(getResourceBundle(), Constants.COORDINATE_Y), localisation(getResourceBundle(), Constants.CAN_NOT_BE_NULL), false);
+        textPrice = createButtonGroup(localisation(getResourceBundle(), Constants.PRICE), localisation(getResourceBundle(), Constants.MUST_BE_BIGGER) + " 0 " + localisation(getResourceBundle(), Constants.CAN_NOT_BE_NULL), false);
+        textManufactureCost = createButtonGroup(localisation(getResourceBundle(), Constants.MANUFACTURE_COST), localisation(getResourceBundle(), Constants.CAN_NOT_BE_NULL), false);
+        textUM = unitOfMeas(localisation(getResourceBundle(), Constants.UNIT_OF_MEASURE), localisation(getResourceBundle(), Constants.CAN_NOT_BE_NULL));
 
-        addOwner = new JCheckBox(localisation(resourceBundle, Constants.ADD_OWNER));
+        addOwner = new JCheckBox(localisation(getResourceBundle(), Constants.ADD_OWNER));
         addOwner.setFont(labelFont);
-        addOwner.setPreferredSize(new Dimension(23, 24));
+        addOwner.setPreferredSize(standardDimension);
         needOwner = new NeedOwner();
         addOwner.addActionListener(needOwner);
 
         mainPlusPanel.add(addOwner);
         addActionButtons();
         mainPlusPanel.setLayout(new BoxLayout(mainPlusPanel, BoxLayout.Y_AXIS));
-        jFrame.add(mainPlusPanel, BorderLayout.CENTER);
-        jFrame.setVisible(true);
+        getFrame().add(mainPlusPanel, BorderLayout.CENTER);
+        getFrame().setVisible(true);
     }
-    protected void addActionButtons(){
+
+    protected void addActionButtons() {
         mainPlusPanel.add(ok);
     }
-    protected void removeActionButtons(){
+
+    protected void removeActionButtons() {
         mainPlusPanel.remove(ok);
     }
 
     protected abstract void addOkListener();
 
-    protected String getID(){
+    protected String getID() {
         return "0";
     }
+
+    protected JTextField createButtonGroup(String name, String description, boolean saveToDelete) {
+        JLabel label = new JLabel(name + "(" + description + ")");
+        label.setForeground(Color.gray);
+        label.setFont(labelFont);
+        label.setPreferredSize(standardDimension);
+        JTextField textField = new JTextField();
+        textField.setPreferredSize(new Dimension(widthButton, heightButton));
+        Component enter = Box.createRigidArea(new Dimension(0, heightBoxArea));
+
+
+        if (saveToDelete) {
+            ownersLabels.add(label);
+            ownersLabels.add(textField);
+            ownersLabels.add(enter);
+        }
+
+        mainPlusPanel.add(label);
+        mainPlusPanel.add(textField);
+        mainPlusPanel.add(enter);
+        return textField;
+    }
+
+    @Override
+    public JMenu createUMMenu(String name) {
+        JMenu menu = new JMenu(name);
+        menu.setPreferredSize(new Dimension(widthUM, heightUM));
+        menu.setFont(getLabelFont());
+        JMenuItem pcs = new JMenuItem(localisation(getResourceBundle(), Constants.PCS));
+        pcs.setName(Constants.PCS.getString());
+        changeMenuName(pcs, menu);
+        JMenuItem millilitres = new JMenuItem(localisation(getResourceBundle(), Constants.MILLILITERS));
+        millilitres.setName(Constants.MILLILITERS.getString());
+        changeMenuName(millilitres, menu);
+        JMenuItem grams = new JMenuItem(localisation(getResourceBundle(), Constants.GRAMS));
+        grams.setName(Constants.GRAMS.getString());
+        changeMenuName(grams, menu);
+
+        menu.add(pcs);
+        menu.add(millilitres);
+        menu.add(grams);
+        return menu;
+
+    }
+
+    @Override
+    public JMenuBar unitOfMeasureButton(JMenu menu) {
+        JMenuBar menuBar = new JMenuBar();
+        menuBar.add(menu);
+        return menuBar;
+    }
+
+    protected JMenu unitOfMeas(String name, String description) {
+        JLabel label = new JLabel(name + "(" + description + ")");
+        label.setForeground(Color.gray);
+        label.setFont(labelFont);
+        label.setPreferredSize(standardDimension);
+
+
+        JMenu menu = createUMMenu(name);
+        JMenuBar menuBar = unitOfMeasureButton(menu);
+
+        mainPlusPanel.add(label);
+        mainPlusPanel.add(menuBar);
+        mainPlusPanel.add(Box.createRigidArea(new Dimension(0, heightBoxArea)));
+        return menu;
+    }
+
+    protected void addKey() {
+        textKey = createButtonGroup(localisation(getResourceBundle(), Constants.KEY), localisation(getResourceBundle(), Constants.CAN_NOT_BE_NULL), false);
+    }
+
+    protected void addLabels(boolean saveToDelete, JLabel label, JTextField textField, Component enter) {
+        if (saveToDelete) {
+            getOwnersLabels().add(label);
+            getOwnersLabels().add(textField);
+            getOwnersLabels().add(enter);
+        }
+
+        getMainPlusPanel().add(label);
+        getMainPlusPanel().add(textField);
+        getMainPlusPanel().add(enter);
+    }
+
+    public JPanel getMainPlusPanel() {
+        return mainPlusPanel;
+    }
+
+    public Font getLabelFont() {
+        return labelFont;
+    }
+
+    public JButton getOk() {
+        return ok;
+    }
+
+    public Set<Component> getOwnersLabels() {
+        return ownersLabels;
+    }
+
+    @Override
+    public void repaintForLanguage() {
+        setFrame(new JFrame());
+        run();
+    }
+
     protected abstract class OkListener implements ActionListener {
         protected abstract void createResponse(Product product, Long key);
 
@@ -101,7 +232,7 @@ public abstract class ChangeProductFrame extends FrameProduct implements ActionL
             coordinates.setY(VariableParsing.toRightY(local(Constants.COORDINATE_Y), textCoordinateY.getText()));
             product.setCoordinates(coordinates);
             product.setPrice(VariableParsing.toRightPrice(local(Constants.PRICE), textPrice.getText()));
-            product.setManufactureCost(VariableParsing.toRightNumberInt(local(Constants.MANUFACTURE_COST), textManufactoreCost.getText()));
+            product.setManufactureCost(VariableParsing.toRightNumberInt(local(Constants.MANUFACTURE_COST), textManufactureCost.getText()));
             product.setUnitOfMeasure(VariableParsing.toRightUnitOfMeasure(local(Constants.UNIT_OF_MEASURE), textUM.getName()));
             if (addOwner.isSelected()) {
                 product.setOwner(needOwner.parsingDate());
@@ -127,75 +258,6 @@ public abstract class ChangeProductFrame extends FrameProduct implements ActionL
         }
     }
 
-    protected JTextField createButtonGroupe(String name, String description, boolean saveToDelete) {
-        JLabel label = new JLabel(name + "(" + description + ")");
-        label.setForeground(Color.gray);
-        label.setFont(labelFont);
-        label.setPreferredSize(new Dimension(23, 24));
-        JTextField textField = new JTextField();
-        textField.setPreferredSize(new Dimension(15, 24));
-        Component enter = Box.createRigidArea(new Dimension(0, 13));
-
-
-        if (saveToDelete) {
-            ownersLabels.add(label);
-            ownersLabels.add(textField);
-            ownersLabels.add(enter);
-        }
-
-        mainPlusPanel.add(label);
-        mainPlusPanel.add(textField);
-        mainPlusPanel.add(enter);
-        return textField;
-    }
-
-    protected JMenu createUMMenu(String name) {
-        JMenu menu = new JMenu(name);
-        menu.setPreferredSize(new Dimension(400, 50));
-        menu.setFont(new Font("Safari", Font.CENTER_BASELINE, 13));
-        JMenuItem pcs = new JMenuItem(localisation(resourceBundle, Constants.PCS));
-        pcs.setName(Constants.PCS.getString());
-        changeMenuName(pcs, menu);
-        JMenuItem millilitres = new JMenuItem(localisation(resourceBundle, Constants.MILLILITERS));
-        millilitres.setName(Constants.MILLILITERS.getString());
-        changeMenuName(millilitres, menu);
-        JMenuItem grams = new JMenuItem(localisation(resourceBundle, Constants.GRAMS));
-        grams.setName(Constants.GRAMS.getString());
-        changeMenuName(grams, menu);
-
-        menu.add(pcs);
-        menu.add(millilitres);
-        menu.add(grams);
-        return menu;
-
-    }
-
-    protected JMenuBar unitOfMeasureButton(JMenu menu) {
-        JMenuBar menuBar = new JMenuBar();
-        menuBar.add(menu);
-        return menuBar;
-    }
-
-    protected JMenu unitOfMeas(String name, String description) {
-        JLabel label = new JLabel(name + "(" + description + ")");
-        label.setForeground(Color.gray);
-        label.setFont(labelFont);
-        label.setPreferredSize(new Dimension(23, 24));
-
-
-        JMenu menu = createUMMenu(name);
-        JMenuBar menuBar = unitOfMeasureButton(menu);
-
-        mainPlusPanel.add(label);
-        mainPlusPanel.add(menuBar);
-        mainPlusPanel.add(Box.createRigidArea(new Dimension(0, 13)));
-        return menu;
-    }
-
-    protected void addKey() {
-        textKey = createButtonGroupe(localisation(resourceBundle, Constants.KEY), localisation(resourceBundle, Constants.CAN_NOT_BE_NULL), false);
-    }
-
     private class NeedOwner implements ActionListener {
         private JTextField textPersonName;
         private JTextField textPersonBirthday;
@@ -203,25 +265,26 @@ public abstract class ChangeProductFrame extends FrameProduct implements ActionL
         private JTextField textLocationX;
         private JTextField textLocationY;
         private JTextField textLocationName;
+        private final double howSmallerThisFrameSize = 4 / 5;
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            jFrame.setMinimumSize(new Dimension(screenSize.width / 2, screenSize.height / 10 * 8));
+            getFrame().setMinimumSize(new Dimension(screenSize.width / 2, (int) (screenSize.height / howSmallerThisFrameSize)));
             if (addOwner.isSelected()) {
                 removeActionButtons();
-                textPersonName = createButtonGroupe(local(Constants.PERSON_NAME), local(Constants.CAN_NOT_BE_NULL), true);
-                textPersonBirthday = createButtonGroupe(local(Constants.BIRTHDAY), local(Constants.CAN_NOT_BE_NULL) + local(Constants.FORMAT), true);
-                textPersonHeight = createButtonGroupe(local(Constants.HEIGHT), local(Constants.MUST_BE_BIGGER) + "0" + local(Constants.CAN_NOT_BE_NULL), true);
-                textLocationX = createButtonGroupe(local(Constants.LOCATION_X), "", true);
-                textLocationY = createButtonGroupe(local(Constants.LOCATION_Y), "", true);
-                textLocationName = createButtonGroupe(local(Constants.LOCATION_NAME), local(Constants.CAN_NOT_BE_NULL), true);
+                textPersonName = createButtonGroup(local(Constants.PERSON_NAME), local(Constants.CAN_NOT_BE_NULL), true);
+                textPersonBirthday = createButtonGroup(local(Constants.BIRTHDAY), local(Constants.CAN_NOT_BE_NULL) + local(Constants.FORMAT), true);
+                textPersonHeight = createButtonGroup(local(Constants.HEIGHT), local(Constants.MUST_BE_BIGGER) + "0" + local(Constants.CAN_NOT_BE_NULL), true);
+                textLocationX = createButtonGroup(local(Constants.LOCATION_X), "", true);
+                textLocationY = createButtonGroup(local(Constants.LOCATION_Y), "", true);
+                textLocationName = createButtonGroup(local(Constants.LOCATION_NAME), local(Constants.CAN_NOT_BE_NULL), true);
                 addActionButtons();
                 mainPlusPanel.validate();
-                jFrame.validate();
+                getFrame().validate();
             } else {
-                ownersLabels.stream().forEach(i -> mainPlusPanel.remove(i));
+                ownersLabels.forEach(i -> mainPlusPanel.remove(i));
                 ownersLabels.clear();
-                jFrame.repaint();
+                getFrame().repaint();
             }
 
         }
@@ -239,11 +302,5 @@ public abstract class ChangeProductFrame extends FrameProduct implements ActionL
             person.setLocation(location);
             return person;
         }
-    }
-
-    @Override
-    public void repaintForLanguage() {
-        jFrame = new JFrame();
-        run();
     }
 }

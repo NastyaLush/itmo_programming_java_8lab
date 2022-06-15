@@ -136,6 +136,7 @@ public final class VariableParsing {
      */
     public static UnitOfMeasure toRightUnitOfMeasure(String name, String unit) throws VariableException {
         try {
+            System.out.println(unit);
             return UnitOfMeasure.valueOf(unit.toUpperCase());
         } catch (IllegalArgumentException e) {
             throw new VariableException(name, "Can't parse to Unit Of Measure, please chose one of: " + "PCS, MILLILITERS, GRAMS");

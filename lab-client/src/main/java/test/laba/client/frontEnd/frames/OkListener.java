@@ -1,26 +1,26 @@
 package test.laba.client.frontEnd.frames;
 
-import test.laba.client.frontEnd.frames.AbstractFrame;
+import javax.swing.JFrame;
 import test.laba.common.exception.VariableException;
 import test.laba.common.responses.Response;
 
-import javax.swing.*;
 import java.awt.event.ActionListener;
 import java.util.ResourceBundle;
 
 public abstract class OkListener extends AbstractFrame implements ActionListener {
-    protected JComponent textKey;
-    protected final String command;
+    private final String command;
 
-    public abstract Response createResponse() throws VariableException;
-
-    public OkListener(String command, JComponent textKey, JFrame jFrame, ResourceBundle resourceBundle) {
+    public OkListener(String command, JFrame jFrame, ResourceBundle resourceBundle) {
         super(jFrame, resourceBundle);
-        this.textKey = textKey;
         this.command = command;
     }
+    public abstract Response createResponse() throws VariableException;
 
     @Override
     public void repaintForLanguage() {
+    }
+
+    public String getCommand() {
+        return command;
     }
 }

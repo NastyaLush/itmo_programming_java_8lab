@@ -1,10 +1,11 @@
 package test.laba.client;
 
+import javax.swing.SwingUtilities;
 import test.laba.client.frontEnd.frames.Frame;
 import test.laba.common.IO.Colors;
 import test.laba.common.util.Util;
 
-import javax.swing.*;
+
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -25,7 +26,7 @@ public final class Client {
     /**
      * the main class create for run
      */
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         final Logger logger = Logger.getLogger(Client.class.getName());
         logger.setLevel(Level.INFO);
         logger.info(Util.giveColor(Colors.BlUE, "the main method starts"));
@@ -34,11 +35,11 @@ public final class Client {
         Frame frame = new Frame(ready, lock);
         ClientApp clientApp = new ClientApp(frame, ready, lock);
         SwingUtilities.invokeLater(frame);
-        //new Thread(frame).start();
-        //new Thread(new HomeFrame(ready, lock, "test", new Response(""),Local.getResourceBundleDeafult())).start();
         connection(clientApp, frame, lock, ready, logger);
+        //new Thread(new HomeFrame(ready, lock, "test", new Response("jj"), Local.getResourceBundleDefault())).start();
     }
-    private static void connection(ClientApp clientApp, Frame frame, Lock lock, Condition ready, Logger logger){
+
+    private static void connection(ClientApp clientApp, Frame frame, Lock lock, Condition ready, Logger logger) {
         String port = frame.getPort();
         String host = frame.getHost();
         while (true) {
@@ -61,38 +62,16 @@ public final class Client {
                 frame.exception(e.getMessage());
             }
         }
-
-
-       /* int length = args.length;
-        String port = null;
-        String host = "localhost";
-        switch (length) {
-            case 1:
-                port = args[0];
-                break;
-            case 2:
-                port = args[0];
-                host = args[1];
-                break;
-            default:
-                logger.severe(Util.giveColor(Colors.RED, "Please write port and host( default it's localhost)"));
-        }*/
         try {
-            /*if (checkPort(port) && checkHost(host)) {*/
             clientApp.run(host, getPort(port));
-            //Frame frame = new Frame();
-                /*} else {
-                    logger.severe(Util.giveColor(Colors.RED, "Can't connect to the server, please check host address and port"));
-                }*/
         } catch (IOException e) {
             frame.exception("Can't connect to the server, check host address and port, the reason (" + e.getMessage() + ")");
             logger.severe(Util.giveColor(Colors.RED, "Can't connect to the server, check host address and port: " + e.getMessage()));
-            connection(clientApp, frame, lock, ready,logger);
+            connection(clientApp, frame, lock, ready, logger);
         } catch (NumberFormatException e) {
             frame.exception("impossible pars host address and port " + e.getMessage());
             logger.severe(Util.giveColor(Colors.RED, "impossible pars host address and port "));
-            connection(clientApp, frame, lock, ready,logger);
+            connection(clientApp, frame, lock, ready, logger);
         }
     }
-
 }

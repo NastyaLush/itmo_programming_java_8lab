@@ -1,21 +1,21 @@
 package test.laba.client.frontEnd.frames.table;
 
-
-
-import java.awt.*;
-import java.awt.event.*;
-import java.util.ResourceBundle;
-import javax.swing.*;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.BoxLayout;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.event.RowSorterEvent;
-import javax.swing.event.RowSorterListener;
-import javax.swing.table.*;
+
 
 public abstract class TablePanel extends JPanel
         implements ActionListener {
-    private JTable table;
-    protected int columnForChanging;
+    private final JTable table;
+    private int columnForChanging;
+    private final Dimension tableSize = new Dimension(500, 70);
 
     public TablePanel(JTable table) {
         super();
@@ -25,16 +25,24 @@ public abstract class TablePanel extends JPanel
         table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         table.setAutoCreateRowSorter(true);
 
-        table.setPreferredScrollableViewportSize(new Dimension(500, 70));
+        table.setPreferredScrollableViewportSize(tableSize);
         table.setFillsViewportHeight(true);
         table.getSelectionModel().addListSelectionListener(new RowListener());
         add(new JScrollPane(table));
 
     }
-
     protected abstract void outputSelection();
-
+    @Override
+    public void actionPerformed(ActionEvent e) {
+    }
+    public int getColumnForChanging() {
+        return columnForChanging;
+    }
+    public JTable getTable() {
+        return table;
+    }
     private class RowListener implements ListSelectionListener {
+        @Override
         public void valueChanged(ListSelectionEvent event) {
             if (event.getValueIsAdjusting()) {
                 return;
@@ -43,21 +51,4 @@ public abstract class TablePanel extends JPanel
             outputSelection();
         }
     }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-
-    }
-
-    public int getColumnForChanging() {
-        return columnForChanging;
-    }
-
-    public JTable getTable() {
-        return table;
-    }
-
-
-
-
 }
