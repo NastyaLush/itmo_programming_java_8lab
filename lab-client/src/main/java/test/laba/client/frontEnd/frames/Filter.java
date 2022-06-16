@@ -35,6 +35,7 @@ public abstract class Filter extends AbstractFrame {
         getFrame().setDefaultCloseOperation(getFrame().HIDE_ON_CLOSE);
         getFrame().setLocationRelativeTo(parent);
         getFrame().setLayout(new BoxLayout(getFrame().getContentPane(), BoxLayout.Y_AXIS));
+        //getFrame().setPreferredSize(new Dimension(200, 200));
         createFilterButtons();
 
         getFrame().pack();

@@ -180,6 +180,9 @@ public class TableModule extends AbstractTableModel implements Localized {
     public void clearFilter() {
         this.values.clear();
     }
+    public String[] unitOfMeasureContains(ResourceBundle resource) {
+        return UNIT_OF_MEASURE_CONSTANTS_HASH_MAP.values().stream().map(e -> localisation(resource, e)).toArray(String[]::new);
+    }
 
 
 }

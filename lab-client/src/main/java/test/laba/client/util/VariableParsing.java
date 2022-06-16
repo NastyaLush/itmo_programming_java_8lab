@@ -203,7 +203,11 @@ public final class VariableParsing {
      */
     public static Long toLongNumber(String name, String number, ResourceBundle resourceBundle) throws VariableException {
         try {
-            return Long.valueOf(number.trim());
+            if (number.trim() != null) {
+                return Long.valueOf(number.trim());
+            } else {
+                throw new VariableException(name, localisation(resourceBundle, Constants.CAN_NOT_BE_NULL));
+            }
         } catch (NumberFormatException e) {
             throw new VariableException(name, localisation(resourceBundle, Constants.MUST_BE_INTEGER_NUMBER_LONG));
         }

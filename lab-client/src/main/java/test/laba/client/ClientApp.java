@@ -182,7 +182,6 @@ public class ClientApp {
             if (isNormalUpdateID) {
                 wrapper.sent(response);
                 Response readiedResponse = wrapper.readResponse();
-                console.print(readiedResponse.getCommand());
                 isExitInExecuteScript = ifReadyToClose(readiedResponse.getCommand().trim());
                 return readiedResponse;
             } else {
