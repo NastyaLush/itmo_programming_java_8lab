@@ -5,11 +5,13 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Frame;
 import java.awt.Toolkit;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -60,24 +62,29 @@ public abstract class ChangeProductFrame extends FrameProduct implements ActionL
     private NeedOwner needOwner;
 
     public ChangeProductFrame(ResourceBundle resourceBundle, HomeFrame homeFrame) {
-        super(new JFrame(), resourceBundle);
+        super(new JDialog((Frame) null, "", true/*false*/), resourceBundle);
         this.homeFrame = homeFrame;
     }
 
     public void revalidate() {
-        setFrame(new JFrame());
+        //setDialog(new JDialog(homeFrame.getFrame(), "", false));
         ok = new JButton(localisation(getResourceBundle(), Constants.OK));
         mainPlusPanel = new JPanel();
+        setResourceBundle(homeFrame.getResourceBundle());
+        setDialog(new JDialog((Frame) null, "", true));
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        System.out.println(getDialog());
+        System.out.println(getResourceBundle());
         revalidate();
-        getFrame().setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        getFrame().setSize(screenSize.width / 2, screenSize.height / HOW_SMALLER_SIZE_HEIGHT);
-        getFrame().setLocation(START_LOCATION, START_LOCATION);
-        getFrame().setMinimumSize(new Dimension(screenSize.width / 2, screenSize.height / 2));
-        getFrame().setLayout(new BorderLayout());
+        //getDialog().setModalityType(Dialog.ModalityType.MODELESS);
+        getDialog().setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        getDialog().setSize(screenSize.width / 2, screenSize.height / HOW_SMALLER_SIZE_HEIGHT);
+        getDialog().setLocation(START_LOCATION, START_LOCATION);
+        getDialog().setMinimumSize(new Dimension(screenSize.width / 2, screenSize.height / 2));
+        getDialog().setLayout(new BorderLayout());
 
         ok.setFont(labelFont);
         ok.setBackground(Color.gray);
@@ -100,8 +107,9 @@ public abstract class ChangeProductFrame extends FrameProduct implements ActionL
         mainPlusPanel.add(addOwner);
         addActionButtons();
         mainPlusPanel.setLayout(new BoxLayout(mainPlusPanel, BoxLayout.Y_AXIS));
-        getFrame().add(mainPlusPanel, BorderLayout.CENTER);
-        getFrame().setVisible(true);
+        getDialog().add(mainPlusPanel, BorderLayout.CENTER);
+        getDialog().repaint();
+        getDialog().setVisible(true);
     }
 
     protected void addActionButtons() {
@@ -217,11 +225,6 @@ public abstract class ChangeProductFrame extends FrameProduct implements ActionL
         return ownersLabels;
     }
 
-    @Override
-    public void repaintForLanguage() {
-        setFrame(new JFrame());
-        run();
-    }
     protected Product addProduct() throws VariableException {
         Product product = new Product();
         product.setId(VariableParsing.toLongNumber(local(Constants.ID), getID(), getResourceBundle()));
@@ -237,6 +240,9 @@ public abstract class ChangeProductFrame extends FrameProduct implements ActionL
             product.setOwner(needOwner.parsingDate());
         }
         return product;
+    }
+    public HomeFrame getHomeFrame() {
+        return homeFrame;
     }
 
     protected abstract class OkListener implements ActionListener {
@@ -255,7 +261,7 @@ public abstract class ChangeProductFrame extends FrameProduct implements ActionL
                 sentProduct(key, product);
                 homeFrame.getLock().unlock();
             } catch (VariableException ex) {
-                exception(ex.getMessage());
+                homeFrame.exception(ex.getMessage());
             }
 
         }
@@ -272,7 +278,7 @@ public abstract class ChangeProductFrame extends FrameProduct implements ActionL
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            getFrame().setMinimumSize(new Dimension(screenSize.width / 2, (int) (screenSize.height / HOW_SMALLER_THIS_FRAME_SIZE)));
+            getDialog().setMinimumSize(new Dimension(screenSize.width / 2, (int) (screenSize.height / HOW_SMALLER_THIS_FRAME_SIZE)));
             if (addOwner.isSelected()) {
                 removeActionButtons();
                 textPersonName = createButtonGroup(local(Constants.PERSON_NAME), local(Constants.CAN_NOT_BE_NULL), true);
@@ -283,11 +289,11 @@ public abstract class ChangeProductFrame extends FrameProduct implements ActionL
                 textLocationName = createButtonGroup(local(Constants.LOCATION_NAME), local(Constants.CAN_NOT_BE_NULL), true);
                 addActionButtons();
                 mainPlusPanel.validate();
-                getFrame().validate();
+                getDialog().validate();
             } else {
                 ownersLabels.forEach(i -> mainPlusPanel.remove(i));
                 ownersLabels.clear();
-                getFrame().repaint();
+                getDialog().repaint();
             }
 
         }
@@ -306,4 +312,6 @@ public abstract class ChangeProductFrame extends FrameProduct implements ActionL
             return person;
         }
     }
+
+
 }

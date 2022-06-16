@@ -100,7 +100,7 @@ public abstract class ChangeProductFrameAnimation extends ChangeProductFrame {
             try {
                 addRemoveListener();
             } catch (VariableException ex) {
-                show(ex.getMessage());
+                getHomeFrame().show(ex.getMessage());
             }
         });
         getMainPlusPanel().add(Box.createRigidArea(new Dimension(0, HEIGHT_STANDARD_AREA_SMALL)));

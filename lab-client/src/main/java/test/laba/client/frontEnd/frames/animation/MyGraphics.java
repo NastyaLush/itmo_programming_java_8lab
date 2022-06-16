@@ -126,11 +126,11 @@ public class MyGraphics extends JComponent implements ActionListener, MouseListe
         new ChangeProductFrameAnimation(homeFrame.getResourceBundle(), umbrella.getProduct(), key, homeFrame) {
             @Override
             protected void addRemoveListener() throws VariableException {
-                homeFrame.treatmentAnimation(this::createResponse, this.getFrame());
+                homeFrame.treatmentAnimation(this::createResponse, this.getDialog());
             }
 
             private void treatmentResponse() throws VariableException {
-                homeFrame.treatmentAnimation(this::createUpdateResponse, this.getFrame());
+                homeFrame.treatmentAnimation(this::createUpdateResponse, this.getDialog());
             }
 
             @Override
@@ -139,7 +139,7 @@ public class MyGraphics extends JComponent implements ActionListener, MouseListe
                     try {
                         treatmentResponse();
                     } catch (VariableException e) {
-                        show(e.getMessage());
+                        homeFrame.show(e.getMessage());
                     }
                 });
             }

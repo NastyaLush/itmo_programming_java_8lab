@@ -13,6 +13,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -22,7 +23,6 @@ import javax.swing.UIManager;
 import test.laba.client.frontEnd.frames.animation.Picture;
 import test.laba.client.frontEnd.frames.changeProductFrames.ChangeProductFrame;
 import test.laba.client.frontEnd.frames.changeProductFrames.ChangeProductFrameTable;
-import test.laba.client.frontEnd.frames.changeProductFrames.FrameProduct;
 import test.laba.client.frontEnd.frames.table.TableModule;
 import test.laba.client.frontEnd.frames.table.TablePanel;
 import test.laba.client.util.Pictures;
@@ -37,7 +37,7 @@ import javax.swing.table.JTableHeader;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 
-public class HomeFrame extends FrameProduct implements Runnable {
+public class HomeFrame extends AbstractFrame implements Runnable {
     private static final int LOCATION = 100;
     private static final int UP_PANEL_HEIGHT = 85;
     private static final int DOWN_PANEL_HEIGHT = 115;
@@ -91,7 +91,7 @@ public class HomeFrame extends FrameProduct implements Runnable {
         downPanel.add(trash, BorderLayout.WEST);
         JPanel panel = new JPanel();
         panel.setBackground(Color.WHITE);
-        minus = createPictureButton("minus", Color.white, Pictures.MINUS.getPath(), new Minus(this));
+        minus = createPictureButton("minus", Color.white, Pictures.MINUS.getPath(), new Minus(this, minus));
         panel.add(minus);
         JButton plus = createPictureButton("plus", Color.white, Pictures.PLUS.getPath(), plusListener);
         panel.add(plus);
@@ -114,7 +114,7 @@ public class HomeFrame extends FrameProduct implements Runnable {
     }
 
     private JPanel createLeftPanel() {
-        minus = createPictureButton("minus", Color.white, Pictures.MINUS.getPath(), new Minus(this));
+        minus = createPictureButton("minus", Color.white, Pictures.MINUS.getPath(), new Minus(this, minus));
 
         JButton picture = createPictureButton("graphics", green, Pictures.ANIMATION.getPath(), new Picture(this, createUserName()));
         JButton restart = createPictureButton("show", green, Pictures.SHOW.getPath(), new CommandWithoutAction() {
@@ -182,7 +182,6 @@ public class HomeFrame extends FrameProduct implements Runnable {
 
     }
 
-
     private void createTable() {
         tableModule = new TableModule(getResourceBundle());
         JTable table = new JTable(tableModule);
@@ -231,7 +230,7 @@ public class HomeFrame extends FrameProduct implements Runnable {
                                 }
                             }
                             private void sentProduct() {
-                                getFrame().dispatchEvent(new WindowEvent(getFrame(), WindowEvent.WINDOW_CLOSING));
+                                getDialog().dispatchEvent(new WindowEvent(getDialog(), WindowEvent.WINDOW_CLOSING));
                                 treatmentResponseWithoutFrame(HomeFrame.this::show);
                             }
                         });
@@ -272,13 +271,6 @@ public class HomeFrame extends FrameProduct implements Runnable {
         repaint();
     }
 
-    public void treatmentResponseWithFrame(IFunction show, JFrame jFrame) {
-        if (jFrame != null) {
-            close(jFrame);
-        }
-        treatmentResponseWithoutFrame(show);
-    }
-
     public void treatmentResponseWithCommandName(String name, IFunction show) {
         lock.lock();
         response = new Response(name);
@@ -287,10 +279,10 @@ public class HomeFrame extends FrameProduct implements Runnable {
 
     }
 
-    public void treatmentAnimation(IFunctionResponse newResponse, JFrame jFrame) throws VariableException {
+    public void treatmentAnimation(IFunctionResponse newResponse, JDialog jFrame) throws VariableException {
         lock.lock();
         response = newResponse.createResponse();
-        treatmentResponseWithFrame(this::show, jFrame);
+        treatmentResponseWithoutFrame(this::show);
         lock.unlock();
     }
 
@@ -421,7 +413,6 @@ public class HomeFrame extends FrameProduct implements Runnable {
         private Plus(ResourceBundle resourceBundle) {
             super(resourceBundle, HomeFrame.this);
         }
-
         @Override
         protected void addOkListener() {
             getOk().addActionListener(new OkListener() {
@@ -435,7 +426,7 @@ public class HomeFrame extends FrameProduct implements Runnable {
                 @Override
                 protected void sentProduct(Long key, Product product) {
                     lock.lock();
-                    getFrame().dispatchEvent(new WindowEvent(getFrame(), WindowEvent.WINDOW_CLOSING));
+                    getDialog().dispatchEvent(new WindowEvent(getDialog(), WindowEvent.WINDOW_CLOSING));
                     condition.signal();
 
                     try {

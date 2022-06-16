@@ -2,23 +2,47 @@ package test.laba.client.frontEnd.frames.changeProductFrames;
 
 import java.awt.Dimension;
 import java.awt.Font;
-import javax.swing.JFrame;
+import javax.swing.JDialog;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import test.laba.client.frontEnd.frames.local.LanguageAbstractClass;
+import test.laba.client.frontEnd.frames.local.Localized;
 import test.laba.client.util.Constants;
 
 import java.awt.event.ActionEvent;
 import java.util.ResourceBundle;
 
-public abstract class FrameProduct extends LanguageAbstractClass {
+public abstract class FrameProduct implements Localized {
     private final Font umFont = new Font("Safari", Font.ITALIC, 13);
     private final Dimension umSize = new Dimension(400, 50);
+    private JDialog dialog;
+    private ResourceBundle resourceBundle;
 
-    public FrameProduct(JFrame jFrame, ResourceBundle resourceBundle) {
-        super(jFrame, resourceBundle);
+    public FrameProduct(JDialog dialog, ResourceBundle resourceBundle) {
+        this.dialog = dialog;
+        this.resourceBundle = resourceBundle;
     }
+
+    public ResourceBundle getResourceBundle() {
+        return resourceBundle;
+    }
+
+    public void setResourceBundle(ResourceBundle resourceBundle) {
+        this.resourceBundle = resourceBundle;
+    }
+
+    public JDialog getDialog() {
+        return dialog;
+    }
+
+    public void setDialog(JDialog dialog) {
+        this.dialog = dialog;
+    }
+
+    protected String local(Constants constants) {
+        return localisation(resourceBundle, constants);
+    }
+
 
 
     public JMenu createUMMenu(String name) {

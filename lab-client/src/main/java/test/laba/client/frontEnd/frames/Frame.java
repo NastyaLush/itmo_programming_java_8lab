@@ -15,7 +15,6 @@ import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
-import test.laba.client.frontEnd.frames.local.LanguageAbstractClass;
 import test.laba.client.util.Constants;
 import test.laba.client.frontEnd.frames.local.Local;
 import test.laba.common.responses.Response;
@@ -26,7 +25,7 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 
 
-public class Frame extends LanguageAbstractClass implements Runnable {
+public class Frame extends AbstractFrame implements Runnable {
     private static final int EIGHT_PANEL_SMALLER = 8;
     private static final int FOURTEEN_TWICE_PANEL_SMALLER = 14;
     private static final int AUTHORISATION_TEXT_SIZE = 50;
