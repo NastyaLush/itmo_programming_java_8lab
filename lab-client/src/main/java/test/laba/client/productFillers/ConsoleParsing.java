@@ -1,6 +1,9 @@
 package test.laba.client.productFillers;
 
+import java.util.ResourceBundle;
+import test.laba.client.frontEnd.frames.local.Localized;
 import test.laba.client.util.Console;
+import test.laba.client.util.Constants;
 import test.laba.client.util.VariableParsing;
 import test.laba.common.exception.CreateError;
 import test.laba.common.exception.VariableException;
@@ -16,7 +19,7 @@ import java.time.ZonedDateTime;
 /**
  * the class is responsible for work with creating products from console
  */
-public class ConsoleParsing {
+public class ConsoleParsing implements Localized {
     private final Console console;
 
     public ConsoleParsing(Console console) {
@@ -28,15 +31,15 @@ public class ConsoleParsing {
      *
      * @return product object
      */
-    public Product parsProductFromConsole() throws CreateError {
+    public Product parsProductFromConsole(ResourceBundle resourceBundle) throws CreateError, VariableException {
         Person owner = null;
-        String name = parsField("Введите название продукта: ", VariableParsing::toRightName, Command.PRODUCT_NAME);
-        Coordinates coordinates = parsCoordinatesFromConsole();
-        Long price = parsField("Введите цену продукта, price: ", VariableParsing::toRightPrice, Command.PRICE);
-        Integer manufactureCost = parsField("Введите поле manufactureCost: ", VariableParsing::toRightNumberInt, Command.MANUFACTURE_COST);
-        UnitOfMeasure unitOfMeasure = parsField("Введите unitOfMeasure, возможные варианты:PCS, MILLILITERS, GRAMS", VariableParsing::toRightUnitOfMeasure, Command.UNIT_OF_MEASURE);
-        if (console.askQuestion("Хотите добавить владельца?(yes/no/да/нет)")) {
-            owner = parsPersonFromConsole();
+        String name = parsField(VariableParsing::toRightName, Command.PRODUCT_NAME, resourceBundle);
+        Coordinates coordinates = parsCoordinatesFromConsole(resourceBundle);
+        Long price = parsField(VariableParsing::toRightPrice, Command.PRICE, resourceBundle);
+        Integer manufactureCost = parsField(VariableParsing::toRightNumberInt, Command.MANUFACTURE_COST, resourceBundle);
+        UnitOfMeasure unitOfMeasure = parsField(VariableParsing::toRightUnitOfMeasure, Command.UNIT_OF_MEASURE, resourceBundle);
+        if (console.askQuestion()) {
+            owner = parsPersonFromConsole(resourceBundle);
         }
         Product product;
         product = new Product(name, coordinates, price, manufactureCost, unitOfMeasure, owner);
@@ -44,10 +47,10 @@ public class ConsoleParsing {
 
     }
 
-    private Location parsLocationFromConsole() {
-        Long x = parsField("Введите координату X локации: ", VariableParsing::toRightNumberLong, Command.LOCATION_X);
-        Integer y = parsField("Введите координату Y локации: ", VariableParsing::toRightNumberInt, Command.LOCATION_Y);
-        String name = parsField("Введите название локации: ", VariableParsing::toRightName, Command.LOCATION_NAME);
+    private Location parsLocationFromConsole(ResourceBundle resourceBundle) throws VariableException {
+        Long x = parsField(VariableParsing::toRightNumberLong, Command.LOCATION_X, resourceBundle);
+        Integer y = parsField(VariableParsing::toRightNumberInt, Command.LOCATION_Y, resourceBundle);
+        String name = parsField(VariableParsing::toRightName, Command.LOCATION_NAME, resourceBundle);
 
         try {
             return new Location(x, y, name);
@@ -57,44 +60,38 @@ public class ConsoleParsing {
         }
     }
 
-    public Person parsPersonFromConsole() {
-        String name = parsField("Введите имя владельца: ", VariableParsing::toRightName, Command.PERSON_NAME);
-        ZonedDateTime newBirthday = parsField("Введите дату рождения владельца: ", VariableParsing::toRightBirthday, Command.BIRTHDAY);
-        Integer height = parsField("Введите рост владельца: ", VariableParsing::toRightHeight, Command.HEIGHT);
-        Location location = parsLocationFromConsole();
+    public Person parsPersonFromConsole(ResourceBundle resourceBundle) throws VariableException {
+        String name = parsField(VariableParsing::toRightName, Command.PERSON_NAME, resourceBundle);
+        ZonedDateTime newBirthday = parsField(VariableParsing::toRightBirthday, Command.BIRTHDAY, resourceBundle);
+        Integer height = parsField(VariableParsing::toRightHeight, Command.HEIGHT, resourceBundle);
+        Location location = parsLocationFromConsole(resourceBundle);
         Person person;
         try {
             person = new Person(name, newBirthday, height, location);
             return person;
         } catch (CreateError e) {
-            return parsPersonFromConsole();
+            return parsPersonFromConsole(resourceBundle);
         }
     }
 
-    private Coordinates parsCoordinatesFromConsole() {
-        Integer x = parsField("Введите координату х: ", VariableParsing::toRightX, Command.COORDINATE_Y);
-        Float y = parsField("Введите координату y: ", VariableParsing::toRightY, Command.COORDINATE_Y);
+    private Coordinates parsCoordinatesFromConsole(ResourceBundle resourceBundle) throws VariableException {
+        Integer x = parsField(VariableParsing::toRightX, Command.COORDINATE_Y, resourceBundle);
+        Float y = parsField(VariableParsing::toRightY, Command.COORDINATE_Y, resourceBundle);
         return new Coordinates(x, y);
 
     }
 
-    public <T> T parsField(String question, IFunction pars, Command field) {
+    public <T> T parsField(IFunction pars, Command field, ResourceBundle resourceBundle) throws VariableException {
         T value;
         String simpleField;
-        try {
-            console.ask(question);
-            simpleField = console.scanner();
-            if (simpleField != null) {
-                value = (T) pars.function(text(field), simpleField);
-            } else {
-                throw new VariableException("не может быть null");
-            }
-            if (value == null) {
-                throw new VariableException("не может быть null");
-            }
-        } catch (VariableException e) {
-            console.printError("Не правильный тип данных," + e.getMessage());
-            value = parsField(question, pars, field);
+        simpleField = console.scanner();
+        if (simpleField != null) {
+            value = (T) pars.function(text(field), simpleField, resourceBundle);
+        } else {
+            throw new VariableException(localisation(resourceBundle, Constants.CAN_NOT_BE_NULL));
+        }
+        if (value == null) {
+            throw new VariableException(localisation(resourceBundle, Constants.CAN_NOT_BE_NULL));
         }
         return value;
     }
@@ -104,7 +101,7 @@ public class ConsoleParsing {
     }
 
     public interface IFunction<T> {
-        T function(String oldField, String field) throws VariableException;
+        T function(String oldField, String field, ResourceBundle resourceBundle) throws VariableException;
     }
 }
 

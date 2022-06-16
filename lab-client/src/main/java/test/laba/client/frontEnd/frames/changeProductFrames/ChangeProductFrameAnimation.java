@@ -10,9 +10,12 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JTextField;
 import test.laba.client.frontEnd.frames.IFunctionString;
+import test.laba.client.frontEnd.frames.local.Localized;
 import test.laba.client.util.Command;
 import test.laba.client.util.Constants;
 import test.laba.common.dataClasses.Product;
+import test.laba.common.dataClasses.UnitOfMeasure;
+import test.laba.common.exception.VariableException;
 import test.laba.common.responses.Response;
 
 
@@ -76,11 +79,9 @@ public abstract class ChangeProductFrameAnimation extends ChangeProductFrame {
         addLabels(saveToDelete, label, textField, enter);
         return textField;
     }
-
     @Override
     protected void addKey() {
     }
-
     @Override
     public void actionPerformed(ActionEvent e) {
         super.actionPerformed(e);
@@ -92,7 +93,13 @@ public abstract class ChangeProductFrameAnimation extends ChangeProductFrame {
         remove = new JButton(localisation(getResourceBundle(), Constants.REMOVE_KEY));
         remove.setBackground(Color.GRAY);
         remove.setFont(getLabelFont());
-        remove.addActionListener(e -> addRemoveListener());
+        remove.addActionListener(e -> {
+            try {
+                addRemoveListener();
+            } catch (VariableException ex) {
+                show(ex.getMessage());
+            }
+        });
         getMainPlusPanel().add(Box.createRigidArea(new Dimension(0, heightStandardAreaSmall)));
         getMainPlusPanel().add(remove);
     }
@@ -103,7 +110,7 @@ public abstract class ChangeProductFrameAnimation extends ChangeProductFrame {
         return response;
     }
 
-    protected abstract void addRemoveListener();
+    protected abstract void addRemoveListener() throws VariableException;
 
     @Override
     protected void removeActionButtons() {
@@ -112,9 +119,10 @@ public abstract class ChangeProductFrameAnimation extends ChangeProductFrame {
 
     }
 
-    protected Response createUpdateResponse() {
+    protected Response createUpdateResponse() throws VariableException {
         Response response = new Response(Command.UPDATE_ID.getString());
-        response.setProduct(product);
+        Product newProduct = addProduct();
+        response.setProduct(newProduct);
         response.setFlagUdateID(true);
         response.setKeyOrID(product.getId());
         return response;
@@ -129,7 +137,8 @@ public abstract class ChangeProductFrameAnimation extends ChangeProductFrame {
         label.setPreferredSize(standardDimension);
 
 
-        JMenu menu = createUMMenu(getDescription(name));
+        JMenu menu = createUMMenu(localisation(getResourceBundle(),localUM(product.getUnitOfMeasure())));
+        menu.setName(getDescription(name));
         JMenuBar menuBar = unitOfMeasureButton(menu);
 
         getMainPlusPanel().add(label);
@@ -143,6 +152,15 @@ public abstract class ChangeProductFrameAnimation extends ChangeProductFrame {
             return String.valueOf(functions.get(name).getText());
         } else {
             return "";
+        }
+    }
+    private Constants localUM(UnitOfMeasure unitOfMeasure){
+        switch (unitOfMeasure){
+            case PCS: return Constants.PCS;
+            case MILLILITERS: return Constants.MILLILITERS;
+            case GRAMS: return Constants.GRAMS;
+            default: return  null;
+
         }
     }
 

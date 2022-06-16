@@ -219,33 +219,32 @@ public abstract class ChangeProductFrame extends FrameProduct implements ActionL
         setFrame(new JFrame());
         run();
     }
+    protected Product addProduct() throws VariableException {
+        Product product = new Product();
+        product.setId(VariableParsing.toLongNumber(local(Constants.ID), getID(), getResourceBundle()));
+        product.setName(VariableParsing.toRightName(local(Constants.PRODUCT_NAME), textProductName.getText(), getResourceBundle()));
+        Coordinates coordinates = new Coordinates();
+        coordinates.setX(VariableParsing.toRightX(local(Constants.COORDINATE_X), textCoordinateX.getText(), getResourceBundle()));
+        coordinates.setY(VariableParsing.toRightY(local(Constants.COORDINATE_Y), textCoordinateY.getText(), getResourceBundle()));
+        product.setCoordinates(coordinates);
+        product.setPrice(VariableParsing.toRightPrice(local(Constants.PRICE), textPrice.getText(), getResourceBundle()));
+        product.setManufactureCost(VariableParsing.toRightNumberInt(local(Constants.MANUFACTURE_COST), textManufactureCost.getText(), getResourceBundle()));
+        product.setUnitOfMeasure(VariableParsing.toRightUnitOfMeasure(local(Constants.UNIT_OF_MEASURE), textUM.getName(), getResourceBundle()));
+        if (addOwner.isSelected()) {
+            product.setOwner(needOwner.parsingDate());
+        }
+        return product;
+    }
 
     protected abstract class OkListener implements ActionListener {
         protected abstract void createResponse(Product product, Long key);
-
-        protected Product addProduct() throws VariableException {
-            Product product = new Product();
-            product.setId(VariableParsing.toLongNumber(local(Constants.ID), getID()));
-            product.setName(VariableParsing.toRightName(local(Constants.PRODUCT_NAME), textProductName.getText()));
-            Coordinates coordinates = new Coordinates();
-            coordinates.setX(VariableParsing.toRightX(local(Constants.COORDINATE_X), textCoordinateX.getText()));
-            coordinates.setY(VariableParsing.toRightY(local(Constants.COORDINATE_Y), textCoordinateY.getText()));
-            product.setCoordinates(coordinates);
-            product.setPrice(VariableParsing.toRightPrice(local(Constants.PRICE), textPrice.getText()));
-            product.setManufactureCost(VariableParsing.toRightNumberInt(local(Constants.MANUFACTURE_COST), textManufactureCost.getText()));
-            product.setUnitOfMeasure(VariableParsing.toRightUnitOfMeasure(local(Constants.UNIT_OF_MEASURE), textUM.getName()));
-            if (addOwner.isSelected()) {
-                product.setOwner(needOwner.parsingDate());
-            }
-            return product;
-        }
 
         protected abstract void sentProduct(Long key, Product product);
 
         @Override
         public void actionPerformed(ActionEvent e) {
             try {
-                Long key = VariableParsing.toRightNumberLong(local(Constants.KEY), textKey.getText());
+                Long key = VariableParsing.toRightNumberLong(local(Constants.KEY), textKey.getText(), getResourceBundle());
                 Product product = addProduct();
 
                 createResponse(product, key);
@@ -292,13 +291,13 @@ public abstract class ChangeProductFrame extends FrameProduct implements ActionL
 
         public Person parsingDate() throws VariableException {
             Person person = new Person();
-            person.setName(VariableParsing.toRightName(local(Constants.PERSON_NAME), textPersonName.getText()));
-            person.setBirthday(VariableParsing.toRightBirthday(local(Constants.BIRTHDAY), textPersonBirthday.getText()));
-            person.setHeight(VariableParsing.toRightNumberInt(local(Constants.HEIGHT), textPersonHeight.getText()));
+            person.setName(VariableParsing.toRightName(local(Constants.PERSON_NAME), textPersonName.getText(), getResourceBundle()));
+            person.setBirthday(VariableParsing.toRightBirthday(local(Constants.BIRTHDAY), textPersonBirthday.getText(), getResourceBundle()));
+            person.setHeight(VariableParsing.toRightNumberInt(local(Constants.HEIGHT), textPersonHeight.getText(), getResourceBundle()));
             Location location = new Location();
-            location.setX(VariableParsing.toRightNumberLong(local(Constants.LOCATION_X), textLocationX.getText()));
-            location.setY(VariableParsing.toRightNumberInt(local(Constants.LOCATION_Y), textLocationY.getText()));
-            location.setName(VariableParsing.toRightName(local(Constants.LOCATION_NAME), textLocationName.getText()));
+            location.setX(VariableParsing.toRightNumberLong(local(Constants.LOCATION_X), textLocationX.getText(), getResourceBundle()));
+            location.setY(VariableParsing.toRightNumberInt(local(Constants.LOCATION_Y), textLocationY.getText(), getResourceBundle()));
+            location.setName(VariableParsing.toRightName(local(Constants.LOCATION_NAME), textLocationName.getText(), getResourceBundle()));
             person.setLocation(location);
             return person;
         }

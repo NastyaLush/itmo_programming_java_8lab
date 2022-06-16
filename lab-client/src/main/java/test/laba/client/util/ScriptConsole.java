@@ -85,25 +85,23 @@ public class ScriptConsole extends Console {
     /**
      * ask question and return answer
      *
-     * @param question question for asking
      * @return answer
      */
     @Override
-    public String askFullQuestion(String question) {
-        ask(question);
+    public String askFullQuestion(/*String question*/) {
+        //ask(question);
         return scanner();
     }
 
     /**
      * ask question and return true if answer was yes, another case false
      *
-     * @param question question for asking
      * @return answer
      */
     @Override
-    public boolean askQuestion(String question) {
+    public boolean askQuestion(/*String question*/) {
         String newAnswer;
-        ask(question);
+        //ask(question);
         newAnswer = scanner().toLowerCase().trim();
         if ("да".equals(newAnswer) || "yes".equals(newAnswer)) {
             return true;
@@ -112,7 +110,7 @@ public class ScriptConsole extends Console {
             return false;
         }
         printError("Ответ не распознан, пожалуйста введите да или нет, вы ввели:" + newAnswer);
-        return askQuestion(question);
+        return askQuestion(/*question*/);
     }
 
     public String getAnswer() {

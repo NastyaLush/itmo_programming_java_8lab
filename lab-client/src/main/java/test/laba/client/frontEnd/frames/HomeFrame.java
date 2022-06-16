@@ -63,8 +63,6 @@ public class HomeFrame extends FrameProduct implements Runnable {
     private JButton minus;
     private final int standardSizeText = 20;
 
-    ///////////
-
     public HomeFrame(Condition condition, Lock lock, String login, Response response, ResourceBundle resourceBundle) {
         super(new JFrame(), resourceBundle);
         this.login = login;
@@ -111,7 +109,7 @@ public class HomeFrame extends FrameProduct implements Runnable {
         getFrame().getContentPane().add(BorderLayout.NORTH, upPanel);
         getFrame().getContentPane().add(BorderLayout.SOUTH, downPanel);
         getFrame().repaint();
-        // repaintAll();
+        repaintAll();
         getFrame().setVisible(true);
     }
 
@@ -290,7 +288,7 @@ public class HomeFrame extends FrameProduct implements Runnable {
 
     }
 
-    public void treatmentAnimation(IFunctionResponse newResponse, JFrame jFrame) {
+    public void treatmentAnimation(IFunctionResponse newResponse, JFrame jFrame) throws VariableException {
         lock.lock();
         response = newResponse.createResponse();
         treatmentResponseWithFrame(this::show, jFrame);
@@ -479,7 +477,7 @@ public class HomeFrame extends FrameProduct implements Runnable {
     }
 
     public interface IFunctionResponse {
-        Response createResponse();
+        Response createResponse() throws VariableException;
     }
 
 }

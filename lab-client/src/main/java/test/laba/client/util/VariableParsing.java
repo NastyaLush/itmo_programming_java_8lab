@@ -1,6 +1,7 @@
 package test.laba.client.util;
 
 
+import java.util.ResourceBundle;
 import test.laba.common.exception.VariableException;
 import test.laba.common.dataClasses.UnitOfMeasure;
 
@@ -28,10 +29,10 @@ public final class VariableParsing {
      * @return string with right name
      * @throws VariableException throws when parsing is impossible
      */
-    public static String toRightName(String field, String oldName) throws VariableException {
+    public static String toRightName(String field, String oldName, ResourceBundle resourceBundle) throws VariableException {
         String name = oldName.trim();
         if (name.isEmpty()) {
-            throw new VariableException(field, "Данное поле не может быть пустым");
+            throw new VariableException(field,localisation(resourceBundle, Constants.CAN_NOT_BE_NULL));
         }
         return name;
     }
@@ -43,15 +44,15 @@ public final class VariableParsing {
      * @return integer
      * @throws VariableException throws when parsing is impossible
      */
-    public static Integer toRightX(String name, String x) throws VariableException {
+    public static Integer toRightX(String name, String x, ResourceBundle resourceBundle) throws VariableException {
         int rightX;
         try {
             rightX = Integer.parseInt(x);
         } catch (NumberFormatException e) {
-            throw new VariableException(name, "Должно быть введено целое число типа int");
+            throw new VariableException(name, localisation(resourceBundle, Constants.MUST_BE_INTEGER_NUMBER_INT));
         }
         if (rightX <= FALSE_X) {
-            throw new VariableException(name, "Число должно быть больше -233");
+            throw new VariableException(name, localisation(resourceBundle, Constants.MUST_BE_BIGGER) + " -233");
         }
         return rightX;
     }
@@ -63,12 +64,12 @@ public final class VariableParsing {
      * @return float
      * @throws VariableException throws when parsing is impossible
      */
-    public static Float toRightY(String name, String y) throws VariableException {
+    public static Float toRightY(String name, String y, ResourceBundle resourceBundle) throws VariableException {
         float rightY;
         try {
             rightY = Float.parseFloat(y);
         } catch (NumberFormatException e) {
-            throw new VariableException(name, "Должно быть введено число типа float");
+            throw new VariableException(name, localisation(resourceBundle, Constants.MUST_BE_FLOAT_NUMBER));
         }
         return rightY;
     }
@@ -80,15 +81,15 @@ public final class VariableParsing {
      * @return long
      * @throws VariableException throws when parsing is impossible
      */
-    public static Long toRightPrice(String name, String price) throws VariableException {
+    public static Long toRightPrice(String name, String price, ResourceBundle resourceBundle) throws VariableException {
         long rightPrice;
         try {
             rightPrice = Long.parseLong(price);
         } catch (NumberFormatException e) {
-            throw new VariableException(name, "Должно быть введено целое число типа long, вы ввели: " + price);
+            throw new VariableException(name, localisation(resourceBundle, Constants.MUST_BE_INTEGER_NUMBER_LONG));
         }
         if (rightPrice <= 0) {
-            throw new VariableException(name, "Число должно быть больше 0, вы ввели: " + price);
+            throw new VariableException(name, localisation(resourceBundle, Constants.MUST_BE_BIGGER) + " 0");
         }
         return rightPrice;
     }
@@ -100,12 +101,12 @@ public final class VariableParsing {
      * @return integer
      * @throws VariableException throws when parsing is impossible
      */
-    public static Integer toRightNumberInt(String name, String number) throws VariableException {
+    public static Integer toRightNumberInt(String name, String number, ResourceBundle resourceBundle) throws VariableException {
         int manufactureCost;
         try {
             manufactureCost = Integer.parseInt(number);
         } catch (NumberFormatException e) {
-            throw new VariableException(name, "Неправильный тип переменной, ожидалось целое число типа int, вы ввели: " + number);
+            throw new VariableException(name, localisation(resourceBundle, Constants.MUST_BE_INTEGER_NUMBER_INT));
 
         }
         return manufactureCost;
@@ -118,11 +119,11 @@ public final class VariableParsing {
      * @return long
      * @throws VariableException throws when parsing is impossible
      */
-    public static Long toRightNumberLong(String name, String number) throws VariableException {
+    public static Long toRightNumberLong(String name, String number, ResourceBundle resourceBundle) throws VariableException {
         try {
             return Long.valueOf(number);
         } catch (NumberFormatException e) {
-            throw new VariableException(name, "Неправильный тип переменной, ожидалось целое число типа long, вы ввели: " + number);
+            throw new VariableException(name, localisation(resourceBundle, Constants.MUST_BE_INTEGER_NUMBER_LONG));
 
         }
     }
@@ -134,13 +135,17 @@ public final class VariableParsing {
      * @return UnitOfMeasure
      * @throws VariableException throws when parsing is impossible
      */
-    public static UnitOfMeasure toRightUnitOfMeasure(String name, String unit) throws VariableException {
+    public static UnitOfMeasure toRightUnitOfMeasure(String name, String unit, ResourceBundle resourceBundle) throws VariableException {
         try {
             System.out.println(unit);
-            return UnitOfMeasure.valueOf(unit.toUpperCase());
+            if(unit != null) {
+                return UnitOfMeasure.valueOf(unit.toUpperCase());
+            }
         } catch (IllegalArgumentException e) {
-            throw new VariableException(name, "Can't parse to Unit Of Measure, please chose one of: " + "PCS, MILLILITERS, GRAMS");
+            throw new VariableException(name,localisation(resourceBundle, Constants.WRONG_UNIT_OF_MEASURE));
         }
+        throw new VariableException(name,localisation(resourceBundle, Constants.WRONG_UNIT_OF_MEASURE));
+
     }
 
     /**
@@ -150,16 +155,16 @@ public final class VariableParsing {
      * @return UnitOfMeasure
      * @throws VariableException throws when parsing is impossible
      */
-    public static Integer toRightHeight(String name, String height) throws VariableException {
+    public static Integer toRightHeight(String name, String height, ResourceBundle resourceBundle) throws VariableException {
         Integer rightHeight = null;
         if (height != null) {
             try {
                 rightHeight = Integer.valueOf(height);
             } catch (NumberFormatException e) {
-                throw new VariableException(name, "Должно быть введено целое число, вы ввели: " + rightHeight);
+                throw new VariableException(name, localisation(resourceBundle, Constants.MUST_BE_INTEGER_NUMBER_INT));
             }
             if (rightHeight <= 0) {
-                throw new VariableException(name, "Число должно быть больше 0, вы ввели: " + rightHeight);
+                throw new VariableException(name, localisation(resourceBundle, Constants.MUST_BE_BIGGER) + " 0");
             }
         }
         return rightHeight;
@@ -172,7 +177,7 @@ public final class VariableParsing {
      * @return ZonedDateTime
      * @throws VariableException throws when parsing is impossible
      */
-    public static ZonedDateTime toRightBirthday(String name, String birthday) throws VariableException {
+    public static ZonedDateTime toRightBirthday(String name, String birthday, ResourceBundle resourceBundle) throws VariableException {
         ZonedDateTime birth;
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
@@ -184,7 +189,7 @@ public final class VariableParsing {
                 LocalDateTime parsed = LocalDateTime.parse(birthday, formatter);
                 birth = ZonedDateTime.of(parsed, ZoneId.of("Europe/Berlin"));
             } catch (DateTimeException exception) {
-                throw new VariableException(name, "Неправильный формат данных, повторите ввод в формате ДД-MM-ГГГГ или ДД-ММ-ГГГГ ЧЧ:ММ:СС, вы ввели: " + birthday);
+                throw new VariableException(name, localisation(resourceBundle, Constants.WRONG_DATE));
             }
         }
         return birth;
@@ -196,12 +201,15 @@ public final class VariableParsing {
      * @param number number for parsing
      * @return long number
      */
-    public static Long toLongNumber(String name, String number) throws VariableException {
+    public static Long toLongNumber(String name, String number, ResourceBundle resourceBundle) throws VariableException {
         try {
             return Long.valueOf(number.trim());
         } catch (NumberFormatException e) {
-            throw new VariableException(name, "Неправильный формат данных. Вы ввели:\"" + number + "\", ожидалось число типа long");
+            throw new VariableException(name, localisation(resourceBundle, Constants.MUST_BE_INTEGER_NUMBER_LONG));
         }
+    }
+    private static String localisation(ResourceBundle resourceBundle, Constants constants){
+        return resourceBundle.getString(constants.getString());
     }
 
 }

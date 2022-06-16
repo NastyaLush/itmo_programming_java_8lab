@@ -66,7 +66,7 @@ public class Minus implements ActionListener {
             public Response createResponse(String command, JComponent component) throws VariableException {
                 Response createdResponse = new Response(command);
                 System.out.println(homeFrame.getTableModule().delocalizationUnitOfMeasure(((JMenu) component).getText()));
-                UnitOfMeasure unitOfMeasure1 = VariableParsing.toRightUnitOfMeasure(homeFrame.localisation(homeFrame.getResourceBundle(), Constants.UNIT_OF_MEASURE), homeFrame.getTableModule().delocalizationUnitOfMeasure(((JMenu) component).getText()));
+                UnitOfMeasure unitOfMeasure1 = VariableParsing.toRightUnitOfMeasure(homeFrame.localisation(homeFrame.getResourceBundle(), Constants.UNIT_OF_MEASURE), homeFrame.getTableModule().delocalizationUnitOfMeasure(((JMenu) component).getText()), homeFrame.getResourceBundle());
                 createdResponse.setUnitOfMeasure(unitOfMeasure1);
                 return createdResponse;
             }
@@ -119,7 +119,7 @@ public class Minus implements ActionListener {
 
         public Response createResponse(String command, JComponent component) throws VariableException {
             Response createdResponse = new Response(command);
-            Long key = VariableParsing.toLongNumber(homeFrame.localisation(homeFrame.getResourceBundle(), Constants.KEY), ((JTextField) component).getText());
+            Long key = VariableParsing.toLongNumber(homeFrame.localisation(homeFrame.getResourceBundle(), Constants.KEY), ((JTextField) component).getText(), homeFrame.getResourceBundle());
             createdResponse.setKeyOrID(key);
             return createdResponse;
         }

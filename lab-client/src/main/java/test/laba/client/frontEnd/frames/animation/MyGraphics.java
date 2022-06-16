@@ -23,6 +23,7 @@ import java.awt.geom.Arc2D;
 import java.awt.geom.Line2D;
 import java.util.List;
 import java.util.stream.Collectors;
+import test.laba.common.exception.VariableException;
 
 public class MyGraphics extends JComponent implements ActionListener, MouseListener {
     private static final double MULTI_FOR_UMBRELLA_HANDLE = 0.6;
@@ -123,15 +124,21 @@ public class MyGraphics extends JComponent implements ActionListener, MouseListe
     public void createUpdateFrame(Umbrella umbrella, Long key) {
         new ChangeProductFrameAnimation(homeFrame.getResourceBundle(), umbrella.getProduct(), key) {
             @Override
-            protected void addRemoveListener() {
+            protected void addRemoveListener() throws VariableException {
                 homeFrame.treatmentAnimation(this::createResponse, this.getFrame());
             }
-            private void treatmentResponse() {
+            private void treatmentResponse() throws VariableException {
                 homeFrame.treatmentAnimation(this::createUpdateResponse, this.getFrame());
             }
             @Override
             protected void addOkListener() {
-                getOk().addActionListener(e1 -> treatmentResponse());
+                getOk().addActionListener(e1 -> {
+                    try {
+                        treatmentResponse();
+                    } catch (VariableException e) {
+                        show(e.getMessage());
+                    }
+                });
             }
         }.actionPerformed(new ActionEvent(this, updateTime, "showUpdate"));
     }

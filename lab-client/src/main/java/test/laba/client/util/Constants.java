@@ -51,7 +51,13 @@ public enum Constants {
     HELP("help"),
     CANCEL("cancel"),
     CHOOSE("choose"),
-    BACK("back");
+    BACK("back"),
+    MUST_BE_INTEGER_NUMBER_INT("mustBeIntegerNumberInt"),
+    MUST_BE_INTEGER_NUMBER_LONG("mustBeIntegerNumberLong"),
+    MUST_BE_FLOAT_NUMBER("mustBeFloatNumber"),
+    WRONG_DATE("wrongDate"),
+    WRONG_UNIT_OF_MEASURE("wrongUnitMeasure")
+    ;
 
     private final String string;
 

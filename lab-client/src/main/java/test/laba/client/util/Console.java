@@ -68,12 +68,10 @@ public class Console {
     /**
      * print question and return true if answer yes, another case false
      *
-     * @param question question for answering
      * @return true if answer yes, false if answer no
      */
-    public boolean askQuestion(String question) {
+    public boolean askQuestion(/*String question*/) {
         String answer = null;
-        ask(question);
         try {
             answer = scanner().toLowerCase().trim();
         } catch (NullPointerException e) {
@@ -86,23 +84,22 @@ public class Console {
             return false;
         }
         printError("Ответ не распознан, пожалуйста введите да или нет");
-        return askQuestion(question);
+        return askQuestion(/*question*/);
     }
 
     /**
      * print question and return answer
      *
-     * @param question question for answering
      * @return answer
      */
-    public String askFullQuestion(String question) {
-        ask(question);
+    public String askFullQuestion(/*String question*/) {
+       // ask(question);
         try {
             return scanner().toLowerCase().trim();
         } catch (NullPointerException e) {
             printError("Вы не можете ввести null!");
         }
-        return askFullQuestion(question);
+        return askFullQuestion(/*question*/);
     }
 
     public int isAvailable() throws IOException {

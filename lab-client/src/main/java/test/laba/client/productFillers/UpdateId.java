@@ -1,5 +1,6 @@
 package test.laba.client.productFillers;
 
+import java.util.ResourceBundle;
 import test.laba.client.util.Command;
 import test.laba.client.util.Console;
 import test.laba.client.util.VariableParsing;
@@ -12,13 +13,15 @@ import java.time.ZonedDateTime;
 public class UpdateId {
     private final ConsoleParsing consoleParsing;
     private final Console console;
+    private final ResourceBundle resourceBundle;
 
-    public UpdateId(ConsoleParsing consoleParsing, Console console) {
+    public UpdateId(ConsoleParsing consoleParsing, Console console, ResourceBundle resourceBundle) {
         this.console = console;
         this.consoleParsing = consoleParsing;
+        this.resourceBundle = resourceBundle;
     }
 
-    public Product execute(Product product) {
+    public Product execute(Product product) throws VariableException {
         changeNameProduct(product);
         changeCoordinates(product);
         changePrice(product);
@@ -28,25 +31,25 @@ public class UpdateId {
         return product;
     }
 
-    private void changeNameProduct(Product product) {
-        if (console.askQuestion("Хотите изменить название продукта?(yes/no/да/нет)")) {
-            String answer = parsFieldFromConsole(VariableParsing::toRightName, product::getName, "Введите измененное имя:", Command.PRODUCT_NAME);
+    private void changeNameProduct(Product product) throws VariableException {
+        if (console.askQuestion()) {
+            String answer = parsFieldFromConsole(VariableParsing::toRightName, Command.PRODUCT_NAME);
             product.setName(answer);
         }
     }
 
-    private void changeCoordinates(Product product) {
-        if (console.askQuestion("Хотите изменить координаты?(yes/no/да/нет)")) {
-            if (console.askQuestion("Хотите изменить координату X?(yes/no/да/нет)")) {
-                Integer x = parsFieldFromConsole(VariableParsing::toRightX, product.getCoordinates()::getX, "Введите координату х: ", Command.COORDINATE_X);
+    private void changeCoordinates(Product product) throws VariableException {
+        if (console.askQuestion()) {
+            if (console.askQuestion()) {
+                Integer x = parsFieldFromConsole(VariableParsing::toRightX, Command.COORDINATE_X);
                 try {
                     product.getCoordinates().setX(x);
                 } catch (VariableException e) {
                     console.printError(e.getMessage());
                 }
             }
-            if (console.askQuestion("Хотите изменить координату Y?(yes/no/да/нет)")) {
-                Float y = parsFieldFromConsole(VariableParsing::toRightY, product.getCoordinates()::getY, "Введите координату y: ", Command.COORDINATE_Y);
+            if (console.askQuestion()) {
+                Float y = parsFieldFromConsole(VariableParsing::toRightY, Command.COORDINATE_Y);
                 try {
                     product.getCoordinates().setY(y);
                 } catch (VariableException e) {
@@ -56,41 +59,40 @@ public class UpdateId {
         }
     }
 
-    private void changePrice(Product product) {
-        if (console.askQuestion("Хотите изменить price?(yes/no/да/нет)")) {
-            Long price = parsFieldFromConsole(VariableParsing::toRightPrice, product::getPrice, "Введите price: ", Command.PRICE);
+    private void changePrice(Product product) throws VariableException {
+        if (console.askQuestion()) {
+            Long price = parsFieldFromConsole(VariableParsing::toRightPrice, Command.PRICE);
             product.setPrice(price);
 
         }
     }
 
-    private void changeManufactureCost(Product product) {
-        if (console.askQuestion("Хотите изменить manufactureCost?(yes/no/да/нет)")) {
-            Integer manufactureCost = parsFieldFromConsole(VariableParsing::toRightNumberInt, product::getManufactureCost, "Введите manufactureCost: ", Command.MANUFACTURE_COST);
+    private void changeManufactureCost(Product product) throws VariableException {
+        if (console.askQuestion()) {
+            Integer manufactureCost = parsFieldFromConsole(VariableParsing::toRightNumberInt, Command.MANUFACTURE_COST);
             product.setManufactureCost(manufactureCost);
 
         }
     }
 
-    private void changeUnitOfMeasure(Product product) {
-        if (console.askQuestion("Хотите изменить unitOfMeasure?(yes/no/да/нет)")) {
-            UnitOfMeasure unitOfMeasure = parsFieldFromConsole(VariableParsing::toRightUnitOfMeasure, product::getUnitOfMeasure, "Варианты: PCS, MILLILITRES, GRAMS", Command.UNIT_OF_MEASURE);
+    private void changeUnitOfMeasure(Product product) throws VariableException {
+        if (console.askQuestion()) {
+            UnitOfMeasure unitOfMeasure = parsFieldFromConsole(VariableParsing::toRightUnitOfMeasure, Command.UNIT_OF_MEASURE);
             product.setUnitOfMeasure(unitOfMeasure);
 
         }
     }
 
-    private void changePerson(Product product) {
-        if (console.askQuestion("Хотите изменить owner?(yes/no/да/нет)")) {
-            console.ask("Owner: " + product.getOwner());
-            if (!console.askQuestion("Хотите owner сделать null?(yes/no/да/нет)")) {
+    private void changePerson(Product product) throws VariableException {
+        if (console.askQuestion()) {
+            if (! console.askQuestion()) {
                 if (product.getOwner() != null) {
                     changeNamePerson(product);
                     changeBirthday(product);
                     changeHeight(product);
                     changeLocation(product);
                 } else {
-                    product.setOwner(consoleParsing.parsPersonFromConsole());
+                    product.setOwner(consoleParsing.parsPersonFromConsole(resourceBundle));
                 }
             } else {
                 product.setOwner(null);
@@ -98,71 +100,65 @@ public class UpdateId {
         }
     }
 
-    private void changeNamePerson(Product product) {
-        if (console.askQuestion("Хотите изменить имя владельца?(yes/no/да/нет)")) {
-            String answer = parsFieldFromConsole(VariableParsing::toRightName, product.getOwner()::getName, "Введите имя владельца: ", Command.PERSON_NAME);
+    private void changeNamePerson(Product product) throws VariableException {
+        if (console.askQuestion()) {
+            String answer = parsFieldFromConsole(VariableParsing::toRightName, Command.PERSON_NAME);
             product.getOwner().setName(answer);
         }
     }
 
-    private void changeBirthday(Product product) {
-        if (console.askQuestion("Хотите изменить дату рождения владельца?(yes/no/да/нет)")) {
-            ZonedDateTime birthday = parsFieldFromConsole(VariableParsing::toRightBirthday, product.getOwner()::getBirthdayString,
-                    "Введите дату рождения владельца в формате ДД-MM-ГГГГ или ДД-ММ-ГГГГ ЧЧ:ММ:СС: ", Command.BIRTHDAY);
+    private void changeBirthday(Product product) throws VariableException {
+        if (console.askQuestion()) {
+            ZonedDateTime birthday = parsFieldFromConsole(VariableParsing::toRightBirthday, Command.BIRTHDAY);
             product.getOwner().setBirthday(birthday);
         }
     }
 
-    private void changeHeight(Product product) {
-        if (console.askQuestion("Хотите изменить рост владельца?(yes/no/да/нет)")) {
-            Integer height = parsFieldFromConsole(VariableParsing::toRightHeight, product.getOwner()::getHeight, "Введите рост владельца: ", Command.HEIGHT);
+    private void changeHeight(Product product) throws VariableException {
+        if (console.askQuestion()) {
+            Integer height = parsFieldFromConsole(VariableParsing::toRightHeight, Command.HEIGHT);
             product.getOwner().setHeight(height);
         }
     }
 
-    private void changeLocation(Product product) {
+    private void changeLocation(Product product) throws VariableException {
 
-        if (console.askQuestion("Хотите изменить локацию владельца?(yes/no/да/нет)")) {
-            console.ask("Location: " + product.getOwner().getLocation());
+        if (console.askQuestion()) {
             changeLocationX(product);
             changeLocationY(product);
             changeLocationName(product);
         }
     }
 
-    private void changeLocationX(Product product) {
-        if (console.askQuestion("Хотите изменить координату х локации?(yes/no/да/нет)")) {
-            Long xLocation = parsFieldFromConsole(VariableParsing::toRightNumberLong, product.getOwner().getLocation()::getX, "Введите координату х: ", Command.LOCATION_X);
+    private void changeLocationX(Product product) throws VariableException {
+        if (console.askQuestion()) {
+            Long xLocation = parsFieldFromConsole(VariableParsing::toRightNumberLong, Command.LOCATION_X);
             product.getOwner().getLocation().setX(xLocation);
         }
     }
 
-    private void changeLocationY(Product product) {
-        if (console.askQuestion("Хотите изменить координату у локации?(yes/no/да/нет)")) {
-            Integer y = parsFieldFromConsole(VariableParsing::toRightNumberInt, product.getOwner().getLocation()::getY, "Введите координату y: ", Command.LOCATION_Y);
+    private void changeLocationY(Product product) throws VariableException {
+        if (console.askQuestion()) {
+            Integer y = parsFieldFromConsole(VariableParsing::toRightNumberInt, Command.LOCATION_Y);
             product.getOwner().getLocation().setY(y);
         }
     }
 
-    private void changeLocationName(Product product) {
-        if (console.askQuestion("Хотите изменить название локации?(yes/no/да/нет)")) {
-            String answer = parsFieldFromConsole(VariableParsing::toRightName, product.getOwner().getLocation()::getName, "Введите название локации: ", Command.LOCATION_NAME);
+    private void changeLocationName(Product product) throws VariableException {
+        if (console.askQuestion()) {
+            String answer = parsFieldFromConsole(VariableParsing::toRightName, Command.LOCATION_NAME);
             product.getOwner().getLocation().setName(answer);
         }
     }
 
-    private <T> T parsFieldFromConsole(IFunction pars, GetFunction getField, String request, Command command) {
+    private <T> T parsFieldFromConsole(IFunction pars, Command command) throws VariableException {
         String answer;
         T value;
-        console.ask("Значение поля сейчас: " + getField.getFunction());
         while (true) {
-            answer = console.askFullQuestion(request);
-            try {
-                value = (T) pars.function(text(command), answer);
-                break;
-            } catch (IllegalArgumentException | VariableException e) {
-                console.printError("Неправильный тип данных, повторите ввод");
-            }
+            answer = console.askFullQuestion();
+            value = (T) pars.function(text(command), answer, resourceBundle);
+            break;
+
         }
         return value;
     }
@@ -170,11 +166,8 @@ public class UpdateId {
     private String text(Command field) {
         return field.getString();
     }
-    private interface GetFunction<T> {
-        T getFunction();
-    }
 
     private interface IFunction<T> {
-        T function(String oldField, String fieldName) throws VariableException;
+        T function(String command, String fieldName, ResourceBundle resourceBundle) throws VariableException;
     }
 }

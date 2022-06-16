@@ -139,7 +139,7 @@ public class ClientApp {
 
     public Response updateID(String[] command, Console console2) throws VariableException, IOException, ClassNotFoundException {
         logger.fine("update id is executing");
-        long id = VariableParsing.toLongNumber(command[1], Constants.KEY.getString());
+        long id = VariableParsing.toLongNumber(command[1], Constants.KEY.getString(), homeFrame.getResourceBundle());
         Response response = new Response(login, password, command[0], id);
         response.setFlagUdateID(false);
         wrapper.sent(response);
@@ -149,41 +149,36 @@ public class ClientApp {
             isNormalUpdateID = false;
         } else {
             Product product = response.getProduct();
-            response = new Response(login, password, Values.PRODUCT_WITH_QUESTIONS.toString(), id, new UpdateId(new ConsoleParsing(console2), console2).execute(product));
+            response = new Response(login, password, Values.PRODUCT_WITH_QUESTIONS.toString(), id, new UpdateId(new ConsoleParsing(console2), console2, homeFrame.getResourceBundle()).execute(product));
         }
         logger.fine("update id was execute");
         return response;
     }
 
-    public Response sendUniqueCommand(String[] command, Console console2) throws IOException {
+    public Response sendUniqueCommand(String[] command, Console console2) throws IOException, VariableException, ClassNotFoundException, CreateError {
         logger.fine("sent unit command starts");
         Values value = valuesOfCommands.get(command[0]);
         Response response = null;
-        try {
             switch (value) {
                 case PRODUCT:
-                    response = new Response(login, password, command[0], VariableParsing.toLongNumber(Constants.ID.getString(), command[1]), new ConsoleParsing(console2).parsProductFromConsole());
+                    response = new Response(login, password, command[0], VariableParsing.toLongNumber(Constants.ID.getString(), command[1], homeFrame.getResourceBundle()), new ConsoleParsing(console2).parsProductFromConsole(homeFrame.getResourceBundle()));
                     break;
                 case UNIT_OF_MEASURE:
-                    response = new Response(login, password, command[0], VariableParsing.toRightUnitOfMeasure(Constants.UNIT_OF_MEASURE.getString(), command[1]));
+                    response = new Response(login, password, command[0], VariableParsing.toRightUnitOfMeasure(Constants.UNIT_OF_MEASURE.getString(), command[1], homeFrame.getResourceBundle()));
                     break;
                 case KEY:
-                    response = new Response(login, password, command[0], VariableParsing.toLongNumber(Constants.KEY.getString(), command[1]));
+                    response = new Response(login, password, command[0], VariableParsing.toLongNumber(Constants.KEY.getString(), command[1], homeFrame.getResourceBundle()));
                     break;
                 case PRODUCT_WITH_QUESTIONS:
                     response = updateID(command, console2);
                     break;
 
                 case PRODUCT_WITHOUT_KEY:
-                    response = new Response(login, password, command[0], new ConsoleParsing(console2).parsProductFromConsole());
+                    response = new Response(login, password, command[0], new ConsoleParsing(console2).parsProductFromConsole(homeFrame.getResourceBundle()));
                     break;
                 default:
                     break;
             }
-        } catch (VariableException | IllegalArgumentException | CreateError | NullPointerException
-                 | ClassNotFoundException e) {
-            console2.printError("repeat writing\n" + e.getMessage());
-        }
         logger.fine("the unique command was send");
         return response;
     }
@@ -210,7 +205,7 @@ public class ClientApp {
         return null;
     }
 
-    public void sendAndReceiveCommandScript(String[] command) throws IOException, CycleInTheScript, ClassNotFoundException {
+    public void sendAndReceiveCommandScript(String[] command) throws IOException, CycleInTheScript, ClassNotFoundException, VariableException, CreateError {
         logger.fine("send and receive starts "); //console
         Response response;
         if (valuesOfCommands.containsKey(command[0].trim().toLowerCase())) {
@@ -267,6 +262,10 @@ public class ClientApp {
                     sendAndReceiveCommandScript(command);
                 } catch (ClassNotFoundException e) {
                     logger.warning(e.getMessage());
+                } catch (VariableException e) {
+                    throw new RuntimeException(e);
+                } catch (CreateError e) {
+                    throw new RuntimeException(e);
                 }
             }
         } catch (FileNotFoundException e) {
