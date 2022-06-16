@@ -56,7 +56,10 @@ public enum Constants {
     MUST_BE_INTEGER_NUMBER_LONG("mustBeIntegerNumberLong"),
     MUST_BE_FLOAT_NUMBER("mustBeFloatNumber"),
     WRONG_DATE("wrongDate"),
-    WRONG_UNIT_OF_MEASURE("wrongUnitMeasure");
+    WRONG_UNIT_OF_MEASURE("wrongUnitMeasure"),
+    HOST_EXCEPTION("hostException"),
+    INTERRAPTED_EXCEPTION("InterException"),
+    IO_EXCEPTION("ioException");
 
     private final String string;
 

@@ -2,6 +2,8 @@ package test.laba.client;
 
 import javax.swing.SwingUtilities;
 import test.laba.client.frontEnd.frames.Frame;
+import test.laba.client.frontEnd.frames.local.Localized;
+import test.laba.client.util.Constants;
 import test.laba.common.IO.Colors;
 import test.laba.common.util.Util;
 
@@ -18,7 +20,7 @@ import static test.laba.common.util.ValidInputDate.checkHost;
 import static test.laba.common.util.ValidInputDate.checkPort;
 import static test.laba.common.util.ValidInputDate.getPort;
 
-public final class Client {
+public final class Client implements Localized {
     private Client() {
         throw new UnsupportedOperationException("This is an utility class and can not be instantiated");
     }
@@ -56,7 +58,7 @@ public final class Client {
                 if (checkPort(port) && checkHost(host)) {
                     break;
                 } else {
-                    frame.exception("Please check port and host (port must be between 1 and 6553)");
+                    frame.exception(frame.localisation(frame.getResourceBundle(), Constants.HOST_EXCEPTION));
                 }
             } catch (IOException e) {
                 frame.exception(e.getMessage());
@@ -65,24 +67,23 @@ public final class Client {
         try {
             clientApp.run(host, getPort(port));
         } catch (IOException e) {
-            treatmentException("Can't connect to the server, check host address and port: " + e.getMessage(),
+            treatmentException(Constants.IO_EXCEPTION, e.getMessage(),
                     logger, frame, clientApp, lock, ready);
         } catch (NumberFormatException e) {
-            treatmentException("impossible pars host address and port " + e.getMessage(),
+            treatmentException(Constants.HOST_EXCEPTION, e.getMessage(),
                     logger, frame, clientApp, lock, ready);
         } catch (ClassNotFoundException | InterruptedException e) {
-            treatmentException("The client can't exist because of: " + e.getMessage()
-                            + "\nProbably server was closed",
+            treatmentException(Constants.INTERRAPTED_EXCEPTION, e.getMessage(),
                     logger, frame, clientApp, lock, ready);
         }
     }
 
-    private static void treatmentException(String message, Logger logger, Frame frame, ClientApp clientApp, Lock lock, Condition ready) {
+    private static void treatmentException(Constants constants, String message, Logger logger, Frame frame, ClientApp clientApp, Lock lock, Condition ready) {
         logger.warning(Util.giveColor(Colors.RED, message));
         if (frame.getFrame().isVisible()) {
-            frame.exception(message);
+            frame.exception(frame.localisation(frame.getResourceBundle(), constants) + " " + message);
         } else {
-            clientApp.close(message);
+            clientApp.close(constants, message);
             frame.revalidateFrame();
         }
         connection(frame, lock, ready, logger);

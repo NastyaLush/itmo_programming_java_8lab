@@ -321,9 +321,9 @@ public class ClientApp {
         }
     }
 
-    public void close(String message) {
+    public void close(Constants constants, String message) {
         lock.lock();
-        homeFrame.setResponse(new ResponseWithError(message));
+        homeFrame.setResponse(new ResponseWithError(homeFrame.localisation(homeFrame.getResourceBundle(), constants) + " " + message));
         condition.signal();
         lock.unlock();
         homeFrame.close(homeFrame.getFrame());
