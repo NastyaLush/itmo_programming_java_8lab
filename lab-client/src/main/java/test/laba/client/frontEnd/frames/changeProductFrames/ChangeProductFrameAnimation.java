@@ -9,8 +9,8 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JTextField;
+import test.laba.client.frontEnd.frames.HomeFrame;
 import test.laba.client.frontEnd.frames.IFunctionString;
-import test.laba.client.frontEnd.frames.local.Localized;
 import test.laba.client.util.Command;
 import test.laba.client.util.Constants;
 import test.laba.common.dataClasses.Product;
@@ -34,8 +34,8 @@ public abstract class ChangeProductFrameAnimation extends ChangeProductFrame {
     private final int heightStandardButton = 24;
     private final int heightStandardAreaSmall = 5;
 
-    public ChangeProductFrameAnimation(ResourceBundle resourceBundle, Product product, Long key) {
-        super(resourceBundle);
+    public ChangeProductFrameAnimation(ResourceBundle resourceBundle, Product product, Long key, HomeFrame homeFrame) {
+        super(resourceBundle, homeFrame);
         this.product = product;
         functions = new HashMap<>();
         functions.put(local(Constants.PRODUCT_NAME), product::getName);
@@ -79,9 +79,11 @@ public abstract class ChangeProductFrameAnimation extends ChangeProductFrame {
         addLabels(saveToDelete, label, textField, enter);
         return textField;
     }
+
     @Override
     protected void addKey() {
     }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         super.actionPerformed(e);
@@ -137,7 +139,7 @@ public abstract class ChangeProductFrameAnimation extends ChangeProductFrame {
         label.setPreferredSize(standardDimension);
 
 
-        JMenu menu = createUMMenu(localisation(getResourceBundle(),localUM(product.getUnitOfMeasure())));
+        JMenu menu = createUMMenu(localisation(getResourceBundle(), localUM(product.getUnitOfMeasure())));
         menu.setName(getDescription(name));
         JMenuBar menuBar = unitOfMeasureButton(menu);
 
@@ -154,12 +156,17 @@ public abstract class ChangeProductFrameAnimation extends ChangeProductFrame {
             return "";
         }
     }
-    private Constants localUM(UnitOfMeasure unitOfMeasure){
-        switch (unitOfMeasure){
-            case PCS: return Constants.PCS;
-            case MILLILITERS: return Constants.MILLILITERS;
-            case GRAMS: return Constants.GRAMS;
-            default: return  null;
+
+    private Constants localUM(UnitOfMeasure unitOfMeasure) {
+        switch (unitOfMeasure) {
+            case PCS:
+                return Constants.PCS;
+            case MILLILITERS:
+                return Constants.MILLILITERS;
+            case GRAMS:
+                return Constants.GRAMS;
+            default:
+                return null;
 
         }
     }

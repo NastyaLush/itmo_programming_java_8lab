@@ -204,7 +204,7 @@ public class HomeFrame extends FrameProduct implements Runnable {
         return new TablePanel(table) {
             @Override
             protected void outputSelection() {
-                new ChangeProductFrameTable(this, tableModule, getResourceBundle()) {
+                new ChangeProductFrameTable(this, tableModule, getResourceBundle(), HomeFrame.this) {
                     @Override
                     protected void addOkListener() {
                         getOk().addActionListener(new OkListener() {
@@ -223,8 +223,10 @@ public class HomeFrame extends FrameProduct implements Runnable {
                             public void actionPerformed(ActionEvent e) {
                                 try {
                                     Product product = addProduct();
+                                    lock.lock();
                                     createResponse(product, Long.valueOf(getDescription(localisation(getResourceBundle(), Constants.ID))));
                                     sentProduct();
+                                    lock.unlock();
                                 } catch (VariableException ex) {
                                     exception(ex.getMessage());
                                 }
@@ -249,23 +251,22 @@ public class HomeFrame extends FrameProduct implements Runnable {
     }
 
     private void repaint() {
-        response = new Response(Command.SHOW.getString());
         mainPanel.repaint();
     }
 
     private void repaintAll() {
+        lock.lock();
         response = new Response(Command.SHOW.getString());
         response.setAddToHistory(false);
-        lock.lock();
         condition.signal();
         try {
             condition.await();
         } catch (InterruptedException ex) {
             exception(ex.getMessage());
         }
-        lock.unlock();
         tableModule.addProducts(response.getProductHashMap());
         graphicCollection = response.getProductHashMap();
+        lock.unlock();
         repaint();
     }
 
@@ -352,8 +353,8 @@ public class HomeFrame extends FrameProduct implements Runnable {
     }
 
     private void createButtonCommandAction(String name, Constants command) {
-        response = new Response(name);
         lock.lock();
+        response = new Response(name);
         condition.signal();
 
         try {
@@ -361,12 +362,12 @@ public class HomeFrame extends FrameProduct implements Runnable {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        lock.unlock();
         if (response instanceof ResponseWithError) {
             exception(response.getCommand());
         } else {
             show(localisation(getResourceBundle(), command) + '\n' + response.getCommand());
         }
+        lock.unlock();
     }
 
     private void showNothing(String message) {
@@ -391,6 +392,7 @@ public class HomeFrame extends FrameProduct implements Runnable {
     }
 
     public void setGraphicCollection(HashMap<Long, Product> graphicCollection) {
+        System.out.println("seted");
         this.graphicCollection = graphicCollection;
     }
 
@@ -420,7 +422,7 @@ public class HomeFrame extends FrameProduct implements Runnable {
 
     private final class Plus extends ChangeProductFrame {
         private Plus(ResourceBundle resourceBundle) {
-            super(resourceBundle);
+            super(resourceBundle, HomeFrame.this);
         }
 
         @Override
@@ -465,9 +467,11 @@ public class HomeFrame extends FrameProduct implements Runnable {
             fileChooser.setDialogTitle(localisation(getResourceBundle(), Constants.CHOOSE_DIRECTORY));
             int result = fileChooser.showOpenDialog(null);
             if (result == JFileChooser.APPROVE_OPTION) {
+                lock.lock();
                 response = new Response(Command.EXECUTE_SCRIPT.getString());
                 response.setMessage(fileChooser.getSelectedFile().getAbsolutePath());
                 treatmentResponseWithoutFrame(HomeFrame.this::showScript);
+                lock.unlock();
             }
         }
     }

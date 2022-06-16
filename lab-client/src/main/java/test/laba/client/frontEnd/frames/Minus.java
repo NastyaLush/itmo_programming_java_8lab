@@ -61,7 +61,6 @@ public class Minus implements ActionListener {
                 panel.add(menuBar);
                 return menu;
             }
-
             @Override
             public Response createResponse(String command, JComponent component) throws VariableException {
                 Response createdResponse = new Response(command);
@@ -172,7 +171,7 @@ public class Minus implements ActionListener {
     }
     private final class RemoveLower extends ChangeProductFrame {
         private RemoveLower(ResourceBundle resourceBundle) {
-            super(resourceBundle);
+            super(resourceBundle, homeFrame);
         }
 
         @Override

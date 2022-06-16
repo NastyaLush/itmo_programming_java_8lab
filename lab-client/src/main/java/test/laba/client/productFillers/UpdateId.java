@@ -85,7 +85,7 @@ public class UpdateId {
 
     private void changePerson(Product product) throws VariableException {
         if (console.askQuestion()) {
-            if (! console.askQuestion()) {
+            if (!console.askQuestion()) {
                 if (product.getOwner() != null) {
                     changeNamePerson(product);
                     changeBirthday(product);

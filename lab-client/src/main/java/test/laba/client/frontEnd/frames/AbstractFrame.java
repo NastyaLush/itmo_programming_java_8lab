@@ -101,7 +101,7 @@ public abstract class AbstractFrame implements FrameInterface, Localized {
         return jFrame;
     }
 
-    public void setFrame(JFrame jFrame) {
-        this.jFrame = jFrame;
+    public void setFrame(JFrame frame) {
+        this.jFrame = frame;
     }
 }

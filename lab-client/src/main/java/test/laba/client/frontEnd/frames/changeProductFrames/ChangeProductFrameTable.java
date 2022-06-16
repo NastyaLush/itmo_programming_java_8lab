@@ -8,6 +8,7 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JTextField;
+import test.laba.client.frontEnd.frames.HomeFrame;
 import test.laba.client.frontEnd.frames.table.TableModule;
 import test.laba.client.frontEnd.frames.table.TablePanel;
 import test.laba.client.util.Constants;
@@ -22,8 +23,8 @@ public abstract class ChangeProductFrameTable extends ChangeProductFrame {
     private final Dimension textLabelSize = new Dimension(15, 24);
     private final Component enter = Box.createRigidArea(new Dimension(0, 13));
 
-    public ChangeProductFrameTable(TablePanel table, TableModule tableModule, ResourceBundle resourceBundle) {
-        super(resourceBundle);
+    public ChangeProductFrameTable(TablePanel table, TableModule tableModule, ResourceBundle resourceBundle, HomeFrame homeFrame) {
+        super(resourceBundle, homeFrame);
         this.tablePanel = table;
         this.tableModule = tableModule;
     }

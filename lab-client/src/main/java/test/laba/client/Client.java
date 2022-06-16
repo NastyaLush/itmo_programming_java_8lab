@@ -33,13 +33,13 @@ public final class Client {
         ReentrantLock lock = new ReentrantLock();
         Condition ready = lock.newCondition();
         Frame frame = new Frame(ready, lock);
-        ClientApp clientApp = new ClientApp(frame, ready, lock);
-        SwingUtilities.invokeLater(frame);
-        connection(clientApp, frame, lock, ready, logger);
+        connection(frame, lock, ready, logger);
         //new Thread(new HomeFrame(ready, lock, "test", new Response("jj"), Local.getResourceBundleDefault())).start();
     }
 
-    private static void connection(ClientApp clientApp, Frame frame, Lock lock, Condition ready, Logger logger) {
+    private static void connection(Frame frame, Lock lock, Condition ready, Logger logger) {
+        ClientApp clientApp = new ClientApp(frame, ready, lock);
+        SwingUtilities.invokeLater(frame);
         String port = frame.getPort();
         String host = frame.getHost();
         while (true) {
@@ -65,13 +65,26 @@ public final class Client {
         try {
             clientApp.run(host, getPort(port));
         } catch (IOException e) {
-            frame.exception("Can't connect to the server, check host address and port, the reason (" + e.getMessage() + ")");
-            logger.severe(Util.giveColor(Colors.RED, "Can't connect to the server, check host address and port: " + e.getMessage()));
-            connection(clientApp, frame, lock, ready, logger);
+            treatmentExeption("Can't connect to the server, check host address and port: " + e.getMessage(),
+                    logger, frame, clientApp, lock, ready);
         } catch (NumberFormatException e) {
-            frame.exception("impossible pars host address and port " + e.getMessage());
-            logger.severe(Util.giveColor(Colors.RED, "impossible pars host address and port "));
-            connection(clientApp, frame, lock, ready, logger);
+            treatmentExeption("impossible pars host address and port " + e.getMessage(),
+                    logger, frame, clientApp, lock, ready);
+        } catch (ClassNotFoundException | InterruptedException e) {
+            treatmentExeption("The client can't exist because of: " + e.getMessage()
+                            + "\nProbably server was closed",
+                    logger, frame, clientApp, lock, ready);
         }
+    }
+
+    private static void treatmentExeption(String message, Logger logger, Frame frame, ClientApp clientApp, Lock lock, Condition ready) {
+        logger.warning(Util.giveColor(Colors.RED, message));
+        if (frame.getFrame().isValid()) {
+            frame.exception(message);
+        } else {
+            clientApp.close(message);
+            frame.revalidateFrame();
+        }
+        connection(frame, lock, ready, logger);
     }
 }

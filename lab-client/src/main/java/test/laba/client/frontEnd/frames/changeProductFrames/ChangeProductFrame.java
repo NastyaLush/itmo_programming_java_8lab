@@ -17,6 +17,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import test.laba.client.frontEnd.frames.HomeFrame;
 import test.laba.client.util.Constants;
 import test.laba.client.util.VariableParsing;
 import test.laba.common.dataClasses.Coordinates;
@@ -55,10 +56,12 @@ public abstract class ChangeProductFrame extends FrameProduct implements ActionL
     private final int heightButton = 24;
     private final int heightStandardButton = 13;
     private final Font labelFont = new Font("Safari", Font.BOLD, heightStandardButton);
+    private final HomeFrame homeFrame;
     private NeedOwner needOwner;
 
-    public ChangeProductFrame(ResourceBundle resourceBundle) {
+    public ChangeProductFrame(ResourceBundle resourceBundle, HomeFrame homeFrame) {
         super(new JFrame(), resourceBundle);
+        this.homeFrame = homeFrame;
     }
 
     public void revalidate() {
@@ -247,9 +250,10 @@ public abstract class ChangeProductFrame extends FrameProduct implements ActionL
                 Long key = VariableParsing.toRightNumberLong(local(Constants.KEY), textKey.getText(), getResourceBundle());
                 Product product = addProduct();
 
+                homeFrame.getLock().lock();
                 createResponse(product, key);
-
                 sentProduct(key, product);
+                homeFrame.getLock().unlock();
             } catch (VariableException ex) {
                 exception(ex.getMessage());
             }

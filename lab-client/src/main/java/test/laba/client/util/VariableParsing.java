@@ -32,7 +32,7 @@ public final class VariableParsing {
     public static String toRightName(String field, String oldName, ResourceBundle resourceBundle) throws VariableException {
         String name = oldName.trim();
         if (name.isEmpty()) {
-            throw new VariableException(field,localisation(resourceBundle, Constants.CAN_NOT_BE_NULL));
+            throw new VariableException(field, localisation(resourceBundle, Constants.CAN_NOT_BE_NULL));
         }
         return name;
     }
@@ -138,13 +138,13 @@ public final class VariableParsing {
     public static UnitOfMeasure toRightUnitOfMeasure(String name, String unit, ResourceBundle resourceBundle) throws VariableException {
         try {
             System.out.println(unit);
-            if(unit != null) {
+            if (unit != null) {
                 return UnitOfMeasure.valueOf(unit.toUpperCase());
             }
         } catch (IllegalArgumentException e) {
-            throw new VariableException(name,localisation(resourceBundle, Constants.WRONG_UNIT_OF_MEASURE));
+            throw new VariableException(name, localisation(resourceBundle, Constants.WRONG_UNIT_OF_MEASURE));
         }
-        throw new VariableException(name,localisation(resourceBundle, Constants.WRONG_UNIT_OF_MEASURE));
+        throw new VariableException(name, localisation(resourceBundle, Constants.WRONG_UNIT_OF_MEASURE));
 
     }
 
@@ -208,7 +208,8 @@ public final class VariableParsing {
             throw new VariableException(name, localisation(resourceBundle, Constants.MUST_BE_INTEGER_NUMBER_LONG));
         }
     }
-    private static String localisation(ResourceBundle resourceBundle, Constants constants){
+
+    private static String localisation(ResourceBundle resourceBundle, Constants constants) {
         return resourceBundle.getString(constants.getString());
     }
 

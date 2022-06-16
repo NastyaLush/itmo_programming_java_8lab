@@ -183,7 +183,6 @@ public class Frame extends LanguageAbstractClass implements Runnable {
         register = new JButton(localisation(getResourceBundle(), Constants.NOT_LOGIN_YET));
     }
 
-
     public String getHost() {
         return userHost;
     }
@@ -199,6 +198,10 @@ public class Frame extends LanguageAbstractClass implements Runnable {
 
     public boolean isNewUser() {
         return isNewUser;
+    }
+
+    public void revalidateFrame() {
+        setFrame(new JFrame());
     }
 
     private class SignUp implements ActionListener {

@@ -60,47 +60,37 @@ public class ClientApp {
         logger.setLevel(Level.INFO);
     }
 
-    public void interactivelyMode() {
+    public void interactivelyMode() throws IOException, ClassNotFoundException, InterruptedException {
         logger.log(Level.FINE, "The interactively Mode starts");
-        try {
-            registeringUser();
-            this.homeFrame = new HomeFrame(condition, lock, login, frame.getResponse(), frame.getResourceBundle());
-            frame.close();
-            new Thread(homeFrame).start();
-            wrapper.sent(new Response(login, password, Values.COLLECTION.toString()));
-            valuesOfCommands = wrapper.readWithMap();
-            logger.info(Util.giveColor(Colors.BlUE, "Program in an interactive module, for giving information about opportunities write help"));
-            Response show = new Response("show");
-            show.setAddToHistory(false);
-            animationWork(show);
-            workCycle();
-
-        } catch (IOException | ClassNotFoundException | InterruptedException e) {
-            logger.warning(Util.giveColor(Colors.RED, "The client can't exist because of: " + e.getMessage()
-                    + "\nProbably server was closed"));
-            frame.exception("The client can't exist because of: " + e.getMessage()
-                    + "\nProbably server was closed");
-        }
+        registeringUser();
+        this.homeFrame = new HomeFrame(condition, lock, login, frame.getResponse(), frame.getResourceBundle());
+        frame.close();
+        new Thread(homeFrame).start();
+        wrapper.sent(new Response(login, password, Values.COLLECTION.toString()));
+        valuesOfCommands = wrapper.readWithMap();
+        logger.info(Util.giveColor(Colors.BlUE, "Program in an interactive module, for giving information about opportunities write help"));
+        Response show = new Response("show");
+        show.setAddToHistory(false);
+        animationWork(show);
+        workCycle();
         logger.fine("the method was closed");
-
     }
 
     public void animationWork(Response show) {
         new Thread(() -> {
-            try {
-                Thread.sleep(TIME_UPDATE_ANIMATION);
-                homeFrame.setGraphicCollection(sendAndReceiveCommand(show).getProductHashMap());
-            } catch (IOException e) {
-                homeFrame.exception("server was closed, app is finishing work :) \nSee you soon!");
-                logger.info(Util.giveColor(Colors.GREEN, "server was closed, app is finishing work :) \nSee you soon!"));
-            } catch (CycleInTheScript | ClassNotFoundException | InterruptedException e) {
-                homeFrame.exception(e.getMessage());
-                logger.warning(e.getMessage());
+            while (true) {
+                try {
+                    Thread.sleep(TIME_UPDATE_ANIMATION);
+                    homeFrame.setGraphicCollection(sendAndReceiveCommand(show).getProductHashMap());
+                } catch (IOException e) {
+                    logger.info(Util.giveColor(Colors.GREEN, "server was closed, app is finishing work :) See you soon!"));
+                    break;
+                } catch (CycleInTheScript | ClassNotFoundException | InterruptedException e) {
+                    logger.warning(e.getMessage());
+                    break;
+                }
             }
-            if (isExitInExecuteScript) {
-                Util.toColor(Colors.GREEN, "see you soon :)");
-            }
-        });
+        }).start();
     }
 
     public void workCycle() throws InterruptedException, IOException {
@@ -112,20 +102,18 @@ public class ClientApp {
 
                 Response response = sendAndReceiveCommand(homeFrame.getResponse());
 
+                lock.lock();
                 if (response != null) {
                     homeFrame.prepareAnswer(response);
                 }
-                lock.lock();
                 condition.signal();
                 lock.unlock();
 
-
-            } catch (IOException e) {
-                homeFrame.exception("server was closed, app is finishing work :) \nSee you soon!");
-                logger.info(Util.giveColor(Colors.GREEN, "server was closed, app is finishing work :) \nSee you soon!"));
-                break;
             } catch (CycleInTheScript | ClassNotFoundException e) {
-                homeFrame.exception(e.getMessage());
+                lock.lock();
+                homeFrame.setResponse(new ResponseWithError(e.getMessage()));
+                condition.signal();
+                lock.unlock();
                 logger.warning(e.getMessage());
             }
             if (isExitInExecuteScript) {
@@ -159,26 +147,26 @@ public class ClientApp {
         logger.fine("sent unit command starts");
         Values value = valuesOfCommands.get(command[0]);
         Response response = null;
-            switch (value) {
-                case PRODUCT:
-                    response = new Response(login, password, command[0], VariableParsing.toLongNumber(Constants.ID.getString(), command[1], homeFrame.getResourceBundle()), new ConsoleParsing(console2).parsProductFromConsole(homeFrame.getResourceBundle()));
-                    break;
-                case UNIT_OF_MEASURE:
-                    response = new Response(login, password, command[0], VariableParsing.toRightUnitOfMeasure(Constants.UNIT_OF_MEASURE.getString(), command[1], homeFrame.getResourceBundle()));
-                    break;
-                case KEY:
-                    response = new Response(login, password, command[0], VariableParsing.toLongNumber(Constants.KEY.getString(), command[1], homeFrame.getResourceBundle()));
-                    break;
-                case PRODUCT_WITH_QUESTIONS:
-                    response = updateID(command, console2);
-                    break;
+        switch (value) {
+            case PRODUCT:
+                response = new Response(login, password, command[0], VariableParsing.toLongNumber(Constants.ID.getString(), command[1], homeFrame.getResourceBundle()), new ConsoleParsing(console2).parsProductFromConsole(homeFrame.getResourceBundle()));
+                break;
+            case UNIT_OF_MEASURE:
+                response = new Response(login, password, command[0], VariableParsing.toRightUnitOfMeasure(Constants.UNIT_OF_MEASURE.getString(), command[1], homeFrame.getResourceBundle()));
+                break;
+            case KEY:
+                response = new Response(login, password, command[0], VariableParsing.toLongNumber(Constants.KEY.getString(), command[1], homeFrame.getResourceBundle()));
+                break;
+            case PRODUCT_WITH_QUESTIONS:
+                response = updateID(command, console2);
+                break;
 
-                case PRODUCT_WITHOUT_KEY:
-                    response = new Response(login, password, command[0], new ConsoleParsing(console2).parsProductFromConsole(homeFrame.getResourceBundle()));
-                    break;
-                default:
-                    break;
-            }
+            case PRODUCT_WITHOUT_KEY:
+                response = new Response(login, password, command[0], new ConsoleParsing(console2).parsProductFromConsole(homeFrame.getResourceBundle()));
+                break;
+            default:
+                break;
+        }
         logger.fine("the unique command was send");
         return response;
     }
@@ -231,17 +219,16 @@ public class ClientApp {
         logger.fine("send and receive finishes");
     }
 
-    public void run(String host, int port) throws IOException {
+    public void run(String host, int port) throws IOException, ClassNotFoundException, InterruptedException {
         logger.fine("server runs");
         try (Socket socket = new Socket(host, port)) {
             wrapper = new Wrapper(socket);
             logger.info(Util.giveColor(Colors.GREEN, "client was connected"));
             interactivelyMode();
-
+        } finally {
+            Util.toColor(Colors.GREEN, "goodbye");
+            logger.fine("run was executed");
         }
-        Util.toColor(Colors.GREEN, "goodbye");
-        logger.fine("run was executed");
-
     }
 
 
@@ -346,5 +333,11 @@ public class ClientApp {
         logger.info("the registration is finished ");
     }
 
-
+    public void close(String message) {
+        lock.lock();
+        homeFrame.setResponse(new ResponseWithError(message));
+        condition.signal();
+        lock.unlock();
+        homeFrame.close(homeFrame.getFrame());
+    }
 }

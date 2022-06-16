@@ -86,7 +86,7 @@ public class MyGraphics extends JComponent implements ActionListener, MouseListe
         }
 
         newCollectionInsert.forEach((key, value) -> {
-            if (! collection.containsKey(key)) {
+            if (!collection.containsKey(key)) {
                 value.setCondition(Condition.INSERT);
                 collection.put(key, value);
             } else {
@@ -97,7 +97,7 @@ public class MyGraphics extends JComponent implements ActionListener, MouseListe
             }
         });
         collection.forEach((key, value) -> {
-            if (! newCollectionInsert.containsKey(key)) {
+            if (!newCollectionInsert.containsKey(key)) {
                 value.setCondition(Condition.REMOVE);
             }
         });
@@ -121,15 +121,18 @@ public class MyGraphics extends JComponent implements ActionListener, MouseListe
             createUpdateFrame(e, key);
         });
     }
+
     public void createUpdateFrame(Umbrella umbrella, Long key) {
-        new ChangeProductFrameAnimation(homeFrame.getResourceBundle(), umbrella.getProduct(), key) {
+        new ChangeProductFrameAnimation(homeFrame.getResourceBundle(), umbrella.getProduct(), key, homeFrame) {
             @Override
             protected void addRemoveListener() throws VariableException {
                 homeFrame.treatmentAnimation(this::createResponse, this.getFrame());
             }
+
             private void treatmentResponse() throws VariableException {
                 homeFrame.treatmentAnimation(this::createUpdateResponse, this.getFrame());
             }
+
             @Override
             protected void addOkListener() {
                 getOk().addActionListener(e1 -> {
@@ -142,6 +145,7 @@ public class MyGraphics extends JComponent implements ActionListener, MouseListe
             }
         }.actionPerformed(new ActionEvent(this, updateTime, "showUpdate"));
     }
+
     @Override
     public void mousePressed(MouseEvent e) {
     }
