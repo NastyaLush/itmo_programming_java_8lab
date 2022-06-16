@@ -4,15 +4,18 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.event.WindowEvent;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import test.laba.client.frontEnd.frames.local.Localized;
 import test.laba.client.frontEnd.frames.table.TableModule;
 import test.laba.client.util.Constants;
 
@@ -20,31 +23,35 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.ResourceBundle;
 
-public abstract class Filter extends AbstractFrame {
+public abstract class Filter implements Localized {
+    private static final Dimension DIALOG_SIZE = new Dimension(300, 150);
     private final TableModule tableModule;
     private final HashSet<String> selected = new HashSet<>();
     private final Component enter = Box.createRigidArea(new Dimension(4, 0));
+    private ResourceBundle resourceBundle;
+    private JDialog dialog;
 
     public Filter(TableModule tableModule, ResourceBundle resourceBundle) {
-        super(new JFrame(tableModule.localisation(resourceBundle, Constants.FILTER)), resourceBundle);
         this.tableModule = tableModule;
+        this.resourceBundle = resourceBundle;
+        this.dialog = new JDialog(null, tableModule.localisation(resourceBundle, Constants.FILTER), JDialog.DEFAULT_MODALITY_TYPE);
     }
 
     public void actionPerformed(JFrame parent) {
         tableModule.clearFilter();
-        getFrame().setDefaultCloseOperation(getFrame().HIDE_ON_CLOSE);
-        getFrame().setLocationRelativeTo(parent);
-        getFrame().setLayout(new BoxLayout(getFrame().getContentPane(), BoxLayout.Y_AXIS));
-        //getFrame().setPreferredSize(new Dimension(200, 200));
+        dialog.setDefaultCloseOperation(dialog.HIDE_ON_CLOSE);
+        dialog.setPreferredSize(DIALOG_SIZE);
+        dialog.setLocationRelativeTo(parent);
+        dialog.setLayout(new BoxLayout(dialog.getContentPane(), BoxLayout.Y_AXIS));
         createFilterButtons();
 
-        getFrame().pack();
-        getFrame().setVisible(true);
+        dialog.pack();
+        dialog.setVisible(true);
     }
 
     private void createFilterButtons() {
-        JMenu choose = new JMenu(local(Constants.CHOOSE));
-        JMenu menu = new JMenu(local(Constants.FILTER));
+        JMenu choose = new JMenu(localisation(resourceBundle, Constants.CHOOSE));
+        JMenu menu = new JMenu(localisation(resourceBundle, Constants.FILTER));
         tableModule.getHead().forEach((key, value) -> {
             JMenuItem jMenuItem = new JMenuItem(value);
             menu.add(jMenuItem);
@@ -64,7 +71,7 @@ public abstract class Filter extends AbstractFrame {
         filter.add(menu);
         JMenuBar menuBarChoose = new JMenuBar();
         menuBarChoose.add(choose);
-        JButton button1 = new JButton(local(Constants.OK));
+        JButton button1 = new JButton(localisation(resourceBundle, Constants.OK));
         button1.addActionListener(e -> {
             tableModule.getConstValues().forEach(
                     e2 -> dodo(e2, tableModule.findColumn(menu.getText()))
@@ -72,8 +79,8 @@ public abstract class Filter extends AbstractFrame {
             close();
             repaint();
         });
-        JButton button2 = new JButton(local(Constants.CANCEL));
-        button2.addActionListener(e -> close(getFrame()));
+        JButton button2 = new JButton(localisation(resourceBundle, Constants.CANCEL));
+        button2.addActionListener(e -> close());
         JPanel topPanel = new JPanel();
 
         topPanel.setLayout(new FlowLayout());
@@ -90,8 +97,8 @@ public abstract class Filter extends AbstractFrame {
         downPanel.add(enter);
         downPanel.add(button2);
 
-        getFrame().getContentPane().add(topPanel);
-        getFrame().getContentPane().add(downPanel);
+        dialog.getContentPane().add(topPanel);
+        dialog.getContentPane().add(downPanel);
     }
 
     private void dodo(ArrayList<?> product, int column) {
@@ -110,10 +117,11 @@ public abstract class Filter extends AbstractFrame {
         });
         return jCheckBoxMenuItem;
     }
+    private void close() {
+        dialog.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+        dialog.dispatchEvent(new WindowEvent(dialog, WindowEvent.WINDOW_CLOSING));
+    }
 
     public abstract void repaint();
 
-    @Override
-    public void repaintForLanguage() {
-    }
 }

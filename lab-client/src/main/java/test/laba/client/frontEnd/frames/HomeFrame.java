@@ -21,8 +21,8 @@ import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.UIManager;
 import test.laba.client.frontEnd.frames.animation.Picture;
-import test.laba.client.frontEnd.frames.changeProductFrames.ChangeProductFrame;
-import test.laba.client.frontEnd.frames.changeProductFrames.ChangeProductFrameTable;
+import test.laba.client.frontEnd.frames.changeProductFrames.ChangeProductDialog;
+import test.laba.client.frontEnd.frames.changeProductFrames.ChangeProductTableDialog;
 import test.laba.client.frontEnd.frames.table.TableModule;
 import test.laba.client.frontEnd.frames.table.TablePanel;
 import test.laba.client.util.Pictures;
@@ -203,7 +203,7 @@ public class HomeFrame extends AbstractFrame implements Runnable {
         return new TablePanel(table) {
             @Override
             protected void outputSelection() {
-                new ChangeProductFrameTable(this, tableModule, getResourceBundle(), HomeFrame.this) {
+                new ChangeProductTableDialog(this, tableModule, getResourceBundle(), HomeFrame.this) {
                     @Override
                     protected void addOkListener() {
                         getOk().addActionListener(new OkListener() {
@@ -278,7 +278,6 @@ public class HomeFrame extends AbstractFrame implements Runnable {
         lock.unlock();
 
     }
-
     public void treatmentAnimation(IFunctionResponse newResponse, JDialog jFrame) throws VariableException {
         lock.lock();
         response = newResponse.createResponse();
@@ -373,6 +372,7 @@ public class HomeFrame extends AbstractFrame implements Runnable {
         lock.unlock();
     }
 
+
     public TableModule getTableModule() {
         return tableModule;
     }
@@ -400,6 +400,14 @@ public class HomeFrame extends AbstractFrame implements Runnable {
     public Lock getLock() {
         return lock;
     }
+
+    @Override
+    public void close() {
+        //show(local(Constants.THANK_YOU));
+        getFrame().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        getFrame().dispatchEvent(new WindowEvent(getFrame(), WindowEvent.WINDOW_CLOSING));
+    }
+
     private class CommandWithoutAction implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -409,7 +417,7 @@ public class HomeFrame extends AbstractFrame implements Runnable {
     }
 
 
-    private final class Plus extends ChangeProductFrame {
+    private final class Plus extends ChangeProductDialog {
         private Plus(ResourceBundle resourceBundle) {
             super(resourceBundle, HomeFrame.this);
         }

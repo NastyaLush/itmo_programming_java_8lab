@@ -59,7 +59,8 @@ public enum Constants {
     WRONG_UNIT_OF_MEASURE("wrongUnitMeasure"),
     HOST_EXCEPTION("hostException"),
     INTERRAPTED_EXCEPTION("InterException"),
-    IO_EXCEPTION("ioException");
+    IO_EXCEPTION("ioException"),
+    THANK_YOU("thankYou");
 
     private final String string;
 

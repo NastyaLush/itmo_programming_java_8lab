@@ -14,7 +14,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
-import test.laba.client.frontEnd.frames.changeProductFrames.ChangeProductFrame;
+import test.laba.client.frontEnd.frames.changeProductFrames.ChangeProductDialog;
 import test.laba.client.util.Command;
 import test.laba.client.util.Constants;
 import test.laba.client.util.VariableParsing;
@@ -48,7 +48,18 @@ public class Minus implements ActionListener {
         JRadioButton removeLower = createRadioButton(homeFrame.localisation(homeFrame.getResourceBundle(), Constants.REMOVE_LOWER), new RemoveLower(homeFrame.getResourceBundle()));
         JRadioButton removeAnyByUnitOfMeasure = new JRadioButton(homeFrame.localisation(homeFrame.getResourceBundle(), Constants.REMOVE_ANY_BY_UNIT_OF_MEASURE));
         removeAnyByUnitOfMeasure.setFont(FONT);
-        removeAnyByUnitOfMeasure.addActionListener(new ActionListener() {
+        removeAnyByUnitOfMeasure.addActionListener(removeUMDialog());
+        createButtonGroup(removeKey, removeLower, removeLowerKey, removeAnyByUnitOfMeasure);
+        delete.add(leftMinusPanel, BorderLayout.WEST);
+        leftMinusPanel.add(removeKey);
+        leftMinusPanel.add(removeLowerKey);
+        leftMinusPanel.add(removeLower);
+        leftMinusPanel.add(removeAnyByUnitOfMeasure);
+        delete.pack();
+        delete.setVisible(true);
+    }
+    private ActionListener removeUMDialog() {
+        return new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String result = (String) JOptionPane.showInputDialog(
@@ -76,15 +87,7 @@ public class Minus implements ActionListener {
                 createdResponse.setUnitOfMeasure(unitOfMeasure1);
                 return createdResponse;
             }
-        });
-        createButtonGroup(removeKey, removeLower, removeLowerKey, removeAnyByUnitOfMeasure);
-        delete.add(leftMinusPanel, BorderLayout.WEST);
-        leftMinusPanel.add(removeKey);
-        leftMinusPanel.add(removeLowerKey);
-        leftMinusPanel.add(removeLower);
-        leftMinusPanel.add(removeAnyByUnitOfMeasure);
-        delete.pack();
-        delete.setVisible(true);
+        };
     }
 
     private void createButtonGroup(JRadioButton removeKey, JRadioButton removeLower, JRadioButton removeLowerKey, JRadioButton removeAnyByUnitOfMeasure) {
@@ -136,7 +139,7 @@ public class Minus implements ActionListener {
         }
     }
 
-    private final class RemoveLower extends ChangeProductFrame {
+    private final class RemoveLower extends ChangeProductDialog {
         private RemoveLower(ResourceBundle resourceBundle) {
             super(resourceBundle, homeFrame);
         }

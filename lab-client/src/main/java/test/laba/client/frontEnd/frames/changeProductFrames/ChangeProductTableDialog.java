@@ -15,7 +15,7 @@ import test.laba.client.util.Constants;
 
 import java.util.ResourceBundle;
 
-public abstract class ChangeProductFrameTable extends ChangeProductFrame {
+public abstract class ChangeProductTableDialog extends ChangeProductDialog {
     private final TablePanel tablePanel;
     private final TableModule tableModule;
     private final Dimension unitOfMeasureSize = new Dimension(23, 24);
@@ -23,7 +23,7 @@ public abstract class ChangeProductFrameTable extends ChangeProductFrame {
     private final Dimension textLabelSize = new Dimension(15, 24);
     private final Component enter = Box.createRigidArea(new Dimension(0, 13));
 
-    public ChangeProductFrameTable(TablePanel table, TableModule tableModule, ResourceBundle resourceBundle, HomeFrame homeFrame) {
+    public ChangeProductTableDialog(TablePanel table, TableModule tableModule, ResourceBundle resourceBundle, HomeFrame homeFrame) {
         super(resourceBundle, homeFrame);
         this.tablePanel = table;
         this.tableModule = tableModule;

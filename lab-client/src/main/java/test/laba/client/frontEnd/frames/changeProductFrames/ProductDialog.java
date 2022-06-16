@@ -12,13 +12,13 @@ import test.laba.client.util.Constants;
 import java.awt.event.ActionEvent;
 import java.util.ResourceBundle;
 
-public abstract class FrameProduct implements Localized {
+public abstract class ProductDialog implements Localized {
     private final Font umFont = new Font("Safari", Font.ITALIC, 13);
     private final Dimension umSize = new Dimension(400, 50);
     private JDialog dialog;
     private ResourceBundle resourceBundle;
 
-    public FrameProduct(JDialog dialog, ResourceBundle resourceBundle) {
+    public ProductDialog(JDialog dialog, ResourceBundle resourceBundle) {
         this.dialog = dialog;
         this.resourceBundle = resourceBundle;
     }

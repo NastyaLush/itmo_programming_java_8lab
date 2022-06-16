@@ -1,12 +1,10 @@
 package test.laba.client;
 
-import javax.swing.SwingUtilities;
 import test.laba.client.frontEnd.frames.Frame;
 import test.laba.client.frontEnd.frames.local.Localized;
 import test.laba.client.util.Constants;
 import test.laba.common.IO.Colors;
 import test.laba.common.util.Util;
-
 
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -36,12 +34,13 @@ public final class Client implements Localized {
         Condition ready = lock.newCondition();
         Frame frame = new Frame(ready, lock);
         connection(frame, lock, ready, logger);
-        //new Thread(new HomeFrame(ready, lock, "test", new Response("jj"), Local.getResourceBundleDefault())).start();
-    }
+   }
 
     private static void connection(Frame frame, Lock lock, Condition ready, Logger logger) {
         ClientApp clientApp = new ClientApp(frame, ready, lock);
-        SwingUtilities.invokeLater(frame);
+        Thread thread = new Thread(frame);
+        thread.setDaemon(true);
+        thread.start();
         String port = frame.getPort();
         String host = frame.getHost();
         while (true) {

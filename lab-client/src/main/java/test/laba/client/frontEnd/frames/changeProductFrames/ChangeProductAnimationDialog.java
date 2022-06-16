@@ -24,7 +24,7 @@ import java.awt.event.ActionEvent;
 import java.util.HashMap;
 import java.util.ResourceBundle;
 
-public abstract class ChangeProductFrameAnimation extends ChangeProductFrame {
+public abstract class ChangeProductAnimationDialog extends ChangeProductDialog {
     private static final int WIDTH_STANDARD_TEXT_FIELD = 15;
     private static final int HEIGHT_STANDARD_AREA = 5;
     private static final int HEIGHT_STANDARD_BUTTON = 24;
@@ -35,7 +35,7 @@ public abstract class ChangeProductFrameAnimation extends ChangeProductFrame {
     private final HashMap<String, IFunctionString> functions;
     private final Dimension standardDimension = new Dimension(23, 24);
 
-    public ChangeProductFrameAnimation(ResourceBundle resourceBundle, Product product, Long key, HomeFrame homeFrame) {
+    public ChangeProductAnimationDialog(ResourceBundle resourceBundle, Product product, Long key, HomeFrame homeFrame) {
         super(resourceBundle, homeFrame);
         this.product = product;
         functions = new HashMap<>();

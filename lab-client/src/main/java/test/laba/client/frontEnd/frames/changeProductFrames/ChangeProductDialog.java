@@ -35,7 +35,7 @@ import java.util.ResourceBundle;
 import java.util.Set;
 
 
-public abstract class ChangeProductFrame extends FrameProduct implements ActionListener {
+public abstract class ChangeProductDialog extends ProductDialog implements ActionListener {
     private static final int START_LOCATION = 30;
     private static final int HOW_SMALLER_SIZE_HEIGHT = 4;
     private static final Dimension STANDARD_DIMENSION = new Dimension(23, 24);
@@ -61,7 +61,7 @@ public abstract class ChangeProductFrame extends FrameProduct implements ActionL
     private final HomeFrame homeFrame;
     private NeedOwner needOwner;
 
-    public ChangeProductFrame(ResourceBundle resourceBundle, HomeFrame homeFrame) {
+    public ChangeProductDialog(ResourceBundle resourceBundle, HomeFrame homeFrame) {
         super(new JDialog((Frame) null, "", true/*false*/), resourceBundle);
         this.homeFrame = homeFrame;
     }

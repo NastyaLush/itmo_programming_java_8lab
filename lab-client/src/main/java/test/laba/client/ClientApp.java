@@ -65,7 +65,9 @@ public class ClientApp {
         registeringUser();
         this.homeFrame = new HomeFrame(condition, lock, login, frame.getResponse(), frame.getResourceBundle());
         frame.close();
-        new Thread(homeFrame).start();
+        Thread thread = new Thread(homeFrame);
+        thread.setDaemon(true);
+        thread.start();
         wrapper.sent(new Response(login, password, Values.COLLECTION.toString()));
         valuesOfCommands = wrapper.readWithMap();
         logger.info(Util.giveColor(Colors.BlUE, "Program in an interactive module, for giving information about opportunities write help"));
@@ -84,6 +86,7 @@ public class ClientApp {
                     homeFrame.setGraphicCollection(sendAndReceiveCommand(show).getProductHashMap());
                 } catch (IOException e) {
                     logger.info(Util.giveColor(Colors.GREEN, "server was closed, app is finishing work :) See you soon!"));
+                    System.out.println(Thread.getAllStackTraces());
                     break;
                 } catch (CycleInTheScript | ClassNotFoundException | InterruptedException e) {
                     logger.warning(e.getMessage());
@@ -118,6 +121,7 @@ public class ClientApp {
             }
             if (isExitInExecuteScript) {
                 wrapper.close();
+                homeFrame.close();
                 Util.toColor(Colors.GREEN, "see you soon :)");
                 break;
             }

@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.Random;
 import javax.swing.JComponent;
 import test.laba.client.frontEnd.frames.HomeFrame;
-import test.laba.client.frontEnd.frames.changeProductFrames.ChangeProductFrameAnimation;
+import test.laba.client.frontEnd.frames.changeProductFrames.ChangeProductAnimationDialog;
 import test.laba.common.dataClasses.Product;
 
 import javax.swing.Timer;
@@ -123,7 +123,7 @@ public class MyGraphics extends JComponent implements ActionListener, MouseListe
     }
 
     public void createUpdateFrame(Umbrella umbrella, Long key) {
-        new ChangeProductFrameAnimation(homeFrame.getResourceBundle(), umbrella.getProduct(), key, homeFrame) {
+        new ChangeProductAnimationDialog(homeFrame.getResourceBundle(), umbrella.getProduct(), key, homeFrame) {
             @Override
             protected void addRemoveListener() throws VariableException {
                 homeFrame.treatmentAnimation(this::createResponse, this.getDialog());
