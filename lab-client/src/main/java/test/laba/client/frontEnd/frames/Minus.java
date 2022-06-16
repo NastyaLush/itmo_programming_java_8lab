@@ -28,10 +28,10 @@ import test.laba.common.exception.VariableException;
 import test.laba.common.responses.Response;
 
 public class Minus implements ActionListener {
+    private static final int FOURTH_SMALLER_PANEL_SIZE = 4;
     private final JFrame delete = new JFrame();
     private final JPanel leftMinusPanel = new JPanel();
     private final HomeFrame homeFrame;
-    private final int fourthSmallerPanelSize = 4;
 
     public Minus(HomeFrame homeFrame) {
         this.homeFrame = homeFrame;
@@ -40,7 +40,7 @@ public class Minus implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         delete.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        delete.setSize(homeFrame.getScreenSize().width / 2, homeFrame.getScreenSize().height / fourthSmallerPanelSize);
+        delete.setSize(homeFrame.getScreenSize().width / 2, homeFrame.getScreenSize().height / FOURTH_SMALLER_PANEL_SIZE);
         delete.setLocationRelativeTo(homeFrame.getMainPanel());
         delete.setMinimumSize(new Dimension(homeFrame.screenSize.width / 2, homeFrame.screenSize.height / 2));
         delete.setLayout(new BorderLayout());
@@ -94,13 +94,12 @@ public class Minus implements ActionListener {
     }
 
     private class RemoveKeyOrRemoveLowerKey implements ActionListener {
+        private static final int LOCATION = 50;
+        private static final int SEVENTH_FRAME_SMALLER = 7;
+        private static final int ENTER_BETWEEN_OK = 20;
         private final String name;
-        private final int location = 50;
         private final Dimension textKeySize = new Dimension(100, 20);
-        private final int seventhFrameSmaller = 7;
-        private final int enterBetweenOk = 20;
         private final int enterBetweenLabelAndText = 5;
-        private JButton ok;
 
         RemoveKeyOrRemoveLowerKey(String name) {
             this.name = name;
@@ -126,14 +125,14 @@ public class Minus implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             JFrame removeFrame = new JFrame();
-            removeFrame.setPreferredSize(new Dimension(homeFrame.screenSize.width / seventhFrameSmaller, homeFrame.screenSize.height / seventhFrameSmaller));
-            removeFrame.setLocation(location, location);
+            removeFrame.setPreferredSize(new Dimension(homeFrame.screenSize.width / SEVENTH_FRAME_SMALLER, homeFrame.screenSize.height / SEVENTH_FRAME_SMALLER));
+            removeFrame.setLocation(LOCATION, LOCATION);
             removeFrame.setLocationRelativeTo(delete);
             removeFrame.setLayout(new BorderLayout());
 
             JPanel removePanel = new JPanel();
             JComponent component = createButtons(removePanel);
-            ok = new JButton(homeFrame.localisation(homeFrame.getResourceBundle(), Constants.OK));
+            JButton ok = new JButton(homeFrame.localisation(homeFrame.getResourceBundle(), Constants.OK));
             ok.addActionListener(new OkListener(name, removeFrame, homeFrame.getResourceBundle()) {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -154,7 +153,7 @@ public class Minus implements ActionListener {
             });
 
             removePanel.setLayout(new BoxLayout(removePanel, BoxLayout.Y_AXIS));
-            removePanel.add(Box.createRigidArea(new Dimension(0, enterBetweenOk)));
+            removePanel.add(Box.createRigidArea(new Dimension(0, ENTER_BETWEEN_OK)));
             removePanel.add(ok);
             removePanel.revalidate();
             removePanel.repaint();

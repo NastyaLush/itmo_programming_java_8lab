@@ -65,19 +65,19 @@ public final class Client {
         try {
             clientApp.run(host, getPort(port));
         } catch (IOException e) {
-            treatmentExeption("Can't connect to the server, check host address and port: " + e.getMessage(),
+            treatmentException("Can't connect to the server, check host address and port: " + e.getMessage(),
                     logger, frame, clientApp, lock, ready);
         } catch (NumberFormatException e) {
-            treatmentExeption("impossible pars host address and port " + e.getMessage(),
+            treatmentException("impossible pars host address and port " + e.getMessage(),
                     logger, frame, clientApp, lock, ready);
         } catch (ClassNotFoundException | InterruptedException e) {
-            treatmentExeption("The client can't exist because of: " + e.getMessage()
+            treatmentException("The client can't exist because of: " + e.getMessage()
                             + "\nProbably server was closed",
                     logger, frame, clientApp, lock, ready);
         }
     }
 
-    private static void treatmentExeption(String message, Logger logger, Frame frame, ClientApp clientApp, Lock lock, Condition ready) {
+    private static void treatmentException(String message, Logger logger, Frame frame, ClientApp clientApp, Lock lock, Condition ready) {
         logger.warning(Util.giveColor(Colors.RED, message));
         if (frame.getFrame().isValid()) {
             frame.exception(message);

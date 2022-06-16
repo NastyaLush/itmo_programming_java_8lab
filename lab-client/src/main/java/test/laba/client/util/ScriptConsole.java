@@ -74,15 +74,6 @@ public class ScriptConsole extends Console {
     }
 
     /**
-     * to nothing override from parent class
-     *
-     * @param object object for asking
-     */
-    @Override
-    public void ask(Object object) {
-    }
-
-    /**
      * ask question and return answer
      *
      * @return answer

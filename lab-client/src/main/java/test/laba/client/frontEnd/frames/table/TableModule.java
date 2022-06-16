@@ -13,29 +13,29 @@ import javax.swing.table.AbstractTableModel;
 import java.text.DateFormat;
 
 public class TableModule extends AbstractTableModel implements Localized {
+    private static final int KEY_COLUMN = 0;
+    private static final int ID_COLUMN = 1;
+    private static final int PRODUCT_NAME_COLUMN = 2;
+    private static final int COORDINATION_X_COLUMN = 3;
+    private static final int COORDINATION_Y_COLUMN = 4;
+    private static final int CREATION_DATE_COLUMN = 5;
+    private static final int PRICE_COLUMN = 6;
+    private static final int MANUFACTURE_COST_COLUMN = 7;
+    private static final int UNIT_OF_MEASURE_COLUMN = 8;
+    private static final int PERSON_NAME_COLUMN = 9;
+    private static final int BIRTHDAY_COLUMN = 10;
+    private static final int HEIGHT_COLUMN = 11;
+    private static final int LOCATION_X_COLUMN = 12;
+    private static final int LOCATION_Y_COLUMN = 13;
+    private static final int LOCATION_NAME_COLUMN = 14;
     private static final HashMap<UnitOfMeasure, Constants> UNIT_OF_MEASURE_CONSTANTS_HASH_MAP;
     private final int columnCount = 15;
     private final ArrayList<ArrayList<?>> values = new ArrayList<>();
     private final HashMap<Integer, String> head = new HashMap<>();
-    private final HashMap<Integer, Class> classField = new HashMap<>();
+    private final HashMap<Integer, Class<?>> classField = new HashMap<>();
     private ArrayList<ArrayList<?>> constValues = new ArrayList<>();
     private final ResourceBundle resourceBundle;
     private final DateFormat dateFormat;
-    private final int keyColumn = 0;
-    private final int idColumn = 1;
-    private final int productNameColumn = 2;
-    private final int coordinationXColumn = 3;
-    private final int coordinationYColumn = 4;
-    private final int creationDateColumn = 5;
-    private final int priceColumn = 6;
-    private final int manufactureCostColumn = 7;
-    private final int unitOfMeasureColumn = 8;
-    private final int personNameColumn = 9;
-    private final int birthdayColumn = 10;
-    private final int heightColumn = 11;
-    private final int locationXColumn = 12;
-    private final int locationYColumn = 13;
-    private final int locationNameColumn = 14;
     static {
         UNIT_OF_MEASURE_CONSTANTS_HASH_MAP = new HashMap<>();
             UNIT_OF_MEASURE_CONSTANTS_HASH_MAP.put(UnitOfMeasure.PCS, Constants.PCS);
@@ -59,8 +59,8 @@ public class TableModule extends AbstractTableModel implements Localized {
         return columnCount;
     }
     @Override
-    public Class<Comparable> getColumnClass(int columnIndex) {
-        return classField.get(columnIndex);
+    public Class<Comparable<?>> getColumnClass(int columnIndex) {
+        return (Class<Comparable<?>>) classField.get(columnIndex);
     }
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
@@ -132,37 +132,37 @@ public class TableModule extends AbstractTableModel implements Localized {
     }
 
     private void initialization() {
-        head.put(keyColumn, localisation(resourceBundle, Constants.KEY));
-        head.put(idColumn, localisation(resourceBundle, Constants.ID));
-        head.put(productNameColumn, localisation(resourceBundle, Constants.PRODUCT_NAME));
-        head.put(coordinationXColumn, localisation(resourceBundle, Constants.COORDINATE_X));
-        head.put(coordinationYColumn, localisation(resourceBundle, Constants.COORDINATE_Y));
-        head.put(creationDateColumn, localisation(resourceBundle, Constants.CREATION_DATE));
-        head.put(priceColumn, localisation(resourceBundle, Constants.PRICE));
-        head.put(manufactureCostColumn, localisation(resourceBundle, Constants.MANUFACTURE_COST));
-        head.put(unitOfMeasureColumn, localisation(resourceBundle, Constants.UNIT_OF_MEASURE));
-        head.put(personNameColumn, localisation(resourceBundle, Constants.PERSON_NAME));
-        head.put(birthdayColumn, localisation(resourceBundle, Constants.BIRTHDAY));
-        head.put(heightColumn, localisation(resourceBundle, Constants.HEIGHT));
-        head.put(locationXColumn, localisation(resourceBundle, Constants.LOCATION_X));
-        head.put(locationYColumn, localisation(resourceBundle, Constants.LOCATION_Y));
-        head.put(locationNameColumn, localisation(resourceBundle, Constants.LOCATION_NAME));
+        head.put(KEY_COLUMN, localisation(resourceBundle, Constants.KEY));
+        head.put(ID_COLUMN, localisation(resourceBundle, Constants.ID));
+        head.put(PRODUCT_NAME_COLUMN, localisation(resourceBundle, Constants.PRODUCT_NAME));
+        head.put(COORDINATION_X_COLUMN, localisation(resourceBundle, Constants.COORDINATE_X));
+        head.put(COORDINATION_Y_COLUMN, localisation(resourceBundle, Constants.COORDINATE_Y));
+        head.put(CREATION_DATE_COLUMN, localisation(resourceBundle, Constants.CREATION_DATE));
+        head.put(PRICE_COLUMN, localisation(resourceBundle, Constants.PRICE));
+        head.put(MANUFACTURE_COST_COLUMN, localisation(resourceBundle, Constants.MANUFACTURE_COST));
+        head.put(UNIT_OF_MEASURE_COLUMN, localisation(resourceBundle, Constants.UNIT_OF_MEASURE));
+        head.put(PERSON_NAME_COLUMN, localisation(resourceBundle, Constants.PERSON_NAME));
+        head.put(BIRTHDAY_COLUMN, localisation(resourceBundle, Constants.BIRTHDAY));
+        head.put(HEIGHT_COLUMN, localisation(resourceBundle, Constants.HEIGHT));
+        head.put(LOCATION_X_COLUMN, localisation(resourceBundle, Constants.LOCATION_X));
+        head.put(LOCATION_Y_COLUMN, localisation(resourceBundle, Constants.LOCATION_Y));
+        head.put(LOCATION_NAME_COLUMN, localisation(resourceBundle, Constants.LOCATION_NAME));
 
-        classField.put(keyColumn, Long.class);
-        classField.put(idColumn, Long.class);
-        classField.put(productNameColumn, String.class);
-        classField.put(coordinationXColumn, Integer.class);
-        classField.put(coordinationYColumn, Float.class);
-        classField.put(creationDateColumn, String.class);
-        classField.put(priceColumn, Long.class);
-        classField.put(manufactureCostColumn, Integer.class);
-        classField.put(unitOfMeasureColumn, String.class);
-        classField.put(personNameColumn, String.class);
-        classField.put(birthdayColumn, String.class);
-        classField.put(heightColumn, Integer.class);
-        classField.put(locationXColumn, Long.class);
-        classField.put(locationYColumn, Integer.class);
-        classField.put(locationNameColumn, String.class);
+        classField.put(KEY_COLUMN, Long.class);
+        classField.put(ID_COLUMN, Long.class);
+        classField.put(PRODUCT_NAME_COLUMN, String.class);
+        classField.put(COORDINATION_X_COLUMN, Integer.class);
+        classField.put(COORDINATION_Y_COLUMN, Float.class);
+        classField.put(CREATION_DATE_COLUMN, String.class);
+        classField.put(PRICE_COLUMN, Long.class);
+        classField.put(MANUFACTURE_COST_COLUMN, Integer.class);
+        classField.put(UNIT_OF_MEASURE_COLUMN, String.class);
+        classField.put(PERSON_NAME_COLUMN, String.class);
+        classField.put(BIRTHDAY_COLUMN, String.class);
+        classField.put(HEIGHT_COLUMN, Integer.class);
+        classField.put(LOCATION_X_COLUMN, Long.class);
+        classField.put(LOCATION_Y_COLUMN, Integer.class);
+        classField.put(LOCATION_NAME_COLUMN, String.class);
     }
 
     public HashMap<Integer, String> getHead() {

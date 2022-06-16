@@ -48,24 +48,6 @@ public class Console {
     }
 
     /**
-     * print the argument
-     *
-     * @param object object for printing
-     */
-    public void ask(Object object) {
-        System.out.println(object);
-    }
-
-    public String read() {
-        try {
-            return USER_SCANNER.readLine().trim().toLowerCase();
-        } catch (IOException | NullPointerException e) {
-            return null;
-        }
-    }
-
-
-    /**
      * print question and return true if answer yes, another case false
      *
      * @return true if answer yes, false if answer no
@@ -100,10 +82,6 @@ public class Console {
             printError("Вы не можете ввести null!");
         }
         return askFullQuestion(/*question*/);
-    }
-
-    public int isAvailable() throws IOException {
-        return System.in.available();
     }
 
 }

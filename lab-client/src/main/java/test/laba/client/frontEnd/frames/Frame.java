@@ -27,6 +27,19 @@ import java.util.concurrent.locks.Lock;
 
 
 public class Frame extends LanguageAbstractClass implements Runnable {
+    private static final int EIGHT_PANEL_SMALLER = 8;
+    private static final int FOURTEEN_TWICE_PANEL_SMALLER = 14;
+    private static final int AUTHORISATION_TEXT_SIZE = 50;
+    private static final int LOGIN_TEXT_SIZE = 18;
+    private static final int WIDTH_LOGIN = 23;
+    private static final int HEIGHT_LOGIN = 45;
+    private static final int REGISTER_SIZE = 13;
+    private static final int ENTER_SIZE = 50;
+    private static final int ENTER_SIZE_AFTER_PORT = 15;
+    private static final int ENTER_SIZE_AFTER_REGISTER = 25;
+    private static final int ENTER_SIZE_AFTER_SING_UP = 5;
+    private static final int DEFAULT_LOCATION = 100;
+    private static final Font STANDARD_FONT = new Font("Safari", Font.BOLD, 15);
     private JLabel login;
     private final JTextField textLogin = new JTextField();
     private JLabel password;
@@ -46,22 +59,8 @@ public class Frame extends LanguageAbstractClass implements Runnable {
     private final Condition condition;
     private final Lock lock;
     private Registration registration;
-    private JMenuBar lang;
-    private final int defaultLocation = 100;
     private final Dimension minimumSizeFrame = new Dimension(screenSize.width / 2, screenSize.height - 300);
     private final Dimension mainPanelSizeFrame = new Dimension(415, 417);
-    private final int eightPanelSmaller = 8;
-    private final int fourteenTwicePanelSmaller = 14;
-    private final int authorisationTextSize = 50;
-    private final int loginTextSize = 18;
-    private final int widthLogin = 23;
-    private final int heightLogin = 45;
-    private final int registerSize = 13;
-    private final int enterSize = 50;
-    private final int enterSizeAfterPort = 15;
-    private final int enterSizeAfterRegister = 25;
-    private final int enterSizeAfterSingUp = 5;
-    private final Font standardFont = new Font("Safari", Font.BOLD, 15);
     private boolean isNewUser = false;
 
 
@@ -74,7 +73,7 @@ public class Frame extends LanguageAbstractClass implements Runnable {
     @Override
     public void run() {
         getFrame().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        getFrame().setLocation(defaultLocation, defaultLocation);
+        getFrame().setLocation(DEFAULT_LOCATION, DEFAULT_LOCATION);
         getFrame().setMinimumSize(minimumSizeFrame);
 
         paintMainPanels();
@@ -83,9 +82,9 @@ public class Frame extends LanguageAbstractClass implements Runnable {
         JPanel downPanel = new JPanel();
 
         mainPanel.setPreferredSize(mainPanelSizeFrame);
-        leftPanel.setPreferredSize(new Dimension(getFrame().getWidth() / eightPanelSmaller, getFrame().getHeight()));
-        upPanel.setPreferredSize(new Dimension(getFrame().getWidth() / eightPanelSmaller, getFrame().getHeight() / fourteenTwicePanelSmaller));
-        downPanel.setPreferredSize(new Dimension(getFrame().getWidth() / eightPanelSmaller, getFrame().getHeight() / eightPanelSmaller));
+        leftPanel.setPreferredSize(new Dimension(getFrame().getWidth() / EIGHT_PANEL_SMALLER, getFrame().getHeight()));
+        upPanel.setPreferredSize(new Dimension(getFrame().getWidth() / EIGHT_PANEL_SMALLER, getFrame().getHeight() / FOURTEEN_TWICE_PANEL_SMALLER));
+        downPanel.setPreferredSize(new Dimension(getFrame().getWidth() / EIGHT_PANEL_SMALLER, getFrame().getHeight() / EIGHT_PANEL_SMALLER));
 
         getFrame().getContentPane().add(BorderLayout.CENTER, panel);
         getFrame().getContentPane().add(BorderLayout.WEST, leftPanel);
@@ -99,17 +98,17 @@ public class Frame extends LanguageAbstractClass implements Runnable {
     private void paintMainPanels() {
         revalidate();
         initialization();
-        authorisation.setFont(underLine(new Font("Safari", Font.ITALIC, authorisationTextSize)));
+        authorisation.setFont(underLine(new Font("Safari", Font.ITALIC, AUTHORISATION_TEXT_SIZE)));
         authorisation.setHorizontalAlignment(JLabel.LEFT);
 
-        Font labelFont = new Font("Safari", Font.BOLD, loginTextSize);
-        login.setSize(widthLogin, heightLogin);
+        Font labelFont = new Font("Safari", Font.BOLD, LOGIN_TEXT_SIZE);
+        login.setSize(WIDTH_LOGIN, HEIGHT_LOGIN);
         setFontAndColorToLabel(login, labelFont);
         setFontAndColorToLabel(password, labelFont);
         setFontAndColorToLabel(host, labelFont);
         setFontAndColorToLabel(port, labelFont);
         register.setBackground(Color.lightGray);
-        register.setFont(underLine(new Font("Arial", Font.ITALIC, registerSize)));
+        register.setFont(underLine(new Font("Arial", Font.ITALIC, REGISTER_SIZE)));
         registration = new Registration();
         register.addActionListener(registration);
 
@@ -119,19 +118,19 @@ public class Frame extends LanguageAbstractClass implements Runnable {
         panel.add(mainPanel, BorderLayout.WEST);
         mainPanel.setLayout(boxLayout);
 
-        addGroupButtonEnter(authorisation, createEnter(enterSize));
+        addGroupButtonEnter(authorisation, createEnter(ENTER_SIZE));
         mainPanel.add(login);
-        addGroupButtonEnter(textLogin, createEnter(enterSize));
+        addGroupButtonEnter(textLogin, createEnter(ENTER_SIZE));
         mainPanel.add(password);
-        addGroupButtonEnter(textPassword, createEnter(enterSize));
+        addGroupButtonEnter(textPassword, createEnter(ENTER_SIZE));
         mainPanel.add(host);
-        addGroupButtonEnter(textHost, createEnter(enterSize));
+        addGroupButtonEnter(textHost, createEnter(ENTER_SIZE));
         mainPanel.add(port);
-        addGroupButtonEnter(textPort, createEnter(enterSizeAfterPort));
-        addGroupButtonEnter(register, createEnter(enterSizeAfterRegister));
+        addGroupButtonEnter(textPort, createEnter(ENTER_SIZE_AFTER_PORT));
+        addGroupButtonEnter(register, createEnter(ENTER_SIZE_AFTER_REGISTER));
         mainPanel.add(createButton(Constants.SING_UP, new SignUp()));
         upPanel.setLayout(new BorderLayout());
-        lang = createLanguage(Color.BLACK);
+        JMenuBar lang = createLanguage(Color.BLACK);
         upPanel.add(lang, BorderLayout.WEST);
     }
 
@@ -168,7 +167,7 @@ public class Frame extends LanguageAbstractClass implements Runnable {
 
     private JButton createButton(Constants constants, ActionListener actionListener) {
         JButton signUp = new JButton(localisation(getResourceBundle(), constants));
-        signUp.setFont(standardFont);
+        signUp.setFont(STANDARD_FONT);
         signUp.setBackground(Color.gray);
         signUp.addActionListener(actionListener);
         return signUp;
@@ -223,7 +222,7 @@ public class Frame extends LanguageAbstractClass implements Runnable {
             isNewUser = true;
             authorisation.setText(localisation(getResourceBundle(), Constants.REGISTRATION));
             mainPanel.remove(register);
-            mainPanel.add(createEnter(enterSizeAfterSingUp));
+            mainPanel.add(createEnter(ENTER_SIZE_AFTER_SING_UP));
             mainPanel.add(createButton(Constants.BACK, e1 -> {
                 isNewUser = false;
                 run();

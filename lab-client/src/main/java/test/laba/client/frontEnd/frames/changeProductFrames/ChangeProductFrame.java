@@ -34,6 +34,15 @@ import java.util.Set;
 
 
 public abstract class ChangeProductFrame extends FrameProduct implements ActionListener {
+    private static final int START_LOCATION = 30;
+    private static final int HOW_SMALLER_SIZE_HEIGHT = 4;
+    private static final Dimension STANDARD_DIMENSION = new Dimension(23, 24);
+    private static final int HEIGHT_BOX_AREA = 13;
+    private static final int WIDTH_UM = 400;
+    private static final int HEIGHT_UM = 50;
+    private static final int WIDTH_BUTTON = 15;
+    private static final int HEIGHT_BUTTON = 24;
+    private static final int HEIGHT_STANDARD_BUTTON = 13;
     private JPanel mainPlusPanel;
     private final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     private JButton ok;
@@ -46,16 +55,7 @@ public abstract class ChangeProductFrame extends FrameProduct implements ActionL
     private JCheckBox addOwner;
     private JMenu textUM;
     private final Set<Component> ownersLabels = new HashSet<>();
-    private final int startLocation = 30;
-    private final int howSmallerSizeHeight = 4;
-    private final Dimension standardDimension = new Dimension(23, 24);
-    private final int heightBoxArea = 13;
-    private final int widthUM = 400;
-    private final int heightUM = 50;
-    private final int widthButton = 15;
-    private final int heightButton = 24;
-    private final int heightStandardButton = 13;
-    private final Font labelFont = new Font("Safari", Font.BOLD, heightStandardButton);
+    private final Font labelFont = new Font("Safari", Font.BOLD, HEIGHT_STANDARD_BUTTON);
     private final HomeFrame homeFrame;
     private NeedOwner needOwner;
 
@@ -74,8 +74,8 @@ public abstract class ChangeProductFrame extends FrameProduct implements ActionL
     public void actionPerformed(ActionEvent e) {
         revalidate();
         getFrame().setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        getFrame().setSize(screenSize.width / 2, screenSize.height / howSmallerSizeHeight);
-        getFrame().setLocation(startLocation, startLocation);
+        getFrame().setSize(screenSize.width / 2, screenSize.height / HOW_SMALLER_SIZE_HEIGHT);
+        getFrame().setLocation(START_LOCATION, START_LOCATION);
         getFrame().setMinimumSize(new Dimension(screenSize.width / 2, screenSize.height / 2));
         getFrame().setLayout(new BorderLayout());
 
@@ -93,7 +93,7 @@ public abstract class ChangeProductFrame extends FrameProduct implements ActionL
 
         addOwner = new JCheckBox(localisation(getResourceBundle(), Constants.ADD_OWNER));
         addOwner.setFont(labelFont);
-        addOwner.setPreferredSize(standardDimension);
+        addOwner.setPreferredSize(STANDARD_DIMENSION);
         needOwner = new NeedOwner();
         addOwner.addActionListener(needOwner);
 
@@ -122,10 +122,10 @@ public abstract class ChangeProductFrame extends FrameProduct implements ActionL
         JLabel label = new JLabel(name + "(" + description + ")");
         label.setForeground(Color.gray);
         label.setFont(labelFont);
-        label.setPreferredSize(standardDimension);
+        label.setPreferredSize(STANDARD_DIMENSION);
         JTextField textField = new JTextField();
-        textField.setPreferredSize(new Dimension(widthButton, heightButton));
-        Component enter = Box.createRigidArea(new Dimension(0, heightBoxArea));
+        textField.setPreferredSize(new Dimension(WIDTH_BUTTON, HEIGHT_BUTTON));
+        Component enter = Box.createRigidArea(new Dimension(0, HEIGHT_BOX_AREA));
 
 
         if (saveToDelete) {
@@ -143,7 +143,7 @@ public abstract class ChangeProductFrame extends FrameProduct implements ActionL
     @Override
     public JMenu createUMMenu(String name) {
         JMenu menu = new JMenu(name);
-        menu.setPreferredSize(new Dimension(widthUM, heightUM));
+        menu.setPreferredSize(new Dimension(WIDTH_UM, HEIGHT_UM));
         menu.setFont(getLabelFont());
         JMenuItem pcs = new JMenuItem(localisation(getResourceBundle(), Constants.PCS));
         pcs.setName(Constants.PCS.getString());
@@ -173,7 +173,7 @@ public abstract class ChangeProductFrame extends FrameProduct implements ActionL
         JLabel label = new JLabel(name + "(" + description + ")");
         label.setForeground(Color.gray);
         label.setFont(labelFont);
-        label.setPreferredSize(standardDimension);
+        label.setPreferredSize(STANDARD_DIMENSION);
 
 
         JMenu menu = createUMMenu(name);
@@ -181,7 +181,7 @@ public abstract class ChangeProductFrame extends FrameProduct implements ActionL
 
         mainPlusPanel.add(label);
         mainPlusPanel.add(menuBar);
-        mainPlusPanel.add(Box.createRigidArea(new Dimension(0, heightBoxArea)));
+        mainPlusPanel.add(Box.createRigidArea(new Dimension(0, HEIGHT_BOX_AREA)));
         return menu;
     }
 
@@ -262,17 +262,17 @@ public abstract class ChangeProductFrame extends FrameProduct implements ActionL
     }
 
     private class NeedOwner implements ActionListener {
+        private static final double HOW_SMALLER_THIS_FRAME_SIZE = 0.8;
         private JTextField textPersonName;
         private JTextField textPersonBirthday;
         private JTextField textPersonHeight;
         private JTextField textLocationX;
         private JTextField textLocationY;
         private JTextField textLocationName;
-        private final double howSmallerThisFrameSize = 4 / 5;
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            getFrame().setMinimumSize(new Dimension(screenSize.width / 2, (int) (screenSize.height / howSmallerThisFrameSize)));
+            getFrame().setMinimumSize(new Dimension(screenSize.width / 2, (int) (screenSize.height / HOW_SMALLER_THIS_FRAME_SIZE)));
             if (addOwner.isSelected()) {
                 removeActionButtons();
                 textPersonName = createButtonGroup(local(Constants.PERSON_NAME), local(Constants.CAN_NOT_BE_NULL), true);

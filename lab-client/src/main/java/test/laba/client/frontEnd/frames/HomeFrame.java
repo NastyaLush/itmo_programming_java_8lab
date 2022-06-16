@@ -38,6 +38,13 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 
 public class HomeFrame extends FrameProduct implements Runnable {
+    private static final int LOCATION = 100;
+    private static final int UP_PANEL_HEIGHT = 85;
+    private static final int DOWN_PANEL_HEIGHT = 115;
+    private static final int LEFT_PANEL_WEIGHT = 95;
+    private static final int ENTER_BETWEEN_UP_LABELS = 5;
+    private static final int STANDARD_SIZE_TEXT_LABELS_ON_TABLE = 13;
+    private static final int USER_NAME_SIZE = 38;
     private TablePanel mainPanel;
     private final String login;
     private TableModule tableModule;
@@ -53,13 +60,6 @@ public class HomeFrame extends FrameProduct implements Runnable {
     private final Dimension preferredSize = new Dimension(screenSize.width - 150, screenSize.height - 50);
     private final Dimension minimumSize = new Dimension((int) (screenSize.width / 1.2), (int) (screenSize.height / 1.2));
     private final Dimension trashSize = new Dimension(95, 95);
-    private final int location = 100;
-    private final int upPanelHeight = 85;
-    private final int downPanelHeight = 115;
-    private final int leftPanelWeight = 95;
-    private final int enterBetweenUpLabels = 5;
-    private final int standardSizeTextLabelsOnTable = 13;
-    private final int userNameSize = 38;
     private JButton minus;
     private final int standardSizeText = 20;
 
@@ -79,7 +79,7 @@ public class HomeFrame extends FrameProduct implements Runnable {
         getFrame().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         getFrame().setPreferredSize(preferredSize);
         getFrame().setMinimumSize(minimumSize);
-        getFrame().setLocation(location, location);
+        getFrame().setLocation(LOCATION, LOCATION);
         getFrame().setLayout(new BorderLayout());
         JButton trash = createPictureButton("trash", green, Pictures.TRASH.getPath(), e -> treatmentResponseWithCommandName(Command.CLEAR.getString(), this::show));
         trash.setPreferredSize(trashSize);
@@ -96,12 +96,12 @@ public class HomeFrame extends FrameProduct implements Runnable {
         JButton plus = createPictureButton("plus", Color.white, Pictures.PLUS.getPath(), plusListener);
         panel.add(plus);
         downPanel.add(panel, BorderLayout.EAST);
-        downPanel.setPreferredSize(new Dimension(getFrame().getWidth(), downPanelHeight));
+        downPanel.setPreferredSize(new Dimension(getFrame().getWidth(), DOWN_PANEL_HEIGHT));
         createTable();
         mainPanel.setOpaque(true);
         mainPanel.setPreferredSize(new Dimension(getFrame().getWidth() / 2, getFrame().getHeight() / 2));
         upPanel.setBackground(Color.BLACK);
-        upPanel.setPreferredSize(new Dimension(getFrame().getWidth(), upPanelHeight));
+        upPanel.setPreferredSize(new Dimension(getFrame().getWidth(), UP_PANEL_HEIGHT));
         upPanel.setLayout(new BoxLayout(upPanel, BoxLayout.X_AXIS));
         getFrame().getContentPane().add(BorderLayout.CENTER, mainPanel);
         getFrame().getContentPane().add(BorderLayout.CENTER, mainPanel);
@@ -136,7 +136,7 @@ public class HomeFrame extends FrameProduct implements Runnable {
         JPanel leftPanel = new JPanel();
         leftPanel.setBackground(green);
         leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
-        leftPanel.setPreferredSize(new Dimension(leftPanelWeight, getFrame().getHeight()));
+        leftPanel.setPreferredSize(new Dimension(LEFT_PANEL_WEIGHT, getFrame().getHeight()));
         leftPanel.add(picture);
         leftPanel.add(restart);
         leftPanel.add(help);
@@ -165,11 +165,11 @@ public class HomeFrame extends FrameProduct implements Runnable {
         JButton filter = createFilter();
 
         upPanel.add(createLanguage(Color.white), BorderLayout.WEST);
-        upPanel.add(Box.createRigidArea(new Dimension(enterBetweenUpLabels, 0)));
+        upPanel.add(Box.createRigidArea(new Dimension(ENTER_BETWEEN_UP_LABELS, 0)));
         upPanel.add(filter, BorderLayout.WEST);
-        upPanel.add(Box.createRigidArea(new Dimension(enterBetweenUpLabels, 0)));
+        upPanel.add(Box.createRigidArea(new Dimension(ENTER_BETWEEN_UP_LABELS, 0)));
         upPanel.add(groupCountingByPrice, BorderLayout.WEST);
-        upPanel.add(Box.createRigidArea(new Dimension(enterBetweenUpLabels, 0)));
+        upPanel.add(Box.createRigidArea(new Dimension(ENTER_BETWEEN_UP_LABELS, 0)));
         upPanel.add(manCost, BorderLayout.WEST);
         JPanel jPanel = new JPanel();
         jPanel.setLayout(new BorderLayout());
@@ -177,7 +177,7 @@ public class HomeFrame extends FrameProduct implements Runnable {
 
         jPanel.add(nameUser, BorderLayout.EAST);
         upPanel.add(jPanel, BorderLayout.AFTER_LINE_ENDS);
-        upPanel.add(Box.createRigidArea(new Dimension(enterBetweenUpLabels, 0)));
+        upPanel.add(Box.createRigidArea(new Dimension(ENTER_BETWEEN_UP_LABELS, 0)));
         plusListener.setResourceBundle(getResourceBundle());
 
     }
@@ -186,13 +186,13 @@ public class HomeFrame extends FrameProduct implements Runnable {
     private void createTable() {
         tableModule = new TableModule(getResourceBundle());
         JTable table = new JTable(tableModule);
-        table.setFont(new Font("Safari", Font.BOLD, standardSizeTextLabelsOnTable));
+        table.setFont(new Font("Safari", Font.BOLD, STANDARD_SIZE_TEXT_LABELS_ON_TABLE));
         JTableHeader tableHeader = table.getTableHeader();
         table.setAutoCreateRowSorter(true);
         table.setUpdateSelectionOnSort(false);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         tableHeader.setBackground(blue);
-        tableHeader.setFont(new Font("Safari", Font.PLAIN, standardSizeTextLabelsOnTable));
+        tableHeader.setFont(new Font("Safari", Font.PLAIN, STANDARD_SIZE_TEXT_LABELS_ON_TABLE));
         tableHeader.setFocusable(false);
         mainPanel = createTablePanel(table);
         mainPanel.repaint();
@@ -218,7 +218,6 @@ public class HomeFrame extends FrameProduct implements Runnable {
                             @Override
                             protected void sentProduct(Long key, Product product) {
                             }
-
                             @Override
                             public void actionPerformed(ActionEvent e) {
                                 try {
@@ -231,7 +230,6 @@ public class HomeFrame extends FrameProduct implements Runnable {
                                     exception(ex.getMessage());
                                 }
                             }
-
                             private void sentProduct() {
                                 getFrame().dispatchEvent(new WindowEvent(getFrame(), WindowEvent.WINDOW_CLOSING));
                                 treatmentResponseWithoutFrame(HomeFrame.this::show);
@@ -246,7 +244,7 @@ public class HomeFrame extends FrameProduct implements Runnable {
     private JLabel createUserName() {
         JLabel userName = new JLabel(login);
         userName.setForeground(Color.WHITE);
-        userName.setFont(underLine(new Font("Safari", Font.BOLD, userNameSize)));
+        userName.setFont(underLine(new Font("Safari", Font.BOLD, USER_NAME_SIZE)));
         return userName;
     }
 
@@ -392,7 +390,6 @@ public class HomeFrame extends FrameProduct implements Runnable {
     }
 
     public void setGraphicCollection(HashMap<Long, Product> graphicCollection) {
-        System.out.println("seted");
         this.graphicCollection = graphicCollection;
     }
 

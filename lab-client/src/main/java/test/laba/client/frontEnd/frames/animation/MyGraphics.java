@@ -31,17 +31,17 @@ public class MyGraphics extends JComponent implements ActionListener, MouseListe
     private static final int FINISH_UMBRELLA_ROUND = 180;
     private static final int MAX_RGB = 256;
     private static final int MAX_UMBRELLA = Toolkit.getDefaultToolkit().getScreenSize().height / 4;
+    private static final int MIN_SIZE_PRICE = 40;
+    private static final int MIN_SIZE_X = -233;
+    private static final int MIN_SIZE_Y = 0;
+    private static final int UPDATE_TIME = 5;
+    private static final int OFFSET_X = 233;
     private int maxX = this.getSize().width;
-    private final int offsetX = 233;
     private int maxY = this.getSize().height;
-    private final int minSizePrice = 40;
-    private final int minSizeX = -233;
-    private final int minSizeY = 0;
-    private final int updateTime = 5;
     private final HomeFrame homeFrame;
     private final HashMap<Long, Umbrella> newCollectionInsert = new HashMap<>();
     private final HashMap<Long, Umbrella> collection = new HashMap<>();
-    private final javax.swing.Timer timer = new Timer(updateTime, this);
+    private final javax.swing.Timer timer = new Timer(UPDATE_TIME, this);
 
 
     public MyGraphics(HomeFrame homeFrame) {
@@ -143,7 +143,7 @@ public class MyGraphics extends JComponent implements ActionListener, MouseListe
                     }
                 });
             }
-        }.actionPerformed(new ActionEvent(this, updateTime, "showUpdate"));
+        }.actionPerformed(new ActionEvent(this, UPDATE_TIME, "showUpdate"));
     }
 
     @Override
@@ -163,6 +163,7 @@ public class MyGraphics extends JComponent implements ActionListener, MouseListe
     }
 
     private final class Umbrella extends JComponent implements Comparable<Umbrella> {
+        private static final int TREMBLING_CONSTANT_INTEGER = 100;
         public final int colorWhite = 255;
         private Integer moveX = 0;
         private int productX;
@@ -171,7 +172,6 @@ public class MyGraphics extends JComponent implements ActionListener, MouseListe
         private Color color;
         private int widthOrHeight;
         private int trembling;
-        private final int tremblingConstantInteger = 100;
         private Product product;
         private final HashMap<Condition, IFunction> function = new HashMap<>();
         private Arc2D umbrellaRound;
@@ -192,9 +192,9 @@ public class MyGraphics extends JComponent implements ActionListener, MouseListe
 
         private void initialization(Product newProduct) {
             updateSize();
-            this.productX = check(newProduct.getCoordinates().getX(), minSizeX, maxX, offsetX);
-            this.moveY = check(Math.round(newProduct.getCoordinates().getY()), minSizeY, maxY);
-            this.widthOrHeight = check(Math.toIntExact(newProduct.getPrice()), minSizePrice, MAX_UMBRELLA);
+            this.productX = check(newProduct.getCoordinates().getX(), MIN_SIZE_X, maxX, OFFSET_X);
+            this.moveY = check(Math.round(newProduct.getCoordinates().getY()), MIN_SIZE_Y, maxY);
+            this.widthOrHeight = check(Math.toIntExact(newProduct.getPrice()), MIN_SIZE_PRICE, MAX_UMBRELLA);
             this.color = createColor(newProduct.getOwnerID().hashCode());
         }
 
@@ -207,7 +207,6 @@ public class MyGraphics extends JComponent implements ActionListener, MouseListe
         public void draw(Graphics2D graphics) {
             final int startUmbrellaHandleX = moveX + (widthOrHeight / 2);
             final int startUmbrellaHandleY = moveY + (widthOrHeight / 2);
-            final int finishUmbrellaHandleX = startUmbrellaHandleX;
             final int finishUmbrellaHandleY = (int) ((widthOrHeight * MULTI_FOR_UMBRELLA_HANDLE) + startUmbrellaHandleY);
 
             final int widthOrHeightUmbrellaHandle = widthOrHeight / 8;
@@ -226,7 +225,7 @@ public class MyGraphics extends JComponent implements ActionListener, MouseListe
             graphics.setStroke(new BasicStroke(thicknessForUmbrellaHandle));
             umbrellaRound = new Arc2D.Float(moveX, moveY, widthOrHeight, widthOrHeight, START_UMBRELLA_ROUND, FINISH_UMBRELLA_ROUND, Arc2D.PIE);
             graphics.fill(umbrellaRound);
-            umbrellaHandle = new Line2D.Float(startUmbrellaHandleX, startUmbrellaHandleY, finishUmbrellaHandleX, finishUmbrellaHandleY);
+            umbrellaHandle = new Line2D.Float(startUmbrellaHandleX, startUmbrellaHandleY, startUmbrellaHandleX, finishUmbrellaHandleY);
             graphics.draw(umbrellaHandle);
             umbrellaRoundSmall = new Arc2D.Float(startUmbrellaHandleRoundX, startUmbrellaHandleRoundY, widthOrHeightUmbrellaHandle, widthOrHeightUmbrellaHandle, START_UMBRELLA_ROUND, finishUmbrellaHandleRound, Arc2D.OPEN);
             graphics.draw(umbrellaRoundSmall);
@@ -259,7 +258,7 @@ public class MyGraphics extends JComponent implements ActionListener, MouseListe
                 draw(graphics);
             } else {
                 condition = Condition.SHOW;
-                trembling = tremblingConstantInteger;
+                trembling = TREMBLING_CONSTANT_INTEGER;
                 initialization(product);
             }
 

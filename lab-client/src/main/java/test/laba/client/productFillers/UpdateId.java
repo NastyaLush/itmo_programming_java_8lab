@@ -154,12 +154,8 @@ public class UpdateId {
     private <T> T parsFieldFromConsole(IFunction pars, Command command) throws VariableException {
         String answer;
         T value;
-        while (true) {
-            answer = console.askFullQuestion();
-            value = (T) pars.function(text(command), answer, resourceBundle);
-            break;
-
-        }
+        answer = console.askFullQuestion();
+        value = (T) pars.function(text(command), answer, resourceBundle);
         return value;
     }
 

@@ -3,6 +3,7 @@ package test.laba.client.frontEnd.frames.changeProductFrames;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.util.Objects;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -24,15 +25,15 @@ import java.util.HashMap;
 import java.util.ResourceBundle;
 
 public abstract class ChangeProductFrameAnimation extends ChangeProductFrame {
+    private static final int WIDTH_STANDARD_TEXT_FIELD = 15;
+    private static final int HEIGHT_STANDARD_AREA = 5;
+    private static final int HEIGHT_STANDARD_BUTTON = 24;
+    private static final int HEIGHT_STANDARD_AREA_SMALL = 5;
     private final Product product;
     private final Long key;
     private JButton remove;
     private final HashMap<String, IFunctionString> functions;
     private final Dimension standardDimension = new Dimension(23, 24);
-    private final int widthStandardTextField = 15;
-    private final int heightStandardArea = 5;
-    private final int heightStandardButton = 24;
-    private final int heightStandardAreaSmall = 5;
 
     public ChangeProductFrameAnimation(ResourceBundle resourceBundle, Product product, Long key, HomeFrame homeFrame) {
         super(resourceBundle, homeFrame);
@@ -72,8 +73,8 @@ public abstract class ChangeProductFrameAnimation extends ChangeProductFrame {
         label.setPreferredSize(standardDimension);
 
         JTextField textField = new JTextField(getDescription(name));
-        textField.setPreferredSize(new Dimension(widthStandardTextField, heightStandardButton));
-        Component enter = Box.createRigidArea(new Dimension(0, heightStandardArea));
+        textField.setPreferredSize(new Dimension(WIDTH_STANDARD_TEXT_FIELD, HEIGHT_STANDARD_BUTTON));
+        Component enter = Box.createRigidArea(new Dimension(0, HEIGHT_STANDARD_AREA));
 
 
         addLabels(saveToDelete, label, textField, enter);
@@ -102,7 +103,7 @@ public abstract class ChangeProductFrameAnimation extends ChangeProductFrame {
                 show(ex.getMessage());
             }
         });
-        getMainPlusPanel().add(Box.createRigidArea(new Dimension(0, heightStandardAreaSmall)));
+        getMainPlusPanel().add(Box.createRigidArea(new Dimension(0, HEIGHT_STANDARD_AREA_SMALL)));
         getMainPlusPanel().add(remove);
     }
 
@@ -139,13 +140,13 @@ public abstract class ChangeProductFrameAnimation extends ChangeProductFrame {
         label.setPreferredSize(standardDimension);
 
 
-        JMenu menu = createUMMenu(localisation(getResourceBundle(), localUM(product.getUnitOfMeasure())));
+        JMenu menu = createUMMenu(localisation(getResourceBundle(), Objects.requireNonNull(localUM(product.getUnitOfMeasure()))));
         menu.setName(getDescription(name));
         JMenuBar menuBar = unitOfMeasureButton(menu);
 
         getMainPlusPanel().add(label);
         getMainPlusPanel().add(menuBar);
-        getMainPlusPanel().add(Box.createRigidArea(new Dimension(0, heightStandardArea)));
+        getMainPlusPanel().add(Box.createRigidArea(new Dimension(0, HEIGHT_STANDARD_AREA)));
         return menu;
     }
 

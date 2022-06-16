@@ -13,9 +13,9 @@ import javax.swing.event.ListSelectionListener;
 
 public abstract class TablePanel extends JPanel
         implements ActionListener {
+    private static final Dimension TABLE_SIZE = new Dimension(500, 70);
     private final JTable table;
     private int columnForChanging;
-    private final Dimension tableSize = new Dimension(500, 70);
 
     public TablePanel(JTable table) {
         super();
@@ -25,7 +25,7 @@ public abstract class TablePanel extends JPanel
         table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         table.setAutoCreateRowSorter(true);
 
-        table.setPreferredScrollableViewportSize(tableSize);
+        table.setPreferredScrollableViewportSize(TABLE_SIZE);
         table.setFillsViewportHeight(true);
         table.getSelectionModel().addListSelectionListener(new RowListener());
         add(new JScrollPane(table));

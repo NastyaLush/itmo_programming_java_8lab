@@ -247,12 +247,8 @@ public class ClientApp {
                 }
                 try {
                     sendAndReceiveCommandScript(command);
-                } catch (ClassNotFoundException e) {
+                } catch (ClassNotFoundException | VariableException | CreateError e) {
                     logger.warning(e.getMessage());
-                } catch (VariableException e) {
-                    throw new RuntimeException(e);
-                } catch (CreateError e) {
-                    throw new RuntimeException(e);
                 }
             }
         } catch (FileNotFoundException e) {
@@ -266,7 +262,7 @@ public class ClientApp {
             try {
                 reader.close();
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                logger.warning(e.getMessage());
             }
             deleteFromStack(fileName);
         }
@@ -301,36 +297,28 @@ public class ClientApp {
         Response frameResponse = frame.getResponse();
         login = frameResponse.getLogin();
         password = frameResponse.getPassword();
+        RegisterResponse response1;
         if (frame.isNewUser()) {
-            RegisterResponse response1 = new RegisterResponse(login, password, Values.REGISTRATION.toString());
-            wrapper.sent(response1);
-            Response response = wrapper.readResponse();
-            if (response instanceof ResponseWithError) {
-                frame.exception(response.getCommand());
-                logger.info(response.getCommand());
-                lock.lock();
-                condition.await();
-                lock.unlock();
-                registeringUser();
-            } else {
-                logger.info(response.getCommand());
-            }
+            response1 = new RegisterResponse(login, password, Values.REGISTRATION.toString());
         } else {
-            RegisterResponse response1 = new RegisterResponse(login, password, Values.AUTHORISATION.toString());
-            wrapper.sent(response1);
-            Response response = wrapper.readResponse();
-            if (response instanceof ResponseWithError) {
-                frame.exception(response.getCommand());
-                logger.info(response.getCommand());
-                lock.lock();
-                condition.await();
-                lock.unlock();
-                registeringUser();
-            } else {
-                logger.info(response.getCommand());
-            }
+            response1 = new RegisterResponse(login, password, Values.AUTHORISATION.toString());
         }
+        registering(response1);
         logger.info("the registration is finished ");
+    }
+    private void registering(RegisterResponse response1) throws IOException, ClassNotFoundException, InterruptedException {
+        wrapper.sent(response1);
+        Response response = wrapper.readResponse();
+        if (response instanceof ResponseWithError) {
+            frame.exception(response.getCommand());
+            logger.info(response.getCommand());
+            lock.lock();
+            condition.await();
+            lock.unlock();
+            registeringUser();
+        } else {
+            logger.info(response.getCommand());
+        }
     }
 
     public void close(String message) {

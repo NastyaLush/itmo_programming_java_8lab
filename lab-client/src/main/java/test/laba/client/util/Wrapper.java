@@ -17,7 +17,7 @@ import java.util.logging.Level;
 
 public class Wrapper {
     public static final Logger LOGGER = Logger.getLogger(Wrapper.class.getName());
-    private final int capacity = 10000;
+    private static final int CAPACITY = 10000;
     private final OutputStream out;
     private final InputStream in;
 
@@ -40,7 +40,7 @@ public class Wrapper {
 
     public Response readResponse() throws IOException, ClassNotFoundException {
         LOGGER.fine("response try to read");
-        ByteBuffer byteBuffer = ByteBuffer.allocate(capacity);
+        ByteBuffer byteBuffer = ByteBuffer.allocate(CAPACITY);
         in.read(byteBuffer.array());
         LOGGER.fine("response was given");
         return ObjectWrapper.deserialize(byteBuffer);
