@@ -79,7 +79,7 @@ public final class Client {
 
     private static void treatmentException(String message, Logger logger, Frame frame, ClientApp clientApp, Lock lock, Condition ready) {
         logger.warning(Util.giveColor(Colors.RED, message));
-        if (frame.getFrame().isValid()) {
+        if (frame.getFrame().isVisible()) {
             frame.exception(message);
         } else {
             clientApp.close(message);
