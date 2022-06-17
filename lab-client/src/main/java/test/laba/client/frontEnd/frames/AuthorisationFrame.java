@@ -25,7 +25,7 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 
 
-public class Frame extends AbstractFrame implements Runnable {
+public class AuthorisationFrame extends AbstractFrame implements Runnable {
     private static final int EIGHT_PANEL_SMALLER = 8;
     private static final int FOURTEEN_TWICE_PANEL_SMALLER = 14;
     private static final int AUTHORISATION_TEXT_SIZE = 50;
@@ -63,7 +63,7 @@ public class Frame extends AbstractFrame implements Runnable {
     private boolean isNewUser = false;
 
 
-    public Frame(Condition condition, Lock lock) {
+    public AuthorisationFrame(Condition condition, Lock lock) {
         super(new JFrame(), Local.getResourceBundleDefault());
         this.lock = lock;
         this.condition = condition;
@@ -165,7 +165,7 @@ public class Frame extends AbstractFrame implements Runnable {
     }
 
     private JButton createButton(Constants constants, ActionListener actionListener) {
-        JButton signUp = new JButton(localisation(getResourceBundle(), constants));
+        JButton signUp = new JButton(localisation(constants));
         signUp.setFont(STANDARD_FONT);
         signUp.setBackground(Color.gray);
         signUp.addActionListener(actionListener);
@@ -173,12 +173,12 @@ public class Frame extends AbstractFrame implements Runnable {
     }
 
     private void initialization() {
-        login = new JLabel(localisation(getResourceBundle(), Constants.LOGIN));
-        password = new JLabel(localisation(getResourceBundle(), Constants.PASSWORD));
-        host = new JLabel(localisation(getResourceBundle(), Constants.HOST));
-        port = new JLabel(localisation(getResourceBundle(), Constants.PORT));
-        authorisation = new JLabel(localisation(getResourceBundle(), Constants.AUTHORISATION));
-        register = new JButton(localisation(getResourceBundle(), Constants.NOT_LOGIN_YET));
+        login = new JLabel(localisation(Constants.LOGIN));
+        password = new JLabel(localisation(Constants.PASSWORD));
+        host = new JLabel(localisation(Constants.HOST));
+        port = new JLabel(localisation(Constants.PORT));
+        authorisation = new JLabel(localisation(Constants.AUTHORISATION));
+        register = new JButton(localisation(Constants.NOT_LOGIN_YET));
     }
 
     public String getHost() {
@@ -219,7 +219,7 @@ public class Frame extends AbstractFrame implements Runnable {
         @Override
         public void actionPerformed(ActionEvent e) {
             isNewUser = true;
-            authorisation.setText(localisation(getResourceBundle(), Constants.REGISTRATION));
+            authorisation.setText(localisation(Constants.REGISTRATION));
             mainPanel.remove(register);
             mainPanel.add(createEnter(ENTER_SIZE_AFTER_SING_UP));
             mainPanel.add(createButton(Constants.BACK, e1 -> {

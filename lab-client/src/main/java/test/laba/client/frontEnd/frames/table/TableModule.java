@@ -110,7 +110,7 @@ public class TableModule extends AbstractTableModel implements Localized {
         newProduct.add(dateFormat.format(Date.from(product.getCreationDate().toInstant())));
         newProduct.add(product.getPrice());
         newProduct.add(product.getManufactureCost());
-        newProduct.add(localisation(resourceBundle, UNIT_OF_MEASURE_CONSTANTS_HASH_MAP.get(product.getUnitOfMeasure())));
+        newProduct.add(localisation(UNIT_OF_MEASURE_CONSTANTS_HASH_MAP.get(product.getUnitOfMeasure())));
         if (product.getOwner() != null) {
             newProduct.add(product.getOwner().getName());
             newProduct.add(dateFormat.format(Date.from(product.getOwner().getBirthday().toInstant())));
@@ -132,21 +132,21 @@ public class TableModule extends AbstractTableModel implements Localized {
     }
 
     private void initialization() {
-        head.put(KEY_COLUMN, localisation(resourceBundle, Constants.KEY));
-        head.put(ID_COLUMN, localisation(resourceBundle, Constants.ID));
-        head.put(PRODUCT_NAME_COLUMN, localisation(resourceBundle, Constants.PRODUCT_NAME));
-        head.put(COORDINATION_X_COLUMN, localisation(resourceBundle, Constants.COORDINATE_X));
-        head.put(COORDINATION_Y_COLUMN, localisation(resourceBundle, Constants.COORDINATE_Y));
-        head.put(CREATION_DATE_COLUMN, localisation(resourceBundle, Constants.CREATION_DATE));
-        head.put(PRICE_COLUMN, localisation(resourceBundle, Constants.PRICE));
-        head.put(MANUFACTURE_COST_COLUMN, localisation(resourceBundle, Constants.MANUFACTURE_COST));
-        head.put(UNIT_OF_MEASURE_COLUMN, localisation(resourceBundle, Constants.UNIT_OF_MEASURE));
-        head.put(PERSON_NAME_COLUMN, localisation(resourceBundle, Constants.PERSON_NAME));
-        head.put(BIRTHDAY_COLUMN, localisation(resourceBundle, Constants.BIRTHDAY));
-        head.put(HEIGHT_COLUMN, localisation(resourceBundle, Constants.HEIGHT));
-        head.put(LOCATION_X_COLUMN, localisation(resourceBundle, Constants.LOCATION_X));
-        head.put(LOCATION_Y_COLUMN, localisation(resourceBundle, Constants.LOCATION_Y));
-        head.put(LOCATION_NAME_COLUMN, localisation(resourceBundle, Constants.LOCATION_NAME));
+        head.put(KEY_COLUMN, localisation(Constants.KEY));
+        head.put(ID_COLUMN, localisation(Constants.ID));
+        head.put(PRODUCT_NAME_COLUMN, localisation(Constants.PRODUCT_NAME));
+        head.put(COORDINATION_X_COLUMN, localisation(Constants.COORDINATE_X));
+        head.put(COORDINATION_Y_COLUMN, localisation(Constants.COORDINATE_Y));
+        head.put(CREATION_DATE_COLUMN, localisation(Constants.CREATION_DATE));
+        head.put(PRICE_COLUMN, localisation(Constants.PRICE));
+        head.put(MANUFACTURE_COST_COLUMN, localisation(Constants.MANUFACTURE_COST));
+        head.put(UNIT_OF_MEASURE_COLUMN, localisation(Constants.UNIT_OF_MEASURE));
+        head.put(PERSON_NAME_COLUMN, localisation(Constants.PERSON_NAME));
+        head.put(BIRTHDAY_COLUMN, localisation(Constants.BIRTHDAY));
+        head.put(HEIGHT_COLUMN, localisation(Constants.HEIGHT));
+        head.put(LOCATION_X_COLUMN, localisation(Constants.LOCATION_X));
+        head.put(LOCATION_Y_COLUMN, localisation(Constants.LOCATION_Y));
+        head.put(LOCATION_NAME_COLUMN, localisation(Constants.LOCATION_NAME));
 
         classField.put(KEY_COLUMN, Long.class);
         classField.put(ID_COLUMN, Long.class);
@@ -180,9 +180,13 @@ public class TableModule extends AbstractTableModel implements Localized {
     public void clearFilter() {
         this.values.clear();
     }
-    public String[] unitOfMeasureContains(ResourceBundle resource) {
-        return UNIT_OF_MEASURE_CONSTANTS_HASH_MAP.values().stream().map(e -> localisation(resource, e)).toArray(String[]::new);
+    public String[] unitOfMeasureContains() {
+        return UNIT_OF_MEASURE_CONSTANTS_HASH_MAP.values().stream().map(e -> localisation(e)).toArray(String[]::new);
     }
 
 
+    @Override
+    public ResourceBundle getResourceBundle() {
+        return resourceBundle;
+    }
 }

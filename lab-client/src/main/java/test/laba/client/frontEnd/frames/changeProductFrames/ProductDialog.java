@@ -23,6 +23,7 @@ public abstract class ProductDialog implements Localized {
         this.resourceBundle = resourceBundle;
     }
 
+    @Override
     public ResourceBundle getResourceBundle() {
         return resourceBundle;
     }
@@ -38,22 +39,15 @@ public abstract class ProductDialog implements Localized {
     public void setDialog(JDialog dialog) {
         this.dialog = dialog;
     }
-
-    protected String local(Constants constants) {
-        return localisation(resourceBundle, constants);
-    }
-
-
-
     public JMenu createUMMenu(String name) {
         JMenu menu = new JMenu(name);
         menu.setPreferredSize(umSize);
         menu.setFont(umFont);
-        JMenuItem pcs = new JMenuItem(localisation(getResourceBundle(), Constants.PCS));
+        JMenuItem pcs = new JMenuItem(localisation(Constants.PCS));
         changeMenuName(pcs, menu);
-        JMenuItem millilitres = new JMenuItem(localisation(getResourceBundle(), Constants.MILLILITERS));
+        JMenuItem millilitres = new JMenuItem(localisation(Constants.MILLILITERS));
         changeMenuName(millilitres, menu);
-        JMenuItem grams = new JMenuItem(localisation(getResourceBundle(), Constants.GRAMS));
+        JMenuItem grams = new JMenuItem(localisation(Constants.GRAMS));
         changeMenuName(grams, menu);
 
         menu.add(pcs);

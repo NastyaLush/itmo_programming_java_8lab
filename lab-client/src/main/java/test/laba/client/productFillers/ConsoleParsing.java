@@ -21,9 +21,11 @@ import java.time.ZonedDateTime;
  */
 public class ConsoleParsing implements Localized {
     private final Console console;
+    private final ResourceBundle resourceBundle;
 
-    public ConsoleParsing(Console console) {
+    public ConsoleParsing(Console console, ResourceBundle resourceBundle) {
         this.console = console;
+        this.resourceBundle = resourceBundle;
     }
 
     /**
@@ -31,15 +33,15 @@ public class ConsoleParsing implements Localized {
      *
      * @return product object
      */
-    public Product parsProductFromConsole(ResourceBundle resourceBundle) throws CreateError, VariableException {
+    public Product parsProductFromConsole() throws CreateError, VariableException {
         Person owner = null;
-        String name = parsField(VariableParsing::toRightName, Command.PRODUCT_NAME, resourceBundle);
-        Coordinates coordinates = parsCoordinatesFromConsole(resourceBundle);
-        Long price = parsField(VariableParsing::toRightPrice, Command.PRICE, resourceBundle);
-        Integer manufactureCost = parsField(VariableParsing::toRightNumberInt, Command.MANUFACTURE_COST, resourceBundle);
-        UnitOfMeasure unitOfMeasure = parsField(VariableParsing::toRightUnitOfMeasure, Command.UNIT_OF_MEASURE, resourceBundle);
+        String name = parsField(VariableParsing::toRightName, Command.PRODUCT_NAME);
+        Coordinates coordinates = parsCoordinatesFromConsole();
+        Long price = parsField(VariableParsing::toRightPrice, Command.PRICE);
+        Integer manufactureCost = parsField(VariableParsing::toRightNumberInt, Command.MANUFACTURE_COST);
+        UnitOfMeasure unitOfMeasure = parsField(VariableParsing::toRightUnitOfMeasure, Command.UNIT_OF_MEASURE);
         if (console.askQuestion()) {
-            owner = parsPersonFromConsole(resourceBundle);
+            owner = parsPersonFromConsole();
         }
         Product product;
         product = new Product(name, coordinates, price, manufactureCost, unitOfMeasure, owner);
@@ -47,10 +49,10 @@ public class ConsoleParsing implements Localized {
 
     }
 
-    private Location parsLocationFromConsole(ResourceBundle resourceBundle) throws VariableException {
-        Long x = parsField(VariableParsing::toRightNumberLong, Command.LOCATION_X, resourceBundle);
-        Integer y = parsField(VariableParsing::toRightNumberInt, Command.LOCATION_Y, resourceBundle);
-        String name = parsField(VariableParsing::toRightName, Command.LOCATION_NAME, resourceBundle);
+    private Location parsLocationFromConsole() throws VariableException {
+        Long x = parsField(VariableParsing::toRightNumberLong, Command.LOCATION_X);
+        Integer y = parsField(VariableParsing::toRightNumberInt, Command.LOCATION_Y);
+        String name = parsField(VariableParsing::toRightName, Command.LOCATION_NAME);
 
         try {
             return new Location(x, y, name);
@@ -60,44 +62,49 @@ public class ConsoleParsing implements Localized {
         }
     }
 
-    public Person parsPersonFromConsole(ResourceBundle resourceBundle) throws VariableException {
-        String name = parsField(VariableParsing::toRightName, Command.PERSON_NAME, resourceBundle);
-        ZonedDateTime newBirthday = parsField(VariableParsing::toRightBirthday, Command.BIRTHDAY, resourceBundle);
-        Integer height = parsField(VariableParsing::toRightHeight, Command.HEIGHT, resourceBundle);
-        Location location = parsLocationFromConsole(resourceBundle);
+    public Person parsPersonFromConsole() throws VariableException {
+        String name = parsField(VariableParsing::toRightName, Command.PERSON_NAME);
+        ZonedDateTime newBirthday = parsField(VariableParsing::toRightBirthday, Command.BIRTHDAY);
+        Integer height = parsField(VariableParsing::toRightHeight, Command.HEIGHT);
+        Location location = parsLocationFromConsole();
         Person person;
         try {
             person = new Person(name, newBirthday, height, location);
             return person;
         } catch (CreateError e) {
-            return parsPersonFromConsole(resourceBundle);
+            return parsPersonFromConsole();
         }
     }
 
-    private Coordinates parsCoordinatesFromConsole(ResourceBundle resourceBundle) throws VariableException {
-        Integer x = parsField(VariableParsing::toRightX, Command.COORDINATE_Y, resourceBundle);
-        Float y = parsField(VariableParsing::toRightY, Command.COORDINATE_Y, resourceBundle);
+    private Coordinates parsCoordinatesFromConsole() throws VariableException {
+        Integer x = parsField(VariableParsing::toRightX, Command.COORDINATE_Y);
+        Float y = parsField(VariableParsing::toRightY, Command.COORDINATE_Y);
         return new Coordinates(x, y);
 
     }
 
-    public <T> T parsField(IFunction pars, Command field, ResourceBundle resourceBundle) throws VariableException {
+    public <T> T parsField(IFunction pars, Command field) throws VariableException {
         T value;
         String simpleField;
         simpleField = console.scanner();
         if (simpleField != null) {
             value = (T) pars.function(text(field), simpleField, resourceBundle);
         } else {
-            throw new VariableException(localisation(resourceBundle, Constants.CAN_NOT_BE_NULL));
+            throw new VariableException(localisation(Constants.CAN_NOT_BE_NULL));
         }
         if (value == null) {
-            throw new VariableException(localisation(resourceBundle, Constants.CAN_NOT_BE_NULL));
+            throw new VariableException(localisation(Constants.CAN_NOT_BE_NULL));
         }
         return value;
     }
 
     private String text(Command field) {
         return field.getString();
+    }
+
+    @Override
+    public ResourceBundle getResourceBundle() {
+        return resourceBundle;
     }
 
     public interface IFunction<T> {

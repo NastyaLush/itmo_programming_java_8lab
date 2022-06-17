@@ -38,12 +38,12 @@ public abstract class AbstractFrame implements FrameInterface, Localized {
 
     @Override
     public void exception(String exception) {
-        JOptionPane.showMessageDialog(jFrame, exception, localisation(resourceBundle, Constants.ERROR), JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(jFrame, exception, localisation(Constants.ERROR), JOptionPane.ERROR_MESSAGE);
     }
 
     @Override
     public void show(String message) {
-        JOptionPane.showConfirmDialog(jFrame, message, localisation(resourceBundle, Constants.INFO), JOptionPane.OK_CANCEL_OPTION);
+        JOptionPane.showConfirmDialog(jFrame, message, localisation(Constants.INFO), JOptionPane.OK_CANCEL_OPTION);
     }
 
     public void showScript(String message) {
@@ -76,7 +76,7 @@ public abstract class AbstractFrame implements FrameInterface, Localized {
         close(jFrame);
     }
     protected JMenuBar createLanguage(Color textColor) {
-        JMenu lang = new JMenu(localisation(getResourceBundle(), Constants.LANGUAGE));
+        JMenu lang = new JMenu(localisation(Constants.LANGUAGE));
         lang.setFocusPainted(false);
         lang.setFocusable(false);
         lang.setContentAreaFilled(false);
@@ -85,13 +85,13 @@ public abstract class AbstractFrame implements FrameInterface, Localized {
         lang.setFont(menuFont);
         lang.setForeground(textColor);
 
-        JMenuItem rus = new JMenuItem(localisation(getResourceBundle(), Constants.RUSSIAN));
+        JMenuItem rus = new JMenuItem(localisation(Constants.RUSSIAN));
         rus.setName(Local.RUSSIAN);
-        JMenuItem nor = new JMenuItem(localisation(getResourceBundle(), Constants.NORWEGIAN));
+        JMenuItem nor = new JMenuItem(localisation(Constants.NORWEGIAN));
         nor.setName(Local.NORWEGIAN);
-        JMenuItem fr = new JMenuItem(localisation(getResourceBundle(), Constants.FRENCH));
+        JMenuItem fr = new JMenuItem(localisation(Constants.FRENCH));
         fr.setName(Local.FRANCE);
-        JMenuItem sp = new JMenuItem(localisation(getResourceBundle(), Constants.SPANISH));
+        JMenuItem sp = new JMenuItem(localisation(Constants.SPANISH));
         sp.setName(Local.SPANISH);
 
 
@@ -141,6 +141,7 @@ public abstract class AbstractFrame implements FrameInterface, Localized {
         this.resourceBundle = resourceBundle;
     }
 
+    @Override
     public ResourceBundle getResourceBundle() {
         return resourceBundle;
     }
@@ -155,8 +156,5 @@ public abstract class AbstractFrame implements FrameInterface, Localized {
 
     public void setFrame(JFrame frame) {
         this.jFrame = frame;
-    }
-    protected String local(Constants constants) {
-        return localisation(resourceBundle, constants);
     }
 }

@@ -1,6 +1,7 @@
 package test.laba.client;
 
-import test.laba.client.frontEnd.frames.Frame;
+import java.util.ResourceBundle;
+import test.laba.client.frontEnd.frames.AuthorisationFrame;
 import test.laba.client.frontEnd.frames.local.Localized;
 import test.laba.client.util.Constants;
 import test.laba.common.IO.Colors;
@@ -18,7 +19,7 @@ import static test.laba.common.util.ValidInputDate.checkHost;
 import static test.laba.common.util.ValidInputDate.checkPort;
 import static test.laba.common.util.ValidInputDate.getPort;
 
-public final class Client implements Localized {
+public final class Client{
     private Client() {
         throw new UnsupportedOperationException("This is an utility class and can not be instantiated");
     }
@@ -32,11 +33,11 @@ public final class Client implements Localized {
         logger.info(Util.giveColor(Colors.BlUE, "the main method starts"));
         ReentrantLock lock = new ReentrantLock();
         Condition ready = lock.newCondition();
-        Frame frame = new Frame(ready, lock);
+        AuthorisationFrame frame = new AuthorisationFrame(ready, lock);
         connection(frame, lock, ready, logger);
    }
 
-    private static void connection(Frame frame, Lock lock, Condition ready, Logger logger) {
+    private static void connection(AuthorisationFrame frame, Lock lock, Condition ready, Logger logger) {
         ClientApp clientApp = new ClientApp(frame, ready, lock);
         Thread thread = new Thread(frame);
         thread.setDaemon(true);
@@ -57,7 +58,7 @@ public final class Client implements Localized {
                 if (checkPort(port) && checkHost(host)) {
                     break;
                 } else {
-                    frame.exception(frame.localisation(frame.getResourceBundle(), Constants.HOST_EXCEPTION));
+                    frame.exception(frame.localisation(/*frame.getResourceBundle(), */Constants.HOST_EXCEPTION));
                 }
             } catch (IOException e) {
                 frame.exception(e.getMessage());
@@ -77,10 +78,10 @@ public final class Client implements Localized {
         }
     }
 
-    private static void treatmentException(Constants constants, String message, Logger logger, Frame frame, ClientApp clientApp, Lock lock, Condition ready) {
+    private static void treatmentException(Constants constants, String message, Logger logger, AuthorisationFrame frame, ClientApp clientApp, Lock lock, Condition ready) {
         logger.warning(Util.giveColor(Colors.RED, message));
         if (frame.getFrame().isVisible()) {
-            frame.exception(frame.localisation(frame.getResourceBundle(), constants) + " " + message);
+            frame.exception(frame.localisation(constants) + " " + message);
         } else {
             clientApp.close(constants, message);
             frame.revalidateFrame();

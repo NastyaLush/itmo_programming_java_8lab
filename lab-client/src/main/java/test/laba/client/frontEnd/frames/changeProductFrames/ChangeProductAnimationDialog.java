@@ -39,26 +39,26 @@ public abstract class ChangeProductAnimationDialog extends ChangeProductDialog {
         super(resourceBundle, homeFrame);
         this.product = product;
         functions = new HashMap<>();
-        functions.put(local(Constants.PRODUCT_NAME), product::getName);
-        functions.put(local(Constants.COORDINATE_X), product.getCoordinates()::getX);
-        functions.put(local(Constants.COORDINATE_Y), product.getCoordinates()::getY);
-        functions.put(local(Constants.PRICE), product::getPrice);
-        functions.put(local(Constants.MANUFACTURE_COST), product::getManufactureCost);
-        functions.put(local(Constants.UNIT_OF_MEASURE), product::getUnitOfMeasure);
+        functions.put(localisation(Constants.PRODUCT_NAME), product::getName);
+        functions.put(localisation(Constants.COORDINATE_X), product.getCoordinates()::getX);
+        functions.put(localisation(Constants.COORDINATE_Y), product.getCoordinates()::getY);
+        functions.put(localisation(Constants.PRICE), product::getPrice);
+        functions.put(localisation(Constants.MANUFACTURE_COST), product::getManufactureCost);
+        functions.put(localisation(Constants.UNIT_OF_MEASURE), product::getUnitOfMeasure);
         if (product.getOwner() != null) {
-            functions.put(local(Constants.PERSON_NAME), product.getOwner()::getName);
-            functions.put(local(Constants.BIRTHDAY), product.getOwner()::getBirthday);
-            functions.put(local(Constants.HEIGHT), product.getOwner()::getHeight);
-            functions.put(local(Constants.LOCATION_NAME), product.getOwner().getLocation()::getName);
-            functions.put(local(Constants.LOCATION_X), product.getOwner().getLocation()::getX);
-            functions.put(local(Constants.LOCATION_Y), product.getOwner().getLocation()::getY);
+            functions.put(localisation(Constants.PERSON_NAME), product.getOwner()::getName);
+            functions.put(localisation(Constants.BIRTHDAY), product.getOwner()::getBirthday);
+            functions.put(localisation(Constants.HEIGHT), product.getOwner()::getHeight);
+            functions.put(localisation(Constants.LOCATION_NAME), product.getOwner().getLocation()::getName);
+            functions.put(localisation(Constants.LOCATION_X), product.getOwner().getLocation()::getX);
+            functions.put(localisation(Constants.LOCATION_Y), product.getOwner().getLocation()::getY);
         } else {
-            functions.put(local(Constants.PERSON_NAME), null);
-            functions.put(local(Constants.BIRTHDAY), null);
-            functions.put(local(Constants.HEIGHT), null);
-            functions.put(local(Constants.LOCATION_NAME), null);
-            functions.put(local(Constants.LOCATION_X), null);
-            functions.put(local(Constants.LOCATION_Y), null);
+            functions.put(localisation(Constants.PERSON_NAME), null);
+            functions.put(localisation(Constants.BIRTHDAY), null);
+            functions.put(localisation(Constants.HEIGHT), null);
+            functions.put(localisation(Constants.LOCATION_NAME), null);
+            functions.put(localisation(Constants.LOCATION_X), null);
+            functions.put(localisation(Constants.LOCATION_Y), null);
         }
 
         this.key = key;
@@ -93,7 +93,7 @@ public abstract class ChangeProductAnimationDialog extends ChangeProductDialog {
     @Override
     protected void addActionButtons() {
         super.addActionButtons();
-        remove = new JButton(localisation(getResourceBundle(), Constants.REMOVE_KEY));
+        remove = new JButton(localisation(Constants.REMOVE_KEY));
         remove.setBackground(Color.GRAY);
         remove.setFont(getLabelFont());
         remove.addActionListener(e -> {
@@ -140,7 +140,7 @@ public abstract class ChangeProductAnimationDialog extends ChangeProductDialog {
         label.setPreferredSize(standardDimension);
 
 
-        JMenu menu = createUMMenu(localisation(getResourceBundle(), Objects.requireNonNull(localUM(product.getUnitOfMeasure()))));
+        JMenu menu = createUMMenu(localisation(Objects.requireNonNull(localUM(product.getUnitOfMeasure()))));
         menu.setName(getDescription(name));
         JMenuBar menuBar = unitOfMeasureButton(menu);
 

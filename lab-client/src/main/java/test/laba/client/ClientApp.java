@@ -5,7 +5,7 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.logging.Logger;
 
-import test.laba.client.frontEnd.frames.Frame;
+import test.laba.client.frontEnd.frames.AuthorisationFrame;
 import test.laba.client.frontEnd.frames.HomeFrame;
 import test.laba.client.productFillers.ConsoleParsing;
 import test.laba.client.productFillers.UpdateId;
@@ -43,7 +43,7 @@ public class ClientApp {
     private Wrapper wrapper;
     private boolean isNormalUpdateID = true;
     private final HashSet<String> executeScriptFiles = new HashSet<>();
-    private final Frame frame;
+    private final AuthorisationFrame frame;
     private HomeFrame homeFrame;
     private boolean isExitInExecuteScript = false;
     private String login;
@@ -52,7 +52,7 @@ public class ClientApp {
     private final Lock lock;
     private ScriptConsole scriptConsole;
 
-    ClientApp(Frame frame, Condition condition, Lock lock) {
+    ClientApp(AuthorisationFrame frame, Condition condition, Lock lock) {
         this.lock = lock;
         this.condition = condition;
         this.frame = frame;
@@ -141,7 +141,7 @@ public class ClientApp {
             isNormalUpdateID = false;
         } else {
             Product product = response.getProduct();
-            response = new Response(login, password, Values.PRODUCT_WITH_QUESTIONS.toString(), id, new UpdateId(new ConsoleParsing(console2), console2, homeFrame.getResourceBundle()).execute(product));
+            response = new Response(login, password, Values.PRODUCT_WITH_QUESTIONS.toString(), id, new UpdateId(new ConsoleParsing(console2, homeFrame.getResourceBundle()), console2, homeFrame.getResourceBundle()).execute(product));
         }
         logger.fine("update id was execute");
         return response;
@@ -153,7 +153,7 @@ public class ClientApp {
         Response response = null;
         switch (value) {
             case PRODUCT:
-                response = new Response(login, password, command[0], VariableParsing.toLongNumber(Constants.ID.getString(), command[1], homeFrame.getResourceBundle()), new ConsoleParsing(console2).parsProductFromConsole(homeFrame.getResourceBundle()));
+                response = new Response(login, password, command[0], VariableParsing.toLongNumber(Constants.ID.getString(), command[1], homeFrame.getResourceBundle()), new ConsoleParsing(console2, homeFrame.getResourceBundle()).parsProductFromConsole());
                 break;
             case UNIT_OF_MEASURE:
                 response = new Response(login, password, command[0], VariableParsing.toRightUnitOfMeasure(Constants.UNIT_OF_MEASURE.getString(), command[1], homeFrame.getResourceBundle()));
@@ -166,7 +166,7 @@ public class ClientApp {
                 break;
 
             case PRODUCT_WITHOUT_KEY:
-                response = new Response(login, password, command[0], new ConsoleParsing(console2).parsProductFromConsole(homeFrame.getResourceBundle()));
+                response = new Response(login, password, command[0], new ConsoleParsing(console2, homeFrame.getResourceBundle()).parsProductFromConsole());
                 break;
             default:
                 break;
@@ -326,7 +326,7 @@ public class ClientApp {
 
     public void close(Constants constants, String message) {
         lock.lock();
-        homeFrame.setResponse(new ResponseWithError(homeFrame.localisation(homeFrame.getResourceBundle(), constants) + " " + message));
+        homeFrame.setResponse(new ResponseWithError(homeFrame.localisation(constants) + " " + message));
         condition.signal();
         lock.unlock();
         homeFrame.close(homeFrame.getFrame());

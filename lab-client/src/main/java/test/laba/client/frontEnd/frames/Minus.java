@@ -43,10 +43,10 @@ public class Minus implements ActionListener {
         delete.setLayout(new BorderLayout());
         homeFrame.revalidate(leftMinusPanel);
         leftMinusPanel.setLayout(new BoxLayout(leftMinusPanel, BoxLayout.Y_AXIS));
-        JRadioButton removeKey = createRadioButton(homeFrame.localisation(homeFrame.getResourceBundle(), Constants.REMOVE_KEY), new RemoveKeyOrRemoveLowerKey(Command.REMOVE_KEY.getString()));
-        JRadioButton removeLowerKey = createRadioButton(homeFrame.localisation(homeFrame.getResourceBundle(), Constants.REMOVE_LOWER_KEY), new RemoveKeyOrRemoveLowerKey(Command.REMOVE_LOWER_KEY.getString()));
-        JRadioButton removeLower = createRadioButton(homeFrame.localisation(homeFrame.getResourceBundle(), Constants.REMOVE_LOWER), new RemoveLower(homeFrame.getResourceBundle()));
-        JRadioButton removeAnyByUnitOfMeasure = new JRadioButton(homeFrame.localisation(homeFrame.getResourceBundle(), Constants.REMOVE_ANY_BY_UNIT_OF_MEASURE));
+        JRadioButton removeKey = createRadioButton(homeFrame.localisation(Constants.REMOVE_KEY), new RemoveKeyOrRemoveLowerKey(Command.REMOVE_KEY.getString()));
+        JRadioButton removeLowerKey = createRadioButton(homeFrame.localisation(Constants.REMOVE_LOWER_KEY), new RemoveKeyOrRemoveLowerKey(Command.REMOVE_LOWER_KEY.getString()));
+        JRadioButton removeLower = createRadioButton(homeFrame.localisation(Constants.REMOVE_LOWER), new RemoveLower(homeFrame.getResourceBundle()));
+        JRadioButton removeAnyByUnitOfMeasure = new JRadioButton(homeFrame.localisation(Constants.REMOVE_ANY_BY_UNIT_OF_MEASURE));
         removeAnyByUnitOfMeasure.setFont(FONT);
         removeAnyByUnitOfMeasure.addActionListener(removeUMDialog());
         createButtonGroup(removeKey, removeLower, removeLowerKey, removeAnyByUnitOfMeasure);
@@ -64,11 +64,11 @@ public class Minus implements ActionListener {
             public void actionPerformed(ActionEvent e) {
                 String result = (String) JOptionPane.showInputDialog(
                         minus,
-                        homeFrame.localisation(homeFrame.getResourceBundle(), Constants.UNIT_OF_MEASURE),
+                        homeFrame.localisation(Constants.UNIT_OF_MEASURE),
                         "",
                         JOptionPane.QUESTION_MESSAGE,
-                        null, homeFrame.getTableModule().unitOfMeasureContains(homeFrame.getResourceBundle()),
-                        homeFrame.localisation(homeFrame.getResourceBundle(), Constants.UNIT_OF_MEASURE));
+                        null, homeFrame.getTableModule().unitOfMeasureContains(),
+                        homeFrame.localisation(Constants.UNIT_OF_MEASURE));
                 if (result != null) {
                     try {
                         homeFrame.getLock().lock();
@@ -83,7 +83,7 @@ public class Minus implements ActionListener {
 
             public Response createResponse(String command, String answer) throws VariableException {
                 Response createdResponse = new Response(command);
-                UnitOfMeasure unitOfMeasure1 = VariableParsing.toRightUnitOfMeasure(homeFrame.localisation(homeFrame.getResourceBundle(), Constants.UNIT_OF_MEASURE), homeFrame.getTableModule().delocalizationUnitOfMeasure(answer), homeFrame.getResourceBundle());
+                UnitOfMeasure unitOfMeasure1 = VariableParsing.toRightUnitOfMeasure(homeFrame.localisation(Constants.UNIT_OF_MEASURE), homeFrame.getTableModule().delocalizationUnitOfMeasure(answer), homeFrame.getResourceBundle());
                 createdResponse.setUnitOfMeasure(unitOfMeasure1);
                 return createdResponse;
             }
@@ -115,7 +115,7 @@ public class Minus implements ActionListener {
 
         public Response createResponse(String command, String answer) throws VariableException {
             Response createdResponse = new Response(command);
-            Long key = VariableParsing.toLongNumber(homeFrame.localisation(homeFrame.getResourceBundle(), Constants.KEY), answer, homeFrame.getResourceBundle());
+            Long key = VariableParsing.toLongNumber(homeFrame.localisation(Constants.KEY), answer, homeFrame.getResourceBundle());
             createdResponse.setKeyOrID(key);
             return createdResponse;
         }
@@ -123,7 +123,7 @@ public class Minus implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             String answer = JOptionPane.showInputDialog(null,
-                    homeFrame.localisation(homeFrame.getResourceBundle(), Constants.KEY),
+                    homeFrame.localisation(Constants.KEY),
                     "",
                     JOptionPane.QUESTION_MESSAGE);
             if (answer != null) {

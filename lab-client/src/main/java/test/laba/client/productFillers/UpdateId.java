@@ -92,7 +92,7 @@ public class UpdateId {
                     changeHeight(product);
                     changeLocation(product);
                 } else {
-                    product.setOwner(consoleParsing.parsPersonFromConsole(resourceBundle));
+                    product.setOwner(consoleParsing.parsPersonFromConsole());
                 }
             } else {
                 product.setOwner(null);

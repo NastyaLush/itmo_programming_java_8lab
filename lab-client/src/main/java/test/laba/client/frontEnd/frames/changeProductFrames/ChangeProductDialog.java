@@ -68,7 +68,7 @@ public abstract class ChangeProductDialog extends ProductDialog implements Actio
 
     public void revalidate() {
         //setDialog(new JDialog(homeFrame.getFrame(), "", false));
-        ok = new JButton(localisation(getResourceBundle(), Constants.OK));
+        ok = new JButton(localisation(Constants.OK));
         mainPlusPanel = new JPanel();
         setResourceBundle(homeFrame.getResourceBundle());
         setDialog(new JDialog((Frame) null, "", true));
@@ -91,14 +91,14 @@ public abstract class ChangeProductDialog extends ProductDialog implements Actio
         addOkListener();
 
         addKey();
-        textProductName = createButtonGroup(localisation(getResourceBundle(), Constants.PRODUCT_NAME), localisation(getResourceBundle(), Constants.CAN_NOT_BE_NULL), false);
-        textCoordinateX = createButtonGroup(localisation(getResourceBundle(), Constants.COORDINATE_X), localisation(getResourceBundle(), Constants.MUST_BE_BIGGER) + " -233 " + localisation(getResourceBundle(), Constants.CAN_NOT_BE_NULL), false);
-        textCoordinateY = createButtonGroup(localisation(getResourceBundle(), Constants.COORDINATE_Y), localisation(getResourceBundle(), Constants.CAN_NOT_BE_NULL), false);
-        textPrice = createButtonGroup(localisation(getResourceBundle(), Constants.PRICE), localisation(getResourceBundle(), Constants.MUST_BE_BIGGER) + " 0 " + localisation(getResourceBundle(), Constants.CAN_NOT_BE_NULL), false);
-        textManufactureCost = createButtonGroup(localisation(getResourceBundle(), Constants.MANUFACTURE_COST), localisation(getResourceBundle(), Constants.CAN_NOT_BE_NULL), false);
-        textUM = unitOfMeas(localisation(getResourceBundle(), Constants.UNIT_OF_MEASURE), localisation(getResourceBundle(), Constants.CAN_NOT_BE_NULL));
+        textProductName = createButtonGroup(localisation(Constants.PRODUCT_NAME), localisation(Constants.CAN_NOT_BE_NULL), false);
+        textCoordinateX = createButtonGroup(localisation(Constants.COORDINATE_X), localisation(Constants.MUST_BE_BIGGER) + " -233 " + localisation(Constants.CAN_NOT_BE_NULL), false);
+        textCoordinateY = createButtonGroup(localisation(Constants.COORDINATE_Y), localisation(Constants.CAN_NOT_BE_NULL), false);
+        textPrice = createButtonGroup(localisation(Constants.PRICE), localisation(Constants.MUST_BE_BIGGER) + " 0 " + localisation(Constants.CAN_NOT_BE_NULL), false);
+        textManufactureCost = createButtonGroup(localisation(Constants.MANUFACTURE_COST), localisation(Constants.CAN_NOT_BE_NULL), false);
+        textUM = unitOfMeas(localisation(Constants.UNIT_OF_MEASURE), localisation(Constants.CAN_NOT_BE_NULL));
 
-        addOwner = new JCheckBox(localisation(getResourceBundle(), Constants.ADD_OWNER));
+        addOwner = new JCheckBox(localisation(Constants.ADD_OWNER));
         addOwner.setFont(labelFont);
         addOwner.setPreferredSize(STANDARD_DIMENSION);
         needOwner = new NeedOwner();
@@ -153,13 +153,13 @@ public abstract class ChangeProductDialog extends ProductDialog implements Actio
         JMenu menu = new JMenu(name);
         menu.setPreferredSize(new Dimension(WIDTH_UM, HEIGHT_UM));
         menu.setFont(getLabelFont());
-        JMenuItem pcs = new JMenuItem(localisation(getResourceBundle(), Constants.PCS));
+        JMenuItem pcs = new JMenuItem(localisation(Constants.PCS));
         pcs.setName(Constants.PCS.getString());
         changeMenuName(pcs, menu);
-        JMenuItem millilitres = new JMenuItem(localisation(getResourceBundle(), Constants.MILLILITERS));
+        JMenuItem millilitres = new JMenuItem(localisation(Constants.MILLILITERS));
         millilitres.setName(Constants.MILLILITERS.getString());
         changeMenuName(millilitres, menu);
-        JMenuItem grams = new JMenuItem(localisation(getResourceBundle(), Constants.GRAMS));
+        JMenuItem grams = new JMenuItem(localisation(Constants.GRAMS));
         grams.setName(Constants.GRAMS.getString());
         changeMenuName(grams, menu);
 
@@ -194,7 +194,7 @@ public abstract class ChangeProductDialog extends ProductDialog implements Actio
     }
 
     protected void addKey() {
-        textKey = createButtonGroup(localisation(getResourceBundle(), Constants.KEY), localisation(getResourceBundle(), Constants.CAN_NOT_BE_NULL), false);
+        textKey = createButtonGroup(localisation(Constants.KEY), localisation(Constants.CAN_NOT_BE_NULL), false);
     }
 
     protected void addLabels(boolean saveToDelete, JLabel label, JTextField textField, Component enter) {
@@ -227,15 +227,15 @@ public abstract class ChangeProductDialog extends ProductDialog implements Actio
 
     protected Product addProduct() throws VariableException {
         Product product = new Product();
-        product.setId(VariableParsing.toLongNumber(local(Constants.ID), getID(), getResourceBundle()));
-        product.setName(VariableParsing.toRightName(local(Constants.PRODUCT_NAME), textProductName.getText(), getResourceBundle()));
+        product.setId(VariableParsing.toLongNumber(localisation(Constants.ID), getID(), getResourceBundle()));
+        product.setName(VariableParsing.toRightName(localisation(Constants.PRODUCT_NAME), textProductName.getText(), getResourceBundle()));
         Coordinates coordinates = new Coordinates();
-        coordinates.setX(VariableParsing.toRightX(local(Constants.COORDINATE_X), textCoordinateX.getText(), getResourceBundle()));
-        coordinates.setY(VariableParsing.toRightY(local(Constants.COORDINATE_Y), textCoordinateY.getText(), getResourceBundle()));
+        coordinates.setX(VariableParsing.toRightX(localisation(Constants.COORDINATE_X), textCoordinateX.getText(), getResourceBundle()));
+        coordinates.setY(VariableParsing.toRightY(localisation(Constants.COORDINATE_Y), textCoordinateY.getText(), getResourceBundle()));
         product.setCoordinates(coordinates);
-        product.setPrice(VariableParsing.toRightPrice(local(Constants.PRICE), textPrice.getText(), getResourceBundle()));
-        product.setManufactureCost(VariableParsing.toRightNumberInt(local(Constants.MANUFACTURE_COST), textManufactureCost.getText(), getResourceBundle()));
-        product.setUnitOfMeasure(VariableParsing.toRightUnitOfMeasure(local(Constants.UNIT_OF_MEASURE), textUM.getName(), getResourceBundle()));
+        product.setPrice(VariableParsing.toRightPrice(localisation(Constants.PRICE), textPrice.getText(), getResourceBundle()));
+        product.setManufactureCost(VariableParsing.toRightNumberInt(localisation(Constants.MANUFACTURE_COST), textManufactureCost.getText(), getResourceBundle()));
+        product.setUnitOfMeasure(VariableParsing.toRightUnitOfMeasure(localisation(Constants.UNIT_OF_MEASURE), textUM.getName(), getResourceBundle()));
         if (addOwner.isSelected()) {
             product.setOwner(needOwner.parsingDate());
         }
@@ -253,7 +253,7 @@ public abstract class ChangeProductDialog extends ProductDialog implements Actio
         @Override
         public void actionPerformed(ActionEvent e) {
             try {
-                Long key = VariableParsing.toRightNumberLong(local(Constants.KEY), textKey.getText(), getResourceBundle());
+                Long key = VariableParsing.toRightNumberLong(localisation(Constants.KEY), textKey.getText(), getResourceBundle());
                 Product product = addProduct();
 
                 homeFrame.getLock().lock();
@@ -281,12 +281,12 @@ public abstract class ChangeProductDialog extends ProductDialog implements Actio
             getDialog().setMinimumSize(new Dimension(screenSize.width / 2, (int) (screenSize.height / HOW_SMALLER_THIS_FRAME_SIZE)));
             if (addOwner.isSelected()) {
                 removeActionButtons();
-                textPersonName = createButtonGroup(local(Constants.PERSON_NAME), local(Constants.CAN_NOT_BE_NULL), true);
-                textPersonBirthday = createButtonGroup(local(Constants.BIRTHDAY), local(Constants.CAN_NOT_BE_NULL) + local(Constants.FORMAT), true);
-                textPersonHeight = createButtonGroup(local(Constants.HEIGHT), local(Constants.MUST_BE_BIGGER) + "0" + local(Constants.CAN_NOT_BE_NULL), true);
-                textLocationX = createButtonGroup(local(Constants.LOCATION_X), "", true);
-                textLocationY = createButtonGroup(local(Constants.LOCATION_Y), "", true);
-                textLocationName = createButtonGroup(local(Constants.LOCATION_NAME), local(Constants.CAN_NOT_BE_NULL), true);
+                textPersonName = createButtonGroup(localisation(Constants.PERSON_NAME), localisation(Constants.CAN_NOT_BE_NULL), true);
+                textPersonBirthday = createButtonGroup(localisation(Constants.BIRTHDAY), localisation(Constants.CAN_NOT_BE_NULL) + localisation(Constants.FORMAT), true);
+                textPersonHeight = createButtonGroup(localisation(Constants.HEIGHT), localisation(Constants.MUST_BE_BIGGER) + "0" + localisation(Constants.CAN_NOT_BE_NULL), true);
+                textLocationX = createButtonGroup(localisation(Constants.LOCATION_X), "", true);
+                textLocationY = createButtonGroup(localisation(Constants.LOCATION_Y), "", true);
+                textLocationName = createButtonGroup(localisation(Constants.LOCATION_NAME), localisation(Constants.CAN_NOT_BE_NULL), true);
                 addActionButtons();
                 mainPlusPanel.validate();
                 getDialog().validate();
@@ -301,13 +301,13 @@ public abstract class ChangeProductDialog extends ProductDialog implements Actio
 
         public Person parsingDate() throws VariableException {
             Person person = new Person();
-            person.setName(VariableParsing.toRightName(local(Constants.PERSON_NAME), textPersonName.getText(), getResourceBundle()));
-            person.setBirthday(VariableParsing.toRightBirthday(local(Constants.BIRTHDAY), textPersonBirthday.getText(), getResourceBundle()));
-            person.setHeight(VariableParsing.toRightNumberInt(local(Constants.HEIGHT), textPersonHeight.getText(), getResourceBundle()));
+            person.setName(VariableParsing.toRightName(localisation(Constants.PERSON_NAME), textPersonName.getText(), getResourceBundle()));
+            person.setBirthday(VariableParsing.toRightBirthday(localisation(Constants.BIRTHDAY), textPersonBirthday.getText(), getResourceBundle()));
+            person.setHeight(VariableParsing.toRightNumberInt(localisation(Constants.HEIGHT), textPersonHeight.getText(), getResourceBundle()));
             Location location = new Location();
-            location.setX(VariableParsing.toRightNumberLong(local(Constants.LOCATION_X), textLocationX.getText(), getResourceBundle()));
-            location.setY(VariableParsing.toRightNumberInt(local(Constants.LOCATION_Y), textLocationY.getText(), getResourceBundle()));
-            location.setName(VariableParsing.toRightName(local(Constants.LOCATION_NAME), textLocationName.getText(), getResourceBundle()));
+            location.setX(VariableParsing.toRightNumberLong(localisation(Constants.LOCATION_X), textLocationX.getText(), getResourceBundle()));
+            location.setY(VariableParsing.toRightNumberInt(localisation(Constants.LOCATION_Y), textLocationY.getText(), getResourceBundle()));
+            location.setName(VariableParsing.toRightName(localisation(Constants.LOCATION_NAME), textLocationName.getText(), getResourceBundle()));
             person.setLocation(location);
             return person;
         }

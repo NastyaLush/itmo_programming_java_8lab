@@ -34,7 +34,7 @@ public abstract class Filter implements Localized {
     public Filter(TableModule tableModule, ResourceBundle resourceBundle) {
         this.tableModule = tableModule;
         this.resourceBundle = resourceBundle;
-        this.dialog = new JDialog(null, tableModule.localisation(resourceBundle, Constants.FILTER), JDialog.DEFAULT_MODALITY_TYPE);
+        this.dialog = new JDialog(null, tableModule.localisation(Constants.FILTER), JDialog.DEFAULT_MODALITY_TYPE);
     }
 
     public void actionPerformed(JFrame parent) {
@@ -50,8 +50,8 @@ public abstract class Filter implements Localized {
     }
 
     private void createFilterButtons() {
-        JMenu choose = new JMenu(localisation(resourceBundle, Constants.CHOOSE));
-        JMenu menu = new JMenu(localisation(resourceBundle, Constants.FILTER));
+        JMenu choose = new JMenu(localisation(Constants.CHOOSE));
+        JMenu menu = new JMenu(localisation(Constants.FILTER));
         tableModule.getHead().forEach((key, value) -> {
             JMenuItem jMenuItem = new JMenuItem(value);
             menu.add(jMenuItem);
@@ -71,7 +71,7 @@ public abstract class Filter implements Localized {
         filter.add(menu);
         JMenuBar menuBarChoose = new JMenuBar();
         menuBarChoose.add(choose);
-        JButton button1 = new JButton(localisation(resourceBundle, Constants.OK));
+        JButton button1 = new JButton(localisation(Constants.OK));
         button1.addActionListener(e -> {
             tableModule.getConstValues().forEach(
                     e2 -> dodo(e2, tableModule.findColumn(menu.getText()))
@@ -79,7 +79,7 @@ public abstract class Filter implements Localized {
             close();
             repaint();
         });
-        JButton button2 = new JButton(localisation(resourceBundle, Constants.CANCEL));
+        JButton button2 = new JButton(localisation(Constants.CANCEL));
         button2.addActionListener(e -> close());
         JPanel topPanel = new JPanel();
 
@@ -120,6 +120,11 @@ public abstract class Filter implements Localized {
     private void close() {
         dialog.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         dialog.dispatchEvent(new WindowEvent(dialog, WindowEvent.WINDOW_CLOSING));
+    }
+
+    @Override
+    public ResourceBundle getResourceBundle() {
+        return resourceBundle;
     }
 
     public abstract void repaint();

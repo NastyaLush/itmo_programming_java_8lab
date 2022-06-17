@@ -74,6 +74,6 @@ public abstract class ChangeProductTableDialog extends ChangeProductDialog {
 
     @Override
     protected String getID() {
-        return getDescription(local(Constants.ID));
+        return getDescription(localisation(Constants.ID));
     }
 }

@@ -75,7 +75,7 @@ public class HomeFrame extends AbstractFrame implements Runnable {
     @Override
     public void run() {
         UIManager.put("swing.boldMetal", Boolean.FALSE);
-        getFrame().setName(localisation(getResourceBundle(), Constants.TITLE));
+        getFrame().setName(localisation(Constants.TITLE));
         getFrame().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         getFrame().setPreferredSize(preferredSize);
         getFrame().setMinimumSize(minimumSize);
@@ -203,7 +203,7 @@ public class HomeFrame extends AbstractFrame implements Runnable {
         return new TablePanel(table) {
             @Override
             protected void outputSelection() {
-                new ChangeProductTableDialog(this, tableModule, getResourceBundle(), HomeFrame.this) {
+                new ChangeProductTableDialog(this, tableModule, getResourceBundle(),HomeFrame.this) {
                     @Override
                     protected void addOkListener() {
                         getOk().addActionListener(new OkListener() {
@@ -222,7 +222,7 @@ public class HomeFrame extends AbstractFrame implements Runnable {
                                 try {
                                     Product product = addProduct();
                                     lock.lock();
-                                    createResponse(product, Long.valueOf(getDescription(localisation(getResourceBundle(), Constants.ID))));
+                                    createResponse(product, Long.valueOf(getDescription(localisation(Constants.ID))));
                                     sentProduct();
                                     lock.unlock();
                                 } catch (VariableException ex) {
@@ -314,7 +314,7 @@ public class HomeFrame extends AbstractFrame implements Runnable {
 
     private JButton createFilter() {
         JButton jButton;
-        jButton = new JButton(localisation(getResourceBundle(), Constants.FILTER));
+        jButton = new JButton(localisation(Constants.FILTER));
         jButton.setFont(new Font("Safari", Font.ITALIC, standardSizeText));
         jButton.setBackground(Color.BLACK);
         jButton.setForeground(Color.WHITE);
@@ -331,7 +331,7 @@ public class HomeFrame extends AbstractFrame implements Runnable {
     }
 
     private JButton createButtonCommand(String name, Constants command) {
-        JButton jButton = new JButton(localisation(getResourceBundle(), command));
+        JButton jButton = new JButton(localisation(command));
         jButton.setFont(new Font("Safari", Font.ITALIC, standardSizeText));
         jButton.setBackground(Color.BLACK);
         jButton.setForeground(Color.WHITE);
@@ -354,7 +354,7 @@ public class HomeFrame extends AbstractFrame implements Runnable {
         if (response instanceof ResponseWithError) {
             exception(response.getCommand());
         } else {
-            show(localisation(getResourceBundle(), command) + '\n' + response.getCommand());
+            show(localisation(command) + '\n' + response.getCommand());
         }
         lock.unlock();
     }
@@ -390,7 +390,7 @@ public class HomeFrame extends AbstractFrame implements Runnable {
     }
 
     private void showHelp(String s) {
-        show(localisation(getResourceBundle(), Constants.HELP));
+        show(localisation(Constants.HELP));
     }
 
     public TablePanel getMainPanel() {
@@ -460,7 +460,7 @@ public class HomeFrame extends AbstractFrame implements Runnable {
         @Override
         public void actionPerformed(ActionEvent e) {
             JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setDialogTitle(localisation(getResourceBundle(), Constants.CHOOSE_DIRECTORY));
+            fileChooser.setDialogTitle(localisation(Constants.CHOOSE_DIRECTORY));
             int result = fileChooser.showOpenDialog(null);
             if (result == JFileChooser.APPROVE_OPTION) {
                 lock.lock();
