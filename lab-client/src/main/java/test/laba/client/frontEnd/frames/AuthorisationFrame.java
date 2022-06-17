@@ -15,14 +15,17 @@ import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import test.laba.client.Client;
+import test.laba.client.ClientApp;
 import test.laba.client.util.Constants;
 import test.laba.client.frontEnd.frames.local.Local;
+import test.laba.client.util.VariableParsing;
+import test.laba.common.exception.VariableException;
 import test.laba.common.responses.Response;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
+import test.laba.common.responses.ResponseWithError;
 
 
 public class AuthorisationFrame extends AbstractFrame implements Runnable {
@@ -55,18 +58,16 @@ public class AuthorisationFrame extends AbstractFrame implements Runnable {
     private String userHost = null;
     private String userPort = null;
     private Response response = null;
-    private final Condition condition;
-    private final Lock lock;
+    private final ClientApp clientApp;
     private Registration registration;
     private final Dimension minimumSizeFrame = new Dimension(screenSize.width / 2, screenSize.height - 300);
     private final Dimension mainPanelSizeFrame = new Dimension(415, 417);
     private boolean isNewUser = false;
 
 
-    public AuthorisationFrame(Condition condition, Lock lock) {
+    public AuthorisationFrame(ClientApp clientApp) {
         super(new JFrame(), Local.getResourceBundleDefault());
-        this.lock = lock;
-        this.condition = condition;
+        this.clientApp = clientApp;
     }
 
     @Override
@@ -80,7 +81,7 @@ public class AuthorisationFrame extends AbstractFrame implements Runnable {
         JPanel leftPanel = new JPanel();
         JPanel downPanel = new JPanel();
 
-        mainPanel.setPreferredSize(mainPanelSizeFrame);
+        mainPanel.setSize(mainPanelSizeFrame);
         leftPanel.setPreferredSize(new Dimension(getFrame().getWidth() / EIGHT_PANEL_SMALLER, getFrame().getHeight()));
         upPanel.setPreferredSize(new Dimension(getFrame().getWidth() / EIGHT_PANEL_SMALLER, getFrame().getHeight() / FOURTEEN_TWICE_PANEL_SMALLER));
         downPanel.setPreferredSize(new Dimension(getFrame().getWidth() / EIGHT_PANEL_SMALLER, getFrame().getHeight() / EIGHT_PANEL_SMALLER));
@@ -99,7 +100,6 @@ public class AuthorisationFrame extends AbstractFrame implements Runnable {
         initialization();
         authorisation.setFont(underLine(new Font("Safari", Font.ITALIC, AUTHORISATION_TEXT_SIZE)));
         authorisation.setHorizontalAlignment(JLabel.LEFT);
-
         Font labelFont = new Font("Safari", Font.BOLD, LOGIN_TEXT_SIZE);
         login.setSize(WIDTH_LOGIN, HEIGHT_LOGIN);
         setFontAndColorToLabel(login, labelFont);
@@ -114,7 +114,9 @@ public class AuthorisationFrame extends AbstractFrame implements Runnable {
         getFrame().setLayout(new BorderLayout());
         BoxLayout boxLayout = new BoxLayout(mainPanel, BoxLayout.Y_AXIS);
         panel.setLayout(new BorderLayout());
-        panel.add(mainPanel, BorderLayout.WEST);
+        JPanel panel2 = new JPanel();
+        panel2.add(mainPanel);
+        panel.add(panel2, BorderLayout.WEST);
         mainPanel.setLayout(boxLayout);
 
         addGroupButtonEnter(authorisation, createEnter(ENTER_SIZE));
@@ -131,9 +133,12 @@ public class AuthorisationFrame extends AbstractFrame implements Runnable {
         upPanel.setLayout(new BorderLayout());
         JMenuBar lang = createLanguage(Color.BLACK);
         upPanel.add(lang, BorderLayout.WEST);
+        getFrame().repaint();
     }
 
     private void revalidate() {
+        panel.removeAll();
+        panel.revalidate();
         mainPanel.removeAll();
         upPanel.removeAll();
         mainPanel.revalidate();
@@ -198,8 +203,8 @@ public class AuthorisationFrame extends AbstractFrame implements Runnable {
         return isNewUser;
     }
 
-    public void revalidateFrame() {
-        setFrame(new JFrame());
+    public ClientApp getClientApp() {
+        return clientApp;
     }
 
     private class SignUp implements ActionListener {
@@ -208,10 +213,21 @@ public class AuthorisationFrame extends AbstractFrame implements Runnable {
         public void actionPerformed(ActionEvent e) {
             userHost = textHost.getText();
             userPort = textPort.getText();
-            response = new Response(textLogin.getText(), new String(textPassword.getPassword()), "");
-            lock.lock();
-            condition.signal();
-            lock.unlock();
+            try {
+                response = new Response(VariableParsing.toRightName(login.getText(), textLogin.getText(), getResourceBundle()), new String(textPassword.getPassword()), "");
+                Response answer  = Client.connection(AuthorisationFrame.this);
+                if (!(answer instanceof ResponseWithError)) {
+                    goToHomeFrame();
+                } else {
+                    exception(answer.getCommand());
+                }
+            } catch (VariableException ex) {
+                exception(ex.getMessage());
+            }
+        }
+        private void goToHomeFrame() {
+            new Thread(new HomeFrame(textLogin.getText(), getResourceBundle(), clientApp)).start();
+            close();
         }
     }
 

@@ -18,6 +18,7 @@ import java.util.logging.Level;
 public class Wrapper {
     public static final Logger LOGGER = Logger.getLogger(Wrapper.class.getName());
     private static final int CAPACITY = 10000;
+    private Socket socket;
     private final OutputStream out;
     private final InputStream in;
 
@@ -25,6 +26,7 @@ public class Wrapper {
         LOGGER.setLevel(Level.INFO);
         out = socket.getOutputStream();
         in = socket.getInputStream();
+        this.socket = socket;
     }
 
     public void sent(BasicResponse response) throws IOException {
@@ -53,5 +55,9 @@ public class Wrapper {
     public void close() throws IOException {
         out.close();
         in.close();
+    }
+
+    public Socket getSocket() {
+        return socket;
     }
 }

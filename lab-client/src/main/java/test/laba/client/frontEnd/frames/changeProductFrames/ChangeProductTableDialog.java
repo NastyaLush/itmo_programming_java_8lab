@@ -3,11 +3,16 @@ package test.laba.client.frontEnd.frames.changeProductFrames;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import javax.swing.Box;
+import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JTextField;
+import javax.swing.text.MaskFormatter;
 import test.laba.client.frontEnd.frames.HomeFrame;
 import test.laba.client.frontEnd.frames.table.TableModule;
 import test.laba.client.frontEnd.frames.table.TablePanel;
@@ -42,6 +47,21 @@ public abstract class ChangeProductTableDialog extends ChangeProductDialog {
 
         addLabels(saveToDelete, label, textField, enter);
 
+        return textField;
+    }
+    @Override
+    protected JFormattedTextField createBirthady(String name, String description, boolean saveToDelete){
+        tablePanel.getTable().getSelectedRow();
+        JLabel label = new JLabel(name + "(" + description + ")");
+        label.setForeground(Color.gray);
+        label.setFont(getLabelFont());
+        label.setPreferredSize(labelSize);
+
+        JFormattedTextField textField = new JFormattedTextField(getDescription(name));
+        //textField.setValue(getDescription(name));
+        textField.setPreferredSize(textLabelSize);
+
+        addLabels(saveToDelete, label, textField, enter);
         return textField;
     }
 

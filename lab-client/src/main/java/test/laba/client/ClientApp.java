@@ -1,14 +1,14 @@
 package test.laba.client;
 
 
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
+import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
 import test.laba.client.frontEnd.frames.AuthorisationFrame;
-import test.laba.client.frontEnd.frames.HomeFrame;
+import test.laba.client.frontEnd.frames.local.Localized;
 import test.laba.client.productFillers.ConsoleParsing;
 import test.laba.client.productFillers.UpdateId;
+import test.laba.client.util.Command;
 import test.laba.client.util.Console;
 import test.laba.client.util.Constants;
 import test.laba.client.util.ScriptConsole;
@@ -35,103 +35,85 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.logging.Level;
 
-public class ClientApp {
-    private static final int TIME_UPDATE_ANIMATION = 3000;
+public class ClientApp implements Localized {
     public final Logger logger;
     private final Console console = new Console();
     private Map<String, Values> valuesOfCommands = null;
     private Wrapper wrapper;
     private boolean isNormalUpdateID = true;
     private final HashSet<String> executeScriptFiles = new HashSet<>();
-    private final AuthorisationFrame frame;
-    private HomeFrame homeFrame;
+    private ResourceBundle resourceBundle;
     private boolean isExitInExecuteScript = false;
     private String login;
     private String password;
-    private final Condition condition;
-    private final Lock lock;
     private ScriptConsole scriptConsole;
+    private String host;
+    private int port;
 
-    ClientApp(AuthorisationFrame frame, Condition condition, Lock lock) {
-        this.lock = lock;
-        this.condition = condition;
-        this.frame = frame;
+    ClientApp() {
         this.logger = Logger.getLogger(ClientApp.class.getName());
         logger.setLevel(Level.INFO);
     }
 
-    public void interactivelyMode() throws IOException, ClassNotFoundException, InterruptedException {
+    public Response run(String newHost, int newPort, AuthorisationFrame authorisationFrame) throws IOException, ClassNotFoundException, InterruptedException {
+        logger.fine("server runs");
+        this.host = newHost;
+        this.port = newPort;
+        Socket socket = new Socket(host, port);
+        wrapper = new Wrapper(socket);
+        logger.info(Util.giveColor(Colors.GREEN, "client was connected"));
+        Response response = interactivelyMode(authorisationFrame.getResponse(), authorisationFrame.isNewUser());
+        logger.fine("run was executed");
+        return response;
+    }
+
+    public Response interactivelyMode(Response response, Boolean isNewUser) throws IOException, ClassNotFoundException, InterruptedException {
         logger.log(Level.FINE, "The interactively Mode starts");
-        registeringUser();
-        this.homeFrame = new HomeFrame(condition, lock, login, frame.getResponse(), frame.getResourceBundle());
-        frame.close();
-        Thread thread = new Thread(homeFrame);
-        thread.setDaemon(true);
-        thread.start();
-        wrapper.sent(new Response(login, password, Values.COLLECTION.toString()));
-        valuesOfCommands = wrapper.readWithMap();
-        logger.info(Util.giveColor(Colors.BlUE, "Program in an interactive module, for giving information about opportunities write help"));
-        Response show = new Response("show");
-        show.setAddToHistory(false);
-        animationWork(show);
-        workCycle();
-        logger.fine("the method was closed");
-    }
-
-    public void animationWork(Response show) {
-        new Thread(() -> {
-            while (true) {
-                try {
-                    Thread.sleep(TIME_UPDATE_ANIMATION);
-                    homeFrame.setGraphicCollection(sendAndReceiveCommand(show).getProductHashMap());
-                } catch (IOException e) {
-                    logger.info(Util.giveColor(Colors.GREEN, "server was closed, app is finishing work :) See you soon!"));
-                    System.out.println(Thread.getAllStackTraces());
-                    break;
-                } catch (CycleInTheScript | ClassNotFoundException | InterruptedException e) {
-                    logger.warning(e.getMessage());
-                    break;
-                }
-            }
-        }).start();
-    }
-
-    public void workCycle() throws InterruptedException, IOException {
-        while (true) {
-            try {
-                lock.lock();
-                condition.await();
-                lock.unlock();
-
-                Response response = sendAndReceiveCommand(homeFrame.getResponse());
-
-                lock.lock();
-                if (response != null) {
-                    homeFrame.prepareAnswer(response);
-                }
-                condition.signal();
-                lock.unlock();
-
-            } catch (CycleInTheScript | ClassNotFoundException e) {
-                lock.lock();
-                homeFrame.setResponse(new ResponseWithError(e.getMessage()));
-                condition.signal();
-                lock.unlock();
-                logger.warning(e.getMessage());
-            }
-            if (isExitInExecuteScript) {
-                wrapper.close();
-                homeFrame.close();
-                Util.toColor(Colors.GREEN, "see you soon :)");
-                break;
-            }
-
+        Response response1 = registeringUser(response, isNewUser);
+        if (!(response1 instanceof ResponseWithError)) {
+            wrapper.sent(new Response(login, password, Values.COLLECTION.toString()));
+            valuesOfCommands = wrapper.readWithMap();
+            logger.info(Util.giveColor(Colors.BlUE, "Program in an interactive module, for giving information about opportunities write help"));
+            logger.fine("the method was closed");
         }
+        return response1;
     }
 
+    public Response workCycle(Response response, ResourceBundle newResourceBundle) {
+        this.resourceBundle = newResourceBundle;
+        Response newResponse = new Response("null response");
+        try {
+            if (isExitInExecuteScript) {
+                try {
+                    wrapper.close();
+                    Util.toColor(Colors.GREEN, "see you soon :)");
+                    newResponse = new Response(Command.CLOSE.getString());
+                } catch (IOException e) {
+                    logger.warning(e.getMessage());
+                    newResponse = new Response(Command.CLOSE.getString(), e.getMessage());
+                }
+            } else {
+                Response answer = sendAndReceiveCommand(response);
+                if (answer != null) {
+                    return answer;
+                }
+            }
+        } catch (CycleInTheScript | ClassNotFoundException e) {
+            logger.warning(e.getMessage());
+            newResponse =  new ResponseWithError(localisation(Constants.CYCLE_IN_THE_SCRIPT));
+        } catch (IOException e) {
+            try( Socket socket = new Socket(host, port)) {
+                wrapper = new Wrapper(socket);
+                newResponse =  workCycle(response, resourceBundle);
+            } catch (IOException ex) {
+                newResponse =  new ResponseWithError(localisation(Constants.SERVER_CLOSED));
+            }
+        }
+        return newResponse;
+    }
     public Response updateID(String[] command, Console console2) throws VariableException, IOException, ClassNotFoundException {
         logger.fine("update id is executing");
-        long id = VariableParsing.toLongNumber(command[1], Constants.KEY.getString(), homeFrame.getResourceBundle());
+        long id = VariableParsing.toLongNumber(command[1], Constants.KEY.getString(), resourceBundle);
         Response response = new Response(login, password, command[0], id);
         response.setFlagUdateID(false);
         wrapper.sent(response);
@@ -141,7 +123,7 @@ public class ClientApp {
             isNormalUpdateID = false;
         } else {
             Product product = response.getProduct();
-            response = new Response(login, password, Values.PRODUCT_WITH_QUESTIONS.toString(), id, new UpdateId(new ConsoleParsing(console2, homeFrame.getResourceBundle()), console2, homeFrame.getResourceBundle()).execute(product));
+            response = new Response(login, password, Values.PRODUCT_WITH_QUESTIONS.toString(), id, new UpdateId(new ConsoleParsing(console2, resourceBundle), console2, resourceBundle).execute(product));
         }
         logger.fine("update id was execute");
         return response;
@@ -153,20 +135,19 @@ public class ClientApp {
         Response response = null;
         switch (value) {
             case PRODUCT:
-                response = new Response(login, password, command[0], VariableParsing.toLongNumber(Constants.ID.getString(), command[1], homeFrame.getResourceBundle()), new ConsoleParsing(console2, homeFrame.getResourceBundle()).parsProductFromConsole());
+                response = new Response(login, password, command[0], VariableParsing.toLongNumber(Constants.ID.getString(), command[1], resourceBundle), new ConsoleParsing(console2, resourceBundle).parsProductFromConsole());
                 break;
             case UNIT_OF_MEASURE:
-                response = new Response(login, password, command[0], VariableParsing.toRightUnitOfMeasure(Constants.UNIT_OF_MEASURE.getString(), command[1], homeFrame.getResourceBundle()));
+                response = new Response(login, password, command[0], VariableParsing.toRightUnitOfMeasure(Constants.UNIT_OF_MEASURE.getString(), command[1], resourceBundle));
                 break;
             case KEY:
-                response = new Response(login, password, command[0], VariableParsing.toLongNumber(Constants.KEY.getString(), command[1], homeFrame.getResourceBundle()));
+                response = new Response(login, password, command[0], VariableParsing.toLongNumber(Constants.KEY.getString(), command[1], resourceBundle));
                 break;
             case PRODUCT_WITH_QUESTIONS:
                 response = updateID(command, console2);
                 break;
-
             case PRODUCT_WITHOUT_KEY:
-                response = new Response(login, password, command[0], new ConsoleParsing(console2, homeFrame.getResourceBundle()).parsProductFromConsole());
+                response = new Response(login, password, command[0], new ConsoleParsing(console2, resourceBundle).parsProductFromConsole());
                 break;
             default:
                 break;
@@ -182,7 +163,6 @@ public class ClientApp {
             readScript(response);
             return new Response(scriptConsole.getAnswer());
         } else {
-
             if (isNormalUpdateID) {
                 wrapper.sent(response);
                 Response readiedResponse = wrapper.readResponse();
@@ -220,18 +200,6 @@ public class ClientApp {
             isNormalUpdateID = true;
         }
         logger.fine("send and receive finishes");
-    }
-
-    public void run(String host, int port) throws IOException, ClassNotFoundException, InterruptedException {
-        logger.fine("server runs");
-        try (Socket socket = new Socket(host, port)) {
-            wrapper = new Wrapper(socket);
-            logger.info(Util.giveColor(Colors.GREEN, "client was connected"));
-            interactivelyMode();
-        } finally {
-            Util.toColor(Colors.GREEN, "goodbye");
-            logger.fine("run was executed");
-        }
     }
 
 
@@ -295,40 +263,39 @@ public class ClientApp {
         return "exit".equals(answer.trim());
     }
 
-    private void registeringUser() throws IOException, ClassNotFoundException, InterruptedException {
+    private Response registeringUser(Response response, Boolean isNewUser) throws IOException, ClassNotFoundException {
         logger.info("the registration is started ");
-        Response frameResponse = frame.getResponse();
-        login = frameResponse.getLogin();
-        password = frameResponse.getPassword();
+        login = response.getLogin();
+        password = response.getPassword();
         RegisterResponse response1;
-        if (frame.isNewUser()) {
+        if (isNewUser) {
             response1 = new RegisterResponse(login, password, Values.REGISTRATION.toString());
         } else {
             response1 = new RegisterResponse(login, password, Values.AUTHORISATION.toString());
         }
-        registering(response1);
         logger.info("the registration is finished ");
+        return registering(response1);
     }
-    private void registering(RegisterResponse response1) throws IOException, ClassNotFoundException, InterruptedException {
+
+    private Response registering(RegisterResponse response1) throws IOException, ClassNotFoundException {
         wrapper.sent(response1);
         Response response = wrapper.readResponse();
         if (response instanceof ResponseWithError) {
-            frame.exception(response.getCommand());
             logger.info(response.getCommand());
-            lock.lock();
-            condition.await();
-            lock.unlock();
-            registeringUser();
+            return new ResponseWithError(response.getCommand());
         } else {
             logger.info(response.getCommand());
+            return new Response("fine");
         }
     }
 
     public void close(Constants constants, String message) {
-        lock.lock();
-        homeFrame.setResponse(new ResponseWithError(homeFrame.localisation(constants) + " " + message));
-        condition.signal();
-        lock.unlock();
-        homeFrame.close(homeFrame.getFrame());
+       /* homeFrame.setResponse(new ResponseWithError(homeFrame.localisation(constants) + " " + message));
+        homeFrame.close(homeFrame.getFrame());*/
+    }
+
+    @Override
+    public ResourceBundle getResourceBundle() {
+        return resourceBundle;
     }
 }

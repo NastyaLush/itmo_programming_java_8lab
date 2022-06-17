@@ -1,7 +1,15 @@
 package test.laba.client.util;
 
 
+import java.text.DateFormat;
+import java.text.NumberFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.format.FormatStyle;
+import java.util.Date;
 import java.util.ResourceBundle;
+import javax.swing.text.NumberFormatter;
 import test.laba.common.exception.VariableException;
 import test.laba.common.dataClasses.UnitOfMeasure;
 
@@ -47,8 +55,9 @@ public final class VariableParsing {
     public static Integer toRightX(String name, String x, ResourceBundle resourceBundle) throws VariableException {
         int rightX;
         try {
-            rightX = Integer.parseInt(x);
-        } catch (NumberFormatException e) {
+            NumberFormat numberFormatter = NumberFormat.getInstance(resourceBundle.getLocale());
+            rightX = Integer.parseInt(String.valueOf(numberFormatter.parse(x)));
+        } catch (NumberFormatException | ParseException e) {
             throw new VariableException(name, localisation(resourceBundle, Constants.MUST_BE_INTEGER_NUMBER_INT));
         }
         if (rightX <= FALSE_X) {
@@ -66,9 +75,10 @@ public final class VariableParsing {
      */
     public static Float toRightY(String name, String y, ResourceBundle resourceBundle) throws VariableException {
         float rightY;
+        NumberFormat numberFormatter = NumberFormat.getInstance(resourceBundle.getLocale());
         try {
-            rightY = Float.parseFloat(y);
-        } catch (NumberFormatException e) {
+            rightY = Float.parseFloat(String.valueOf(numberFormatter.parse(y)));
+        } catch (NumberFormatException | ParseException e) {
             throw new VariableException(name, localisation(resourceBundle, Constants.MUST_BE_FLOAT_NUMBER));
         }
         return rightY;
@@ -84,8 +94,9 @@ public final class VariableParsing {
     public static Long toRightPrice(String name, String price, ResourceBundle resourceBundle) throws VariableException {
         long rightPrice;
         try {
-            rightPrice = Long.parseLong(price);
-        } catch (NumberFormatException e) {
+            NumberFormat numberFormatter = NumberFormat.getInstance(resourceBundle.getLocale());
+            rightPrice = Long.parseLong(String.valueOf(numberFormatter.parse(price)));
+        } catch (NumberFormatException | ParseException e) {
             throw new VariableException(name, localisation(resourceBundle, Constants.MUST_BE_INTEGER_NUMBER_LONG));
         }
         if (rightPrice <= 0) {
@@ -104,8 +115,9 @@ public final class VariableParsing {
     public static Integer toRightNumberInt(String name, String number, ResourceBundle resourceBundle) throws VariableException {
         int manufactureCost;
         try {
-            manufactureCost = Integer.parseInt(number);
-        } catch (NumberFormatException e) {
+            NumberFormat numberFormatter = NumberFormat.getInstance(resourceBundle.getLocale());
+            manufactureCost = Integer.parseInt(String.valueOf(numberFormatter.parse(number)));
+        } catch (NumberFormatException | ParseException e) {
             throw new VariableException(name, localisation(resourceBundle, Constants.MUST_BE_INTEGER_NUMBER_INT));
 
         }
@@ -121,8 +133,9 @@ public final class VariableParsing {
      */
     public static Long toRightNumberLong(String name, String number, ResourceBundle resourceBundle) throws VariableException {
         try {
-            return Long.valueOf(number);
-        } catch (NumberFormatException e) {
+            NumberFormat numberFormatter = NumberFormat.getInstance(resourceBundle.getLocale());
+            return Long.valueOf(String.valueOf(numberFormatter.parse(number)));
+        } catch (NumberFormatException | ParseException e) {
             throw new VariableException(name, localisation(resourceBundle, Constants.MUST_BE_INTEGER_NUMBER_LONG));
 
         }
@@ -137,7 +150,6 @@ public final class VariableParsing {
      */
     public static UnitOfMeasure toRightUnitOfMeasure(String name, String unit, ResourceBundle resourceBundle) throws VariableException {
         try {
-            System.out.println(unit);
             if (unit != null) {
                 return UnitOfMeasure.valueOf(unit.toUpperCase());
             }
@@ -159,8 +171,9 @@ public final class VariableParsing {
         Integer rightHeight = null;
         if (height != null) {
             try {
-                rightHeight = Integer.valueOf(height);
-            } catch (NumberFormatException e) {
+                NumberFormat numberFormatter = NumberFormat.getInstance(resourceBundle.getLocale());
+                rightHeight = Integer.valueOf(String.valueOf(numberFormatter.parse(height)));
+            } catch (NumberFormatException | ParseException e) {
                 throw new VariableException(name, localisation(resourceBundle, Constants.MUST_BE_INTEGER_NUMBER_INT));
             }
             if (rightHeight <= 0) {
@@ -178,19 +191,30 @@ public final class VariableParsing {
      * @throws VariableException throws when parsing is impossible
      */
     public static ZonedDateTime toRightBirthday(String name, String birthday, ResourceBundle resourceBundle) throws VariableException {
-        ZonedDateTime birth;
+        ZonedDateTime birth = null;
         try {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-            LocalDate parsed = LocalDate.parse(birthday, formatter);
-            birth = ZonedDateTime.of(parsed, LocalTime.MIDNIGHT, ZoneId.of("Europe/Berlin"));
-        } catch (DateTimeException e) {
+            DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.DEFAULT, DateFormat.DEFAULT, resourceBundle.getLocale());
+                Date date = dateFormat.parse(birthday);
+            System.out.println(date.toString());
+                Instant instant = date.toInstant();
+                birth = instant.atZone(ZoneId.systemDefault());
+        } catch (DateTimeException | ParseException e) {
             try {
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
-                LocalDateTime parsed = LocalDateTime.parse(birthday, formatter);
-                birth = ZonedDateTime.of(parsed, ZoneId.of("Europe/Berlin"));
-            } catch (DateTimeException exception) {
-                throw new VariableException(name, localisation(resourceBundle, Constants.WRONG_DATE));
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+                LocalDate parsed = LocalDate.parse(birthday, formatter);
+                System.out.println("jj");
+                birth = ZonedDateTime.of(parsed, LocalTime.MIDNIGHT, ZoneId.of("Europe/Berlin"));
+            } catch (DateTimeException dateTimeException) {
+                try {
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+                    LocalDateTime parsed = LocalDateTime.parse(birthday, formatter);
+                    System.out.println(birthday);
+                    birth = ZonedDateTime.of(parsed, ZoneId.of(ZoneId.systemDefault().toString()));
+                } catch (DateTimeException exception) {
+                    throw new VariableException(name, localisation(resourceBundle, Constants.WRONG_DATE));
+                }
             }
+            return birth;
         }
         return birth;
     }
@@ -204,11 +228,12 @@ public final class VariableParsing {
     public static Long toLongNumber(String name, String number, ResourceBundle resourceBundle) throws VariableException {
         try {
             if (number != null) {
-                return Long.valueOf(number.trim());
+                NumberFormat numberFormatter = NumberFormat.getInstance(resourceBundle.getLocale());
+                return Long.valueOf(String.valueOf(numberFormatter.parse(number.trim())));
             } else {
                 throw new VariableException(name, localisation(resourceBundle, Constants.CAN_NOT_BE_NULL));
             }
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException | ParseException e) {
             throw new VariableException(name, localisation(resourceBundle, Constants.MUST_BE_INTEGER_NUMBER_LONG));
         }
     }

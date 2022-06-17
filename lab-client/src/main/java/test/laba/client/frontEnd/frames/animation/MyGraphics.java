@@ -42,11 +42,30 @@ public class MyGraphics extends JComponent implements ActionListener, MouseListe
     private final HashMap<Long, Umbrella> newCollectionInsert = new HashMap<>();
     private final HashMap<Long, Umbrella> collection = new HashMap<>();
     private final javax.swing.Timer timer = new Timer(UPDATE_TIME, this);
+    private volatile boolean isUpdate = false;
 
 
     public MyGraphics(HomeFrame homeFrame) {
         this.homeFrame = homeFrame;
         addMouseListener(this);
+        updateCollection();
+    }
+    private void updateCollection(){
+        new Thread(() ->{
+            while (true){
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                isUpdate = true;
+                newCollectionInsert.clear();
+                if (homeFrame.getGraphicMap() != null) {
+                    homeFrame.getGraphicMap().forEach((key, value) -> newCollectionInsert.put(key, new Umbrella(value)));
+                }
+                isUpdate = false;
+            }
+        }).start();
     }
 
     @Override
@@ -80,27 +99,24 @@ public class MyGraphics extends JComponent implements ActionListener, MouseListe
     }
 
     private void update() {
-        newCollectionInsert.clear();
-        if (homeFrame.getGraphicMap() != null) {
-            homeFrame.getGraphicMap().forEach((key, value) -> newCollectionInsert.put(key, new Umbrella(value)));
-        }
-
-        newCollectionInsert.forEach((key, value) -> {
-            if (!collection.containsKey(key)) {
-                value.setCondition(Condition.INSERT);
-                collection.put(key, value);
-            } else {
-                if (value.getProduct().compareTo(collection.get(key).getProduct()) != 0) {
-                    collection.get(key).setCondition(Condition.UPDATE);
-                    collection.get(key).setProduct(value.getProduct());
+        if(!isUpdate){
+            newCollectionInsert.forEach((key, value) -> {
+                if (! collection.containsKey(key)) {
+                    value.setCondition(Condition.INSERT);
+                    collection.put(key, value);
+                } else {
+                    if (value.getProduct().compareTo(collection.get(key).getProduct()) != 0) {
+                        collection.get(key).setCondition(Condition.UPDATE);
+                        collection.get(key).setProduct(value.getProduct());
+                    }
                 }
-            }
-        });
-        collection.forEach((key, value) -> {
-            if (!newCollectionInsert.containsKey(key)) {
-                value.setCondition(Condition.REMOVE);
-            }
-        });
+            });
+            collection.forEach((key, value) -> {
+                if (!newCollectionInsert.containsKey(key)) {
+                    value.setCondition(Condition.REMOVE);
+                }
+            });
+        }
     }
 
     private void updateSize() {
@@ -126,11 +142,11 @@ public class MyGraphics extends JComponent implements ActionListener, MouseListe
         new ChangeProductAnimationDialog(homeFrame.getResourceBundle(), umbrella.getProduct(), key, homeFrame) {
             @Override
             protected void addRemoveListener() throws VariableException {
-                homeFrame.treatmentAnimation(this::createResponse, this.getDialog());
+                homeFrame.treatmentAnimation(this::createResponse);
             }
 
             private void treatmentResponse() throws VariableException {
-                homeFrame.treatmentAnimation(this::createUpdateResponse, this.getDialog());
+                homeFrame.treatmentAnimation(this::createUpdateResponse);
             }
 
             @Override

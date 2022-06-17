@@ -22,6 +22,7 @@ public class Picture extends JFrame implements ActionListener {
     private final JFrame pictureFrame;
     private final Dimension screenSize;
     private final JPanel upPanel;
+    private MyGraphics graphics;
 
     public Picture(HomeFrame jFrame, JLabel userName) {
         this.homeFrame = jFrame;
@@ -29,15 +30,19 @@ public class Picture extends JFrame implements ActionListener {
         this.pictureFrame = new JFrame();
         this.screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         this.upPanel = new JPanel();
-        SwingUtilities.invokeLater(this::createFrame);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        createFrame();
         pictureFrame.setVisible(true);
     }
 
     public void createFrame() {
+        if(graphics != null) {
+            pictureFrame.getContentPane().remove(graphics);
+            pictureFrame.revalidate();
+        }
         pictureFrame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         pictureFrame.setSize(screenSize.width - OFFSET_FRAME, screenSize.height - OFFSET_FRAME);
         pictureFrame.setLocationRelativeTo(null);
@@ -54,8 +59,8 @@ public class Picture extends JFrame implements ActionListener {
 
         pictureFrame.setLayout(new BorderLayout());
         pictureFrame.getContentPane().add(upPanel, BorderLayout.NORTH);
-
-        pictureFrame.getContentPane().add(new MyGraphics(homeFrame));
+        graphics = new MyGraphics(homeFrame);
+        pictureFrame.getContentPane().add(graphics);
     }
 
 }

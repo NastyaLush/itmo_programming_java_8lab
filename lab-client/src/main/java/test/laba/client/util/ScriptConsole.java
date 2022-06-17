@@ -50,7 +50,6 @@ public class ScriptConsole extends Console {
      */
     @Override
     public void print(Object object) {
-        System.out.println(object);
         answer.append(object).append('\n');
     }
 
@@ -79,8 +78,7 @@ public class ScriptConsole extends Console {
      * @return answer
      */
     @Override
-    public String askFullQuestion(/*String question*/) {
-        //ask(question);
+    public String askFullQuestion() {
         return scanner();
     }
 
@@ -90,9 +88,8 @@ public class ScriptConsole extends Console {
      * @return answer
      */
     @Override
-    public boolean askQuestion(/*String question*/) {
+    public boolean askQuestion() {
         String newAnswer;
-        //ask(question);
         newAnswer = scanner().toLowerCase().trim();
         if ("да".equals(newAnswer) || "yes".equals(newAnswer)) {
             return true;
@@ -101,7 +98,7 @@ public class ScriptConsole extends Console {
             return false;
         }
         printError("Ответ не распознан, пожалуйста введите да или нет, вы ввели:" + newAnswer);
-        return askQuestion(/*question*/);
+        return askQuestion();
     }
 
     public String getAnswer() {

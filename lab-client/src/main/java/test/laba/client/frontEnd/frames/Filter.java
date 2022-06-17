@@ -58,10 +58,12 @@ public abstract class Filter implements Localized {
             jMenuItem.addActionListener(e1 -> {
                 choose.removeAll();
                 menu.setText(jMenuItem.getText());
-                tableModule.getConstValues().forEach(
-                        e2 -> choose
+                tableModule.getConstValues().forEach( e2 ->
+                        {choose
                                 .add(createJCheckBoxMenuItem(
-                                        String.valueOf(e2.get(tableModule.findColumn(jMenuItem.getText())))))
+                                        String.valueOf(e2.get(tableModule.findColumn(jMenuItem.getText())))));
+                            System.out.println(e2.get(tableModule.findColumn(jMenuItem.getText())));
+                            System.out.println(e2);}
                 );
                 choose.add(new JCheckBoxMenuItem());
             });

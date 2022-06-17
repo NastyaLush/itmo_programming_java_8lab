@@ -7,11 +7,15 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Toolkit;
+import java.awt.event.WindowEvent;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
+import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -19,6 +23,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.text.MaskFormatter;
 import test.laba.client.frontEnd.frames.HomeFrame;
 import test.laba.client.util.Constants;
 import test.laba.client.util.VariableParsing;
@@ -33,11 +38,13 @@ import java.awt.event.ActionListener;
 import java.util.HashSet;
 import java.util.ResourceBundle;
 import java.util.Set;
+import test.laba.common.responses.Response;
 
 
 public abstract class ChangeProductDialog extends ProductDialog implements ActionListener {
     private static final int START_LOCATION = 30;
-    private static final int HOW_SMALLER_SIZE_HEIGHT = 4;
+    private static final int HOW_SMALLER_SIZE_HEIGHT = 2;
+    private static final double HOW_SMALLER_SIZE_HEIGHT_MAIN = 0.56;
     private static final Dimension STANDARD_DIMENSION = new Dimension(23, 24);
     private static final int HEIGHT_BOX_AREA = 13;
     private static final int WIDTH_UM = 400;
@@ -62,12 +69,11 @@ public abstract class ChangeProductDialog extends ProductDialog implements Actio
     private NeedOwner needOwner;
 
     public ChangeProductDialog(ResourceBundle resourceBundle, HomeFrame homeFrame) {
-        super(new JDialog((Frame) null, "", true/*false*/), resourceBundle);
+        super(new JDialog((Frame) null, "", true), resourceBundle);
         this.homeFrame = homeFrame;
     }
 
     public void revalidate() {
-        //setDialog(new JDialog(homeFrame.getFrame(), "", false));
         ok = new JButton(localisation(Constants.OK));
         mainPlusPanel = new JPanel();
         setResourceBundle(homeFrame.getResourceBundle());
@@ -76,14 +82,11 @@ public abstract class ChangeProductDialog extends ProductDialog implements Actio
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        System.out.println(getDialog());
-        System.out.println(getResourceBundle());
         revalidate();
-        //getDialog().setModalityType(Dialog.ModalityType.MODELESS);
         getDialog().setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         getDialog().setSize(screenSize.width / 2, screenSize.height / HOW_SMALLER_SIZE_HEIGHT);
         getDialog().setLocation(START_LOCATION, START_LOCATION);
-        getDialog().setMinimumSize(new Dimension(screenSize.width / 2, screenSize.height / 2));
+        getDialog().setMinimumSize(new Dimension(screenSize.width / 2, (int) (screenSize.height * HOW_SMALLER_SIZE_HEIGHT_MAIN)));
         getDialog().setLayout(new BorderLayout());
 
         ok.setFont(labelFont);
@@ -107,9 +110,12 @@ public abstract class ChangeProductDialog extends ProductDialog implements Actio
         mainPlusPanel.add(addOwner);
         addActionButtons();
         mainPlusPanel.setLayout(new BoxLayout(mainPlusPanel, BoxLayout.Y_AXIS));
-        getDialog().add(mainPlusPanel, BorderLayout.CENTER);
+        JPanel helpMainPanel = new JPanel();
+        helpMainPanel.add(mainPlusPanel);
+        getDialog().add(helpMainPanel, BorderLayout.WEST);
         getDialog().repaint();
         getDialog().setVisible(true);
+        getDialog().pack();
     }
 
     protected void addActionButtons() {
@@ -135,6 +141,33 @@ public abstract class ChangeProductDialog extends ProductDialog implements Actio
         textField.setPreferredSize(new Dimension(WIDTH_BUTTON, HEIGHT_BUTTON));
         Component enter = Box.createRigidArea(new Dimension(0, HEIGHT_BOX_AREA));
 
+
+        if (saveToDelete) {
+            ownersLabels.add(label);
+            ownersLabels.add(textField);
+            ownersLabels.add(enter);
+        }
+
+        mainPlusPanel.add(label);
+        mainPlusPanel.add(textField);
+        mainPlusPanel.add(enter);
+        return textField;
+    }
+    protected JFormattedTextField createBirthady(String name, String description, boolean saveToDelete){
+        JLabel label = new JLabel(name + "(" + description + ")");
+        label.setForeground(Color.gray);
+        label.setFont(labelFont);
+        label.setPreferredSize(STANDARD_DIMENSION);
+        JFormattedTextField textField = new JFormattedTextField(new SimpleDateFormat("dd-MM-yyyy HH:mm:ss"));
+        textField.setPreferredSize(new Dimension(WIDTH_BUTTON, HEIGHT_BUTTON));
+        Component enter = Box.createRigidArea(new Dimension(0, HEIGHT_BOX_AREA));
+
+        try {
+            MaskFormatter d = new MaskFormatter("##-##-#### ##:##:##");
+            d.install(textField);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
 
         if (saveToDelete) {
             ownersLabels.add(label);
@@ -244,9 +277,14 @@ public abstract class ChangeProductDialog extends ProductDialog implements Actio
     public HomeFrame getHomeFrame() {
         return homeFrame;
     }
+    protected void close(){
+        getDialog().setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+        getDialog().dispatchEvent(new WindowEvent(getDialog(), WindowEvent.WINDOW_CLOSING));
+
+    }
 
     protected abstract class OkListener implements ActionListener {
-        protected abstract void createResponse(Product product, Long key);
+        protected abstract Response createResponse(Product product, Long key);
 
         protected abstract void sentProduct(Long key, Product product);
 
@@ -255,11 +293,9 @@ public abstract class ChangeProductDialog extends ProductDialog implements Actio
             try {
                 Long key = VariableParsing.toRightNumberLong(localisation(Constants.KEY), textKey.getText(), getResourceBundle());
                 Product product = addProduct();
-
-                homeFrame.getLock().lock();
                 createResponse(product, key);
                 sentProduct(key, product);
-                homeFrame.getLock().unlock();
+                close();
             } catch (VariableException ex) {
                 homeFrame.exception(ex.getMessage());
             }
@@ -268,13 +304,14 @@ public abstract class ChangeProductDialog extends ProductDialog implements Actio
     }
 
     private class NeedOwner implements ActionListener {
-        private static final double HOW_SMALLER_THIS_FRAME_SIZE = 0.8;
+        private static final double HOW_SMALLER_THIS_FRAME_SIZE = 0.65;
         private JTextField textPersonName;
-        private JTextField textPersonBirthday;
+        private JFormattedTextField textPersonBirthday;
         private JTextField textPersonHeight;
         private JTextField textLocationX;
         private JTextField textLocationY;
         private JTextField textLocationName;
+
 
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -282,18 +319,21 @@ public abstract class ChangeProductDialog extends ProductDialog implements Actio
             if (addOwner.isSelected()) {
                 removeActionButtons();
                 textPersonName = createButtonGroup(localisation(Constants.PERSON_NAME), localisation(Constants.CAN_NOT_BE_NULL), true);
-                textPersonBirthday = createButtonGroup(localisation(Constants.BIRTHDAY), localisation(Constants.CAN_NOT_BE_NULL) + localisation(Constants.FORMAT), true);
+                textPersonBirthday = createBirthady(localisation(Constants.BIRTHDAY), localisation(Constants.CAN_NOT_BE_NULL) + localisation(Constants.FORMAT), true);
                 textPersonHeight = createButtonGroup(localisation(Constants.HEIGHT), localisation(Constants.MUST_BE_BIGGER) + "0" + localisation(Constants.CAN_NOT_BE_NULL), true);
                 textLocationX = createButtonGroup(localisation(Constants.LOCATION_X), "", true);
                 textLocationY = createButtonGroup(localisation(Constants.LOCATION_Y), "", true);
                 textLocationName = createButtonGroup(localisation(Constants.LOCATION_NAME), localisation(Constants.CAN_NOT_BE_NULL), true);
                 addActionButtons();
                 mainPlusPanel.validate();
+                getDialog().setMinimumSize(new Dimension(screenSize.width / 2, (int) (screenSize.height / HOW_SMALLER_THIS_FRAME_SIZE)));
                 getDialog().validate();
             } else {
                 ownersLabels.forEach(i -> mainPlusPanel.remove(i));
                 ownersLabels.clear();
+                getDialog().setMinimumSize(new Dimension(screenSize.width / 2, screenSize.height / HOW_SMALLER_SIZE_HEIGHT));
                 getDialog().repaint();
+                getDialog().pack();
             }
 
         }

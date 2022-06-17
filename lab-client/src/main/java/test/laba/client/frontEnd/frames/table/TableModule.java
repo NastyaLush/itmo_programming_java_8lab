@@ -1,9 +1,12 @@
 package test.laba.client.frontEnd.frames.table;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.ResourceBundle;
+import javax.swing.text.NumberFormatter;
 import test.laba.client.frontEnd.frames.local.Localized;
 import test.laba.common.dataClasses.Product;
 import test.laba.common.dataClasses.UnitOfMeasure;
@@ -64,7 +67,11 @@ public class TableModule extends AbstractTableModel implements Localized {
     }
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        return values.get(rowIndex).get(columnIndex);
+        if(values.size()>0) {
+            return values.get(rowIndex).get(columnIndex);
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -97,26 +104,28 @@ public class TableModule extends AbstractTableModel implements Localized {
 
     public void addProducts(HashMap<Long, Product> products) {
         values.clear();
+        constValues.clear();
         products.forEach(this::addProduct);
     }
 
     public void addProduct(Long key, Product product) {
+       NumberFormat numberFormatter = NumberFormat.getNumberInstance(resourceBundle.getLocale());
         ArrayList<Object> newProduct = new ArrayList<>(columnCount);
-        newProduct.add(key);
-        newProduct.add(product.getId());
+        newProduct.add(numberFormatter.format(key));
+        newProduct.add(numberFormatter.format(product.getId()));
         newProduct.add(product.getName());
-        newProduct.add(product.getCoordinates().getX());
+        newProduct.add(numberFormatter.format(product.getCoordinates().getX()));
         newProduct.add(product.getCoordinates().getY());
         newProduct.add(dateFormat.format(Date.from(product.getCreationDate().toInstant())));
-        newProduct.add(product.getPrice());
-        newProduct.add(product.getManufactureCost());
+        newProduct.add(numberFormatter.format(product.getPrice()));
+        newProduct.add(numberFormatter.format(product.getManufactureCost()));
         newProduct.add(localisation(UNIT_OF_MEASURE_CONSTANTS_HASH_MAP.get(product.getUnitOfMeasure())));
         if (product.getOwner() != null) {
             newProduct.add(product.getOwner().getName());
             newProduct.add(dateFormat.format(Date.from(product.getOwner().getBirthday().toInstant())));
-            newProduct.add(product.getOwner().getHeight());
-            newProduct.add(product.getOwner().getLocation().getX());
-            newProduct.add(product.getOwner().getLocation().getY());
+            newProduct.add(numberFormatter.format(product.getOwner().getHeight()));
+            newProduct.add(numberFormatter.format(product.getOwner().getLocation().getX()));
+            newProduct.add(numberFormatter.format(product.getOwner().getLocation().getY()));
             newProduct.add(product.getOwner().getLocation().getName());
         } else {
             newProduct.add(null);

@@ -71,10 +71,7 @@ public class Minus implements ActionListener {
                         homeFrame.localisation(Constants.UNIT_OF_MEASURE));
                 if (result != null) {
                     try {
-                        homeFrame.getLock().lock();
-                        homeFrame.setResponse(createResponse(Command.REMOVE_ANY_BY_UNIT_OF_MEASURE.getString(), result));
-                        homeFrame.treatmentResponseWithoutFrame(homeFrame::show);
-                        homeFrame.getLock().unlock();
+                        homeFrame.treatmentResponseWithoutFrame(homeFrame::show, createResponse(Command.REMOVE_ANY_BY_UNIT_OF_MEASURE.getString(), result));
                     } catch (VariableException ex) {
                         homeFrame.exception(ex.getMessage());
                     }
@@ -128,10 +125,7 @@ public class Minus implements ActionListener {
                     JOptionPane.QUESTION_MESSAGE);
             if (answer != null) {
                 try {
-                    homeFrame.getLock().lock();
-                    homeFrame.setResponse(createResponse(name, answer));
-                    homeFrame.treatmentResponseWithoutFrame(homeFrame::show);
-                    homeFrame.getLock().unlock();
+                    homeFrame.treatmentResponseWithoutFrame(homeFrame::show, createResponse(name, answer));
                 } catch (VariableException ex) {
                     homeFrame.exception(ex.getMessage());
                 }
@@ -152,7 +146,8 @@ public class Minus implements ActionListener {
         protected void addOkListener() {
             getOk().addActionListener(new OkListener() {
                 @Override
-                protected void createResponse(Product product, Long key) {
+                protected Response createResponse(Product product, Long key) {
+                    return null;
                 }
 
                 @Override
@@ -163,21 +158,21 @@ public class Minus implements ActionListener {
                 public void actionPerformed(ActionEvent e) {
                     try {
                         Product product = addProduct();
-                        createResponse(product);
-                        sentProduct();
+                        sentProduct(createResponse(product));
                     } catch (VariableException ex) {
                         homeFrame.exception(ex.getMessage());
                     }
                 }
 
-                private void createResponse(Product product) {
-                    homeFrame.setResponse(new Response(Command.REMOVE_LOWER.getString()));
-                    homeFrame.getResponse().setProduct(product);
+                private Response createResponse(Product product) {
+                    Response response = new Response(Command.REMOVE_LOWER.getString());
+                    response.setProduct(product);
+                    return response;
                 }
 
-                private void sentProduct() {
+                private void sentProduct(Response response) {
                     delete.dispatchEvent(new WindowEvent(getDialog(), WindowEvent.WINDOW_CLOSING));
-                    homeFrame.treatmentResponseWithoutFrame(homeFrame::show);
+                    homeFrame.treatmentResponseWithoutFrame(homeFrame::show, response);
                 }
             });
         }

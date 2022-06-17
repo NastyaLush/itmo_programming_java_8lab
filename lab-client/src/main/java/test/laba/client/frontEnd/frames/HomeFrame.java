@@ -7,19 +7,20 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
+import java.security.Key;
 import java.util.HashMap;
 import java.util.ResourceBundle;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.UIManager;
+import test.laba.client.ClientApp;
 import test.laba.client.frontEnd.frames.animation.Picture;
 import test.laba.client.frontEnd.frames.changeProductFrames.ChangeProductDialog;
 import test.laba.client.frontEnd.frames.changeProductFrames.ChangeProductTableDialog;
@@ -34,8 +35,6 @@ import test.laba.client.util.Command;
 import test.laba.client.util.Constants;
 
 import javax.swing.table.JTableHeader;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
 
 public class HomeFrame extends AbstractFrame implements Runnable {
     private static final int LOCATION = 100;
@@ -46,13 +45,9 @@ public class HomeFrame extends AbstractFrame implements Runnable {
     private static final int STANDARD_SIZE_TEXT_LABELS_ON_TABLE = 13;
     private static final int USER_NAME_SIZE = 38;
     private TablePanel mainPanel;
-    private final String login;
+    private String login;
     private TableModule tableModule;
     private final JLabel nameUser;
-    private Response response;
-    private final Condition condition;
-    private HashMap<Long, Product> graphicCollection;
-    private final Lock lock;
     private final Color green = Color.getHSBColor((float) 0.44, (float) 0.60, (float) 0.80);
     private final Color blue = Color.getHSBColor(0.67F, 0.30F, 0.84F);
     private Plus plusListener;
@@ -60,16 +55,16 @@ public class HomeFrame extends AbstractFrame implements Runnable {
     private final Dimension preferredSize = new Dimension(screenSize.width - 150, screenSize.height - 50);
     private final Dimension minimumSize = new Dimension((int) (screenSize.width / 1.2), (int) (screenSize.height / 1.2));
     private final Dimension trashSize = new Dimension(95, 95);
+    private final ClientApp clientApp;
+    private HashMap<Long, Product> collection;
     private JButton minus;
     private final int standardSizeText = 20;
 
-    public HomeFrame(Condition condition, Lock lock, String login, Response response, ResourceBundle resourceBundle) {
+    public HomeFrame(String login, ResourceBundle resourceBundle, ClientApp clientApp) {
         super(new JFrame(), resourceBundle);
         this.login = login;
-        this.response = response;
-        this.lock = lock;
-        this.condition = condition;
         this.nameUser = createUserName();
+        this.clientApp = clientApp;
     }
 
     @Override
@@ -105,14 +100,13 @@ public class HomeFrame extends AbstractFrame implements Runnable {
         upPanel.setLayout(new BoxLayout(upPanel, BoxLayout.X_AXIS));
         getFrame().getContentPane().add(BorderLayout.CENTER, mainPanel);
         getFrame().getContentPane().add(BorderLayout.CENTER, mainPanel);
-        getFrame().getContentPane().add(BorderLayout.WEST, createLeftPanel());
         getFrame().getContentPane().add(BorderLayout.NORTH, upPanel);
         getFrame().getContentPane().add(BorderLayout.SOUTH, downPanel);
+        getFrame().getContentPane().add(BorderLayout.WEST, createLeftPanel());
         getFrame().repaint();
         repaintAll();
         getFrame().setVisible(true);
     }
-
     private JPanel createLeftPanel() {
         minus = createPictureButton("minus", Color.white, Pictures.MINUS.getPath(), new Minus(this, minus));
 
@@ -156,7 +150,6 @@ public class HomeFrame extends AbstractFrame implements Runnable {
         upPanel.repaint();
         getFrame().repaint();
         repaintAll();
-
     }
 
     private void paintTextLabels() {
@@ -188,8 +181,7 @@ public class HomeFrame extends AbstractFrame implements Runnable {
         table.setFont(new Font("Safari", Font.BOLD, STANDARD_SIZE_TEXT_LABELS_ON_TABLE));
         JTableHeader tableHeader = table.getTableHeader();
         table.setAutoCreateRowSorter(true);
-        table.setUpdateSelectionOnSort(false);
-        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        table.setUpdateSelectionOnSort(true);
         tableHeader.setBackground(blue);
         tableHeader.setFont(new Font("Safari", Font.PLAIN, STANDARD_SIZE_TEXT_LABELS_ON_TABLE));
         tableHeader.setFocusable(false);
@@ -203,35 +195,33 @@ public class HomeFrame extends AbstractFrame implements Runnable {
         return new TablePanel(table) {
             @Override
             protected void outputSelection() {
-                new ChangeProductTableDialog(this, tableModule, getResourceBundle(),HomeFrame.this) {
+                new ChangeProductTableDialog(this, tableModule, getResourceBundle(), HomeFrame.this) {
                     @Override
                     protected void addOkListener() {
                         getOk().addActionListener(new OkListener() {
                             @Override
-                            protected void createResponse(Product product, Long key) {
-                                response = new Response(Command.UPDATE_ID.getString());
+                            protected Response createResponse(Product product, Long key) {
+                                Response response = new Response(Command.UPDATE_ID.getString());
                                 response.setProduct(product);
                                 response.setFlagUdateID(true);
                                 response.setKeyOrID(key);
+                                return response;
                             }
+
                             @Override
                             protected void sentProduct(Long key, Product product) {
+                                getDialog().dispatchEvent(new WindowEvent(getDialog(), WindowEvent.WINDOW_CLOSING));
+                                treatmentResponseWithoutFrame(HomeFrame.this::show, createResponse(product, key));
                             }
+
                             @Override
                             public void actionPerformed(ActionEvent e) {
                                 try {
                                     Product product = addProduct();
-                                    lock.lock();
-                                    createResponse(product, Long.valueOf(getDescription(localisation(Constants.ID))));
-                                    sentProduct();
-                                    lock.unlock();
+                                    sentProduct(Long.valueOf(getDescription(localisation(Constants.ID))), product);
                                 } catch (VariableException ex) {
                                     exception(ex.getMessage());
                                 }
-                            }
-                            private void sentProduct() {
-                                getDialog().dispatchEvent(new WindowEvent(getDialog(), WindowEvent.WINDOW_CLOSING));
-                                treatmentResponseWithoutFrame(HomeFrame.this::show);
                             }
                         });
                     }
@@ -251,20 +241,15 @@ public class HomeFrame extends AbstractFrame implements Runnable {
         mainPanel.repaint();
     }
 
-    private void repaintAll() {
-        lock.lock();
-        response = new Response(Command.SHOW.getString());
+    private HashMap<Long, Product> repaintAll() {
+        Response response = new Response(Command.SHOW.getString());
         response.setAddToHistory(false);
-        condition.signal();
-        try {
-            condition.await();
-        } catch (InterruptedException ex) {
-            exception(ex.getMessage());
-        }
-        tableModule.addProducts(response.getProductHashMap());
-        graphicCollection = response.getProductHashMap();
-        lock.unlock();
+        Response answer = clientApp.workCycle(response, getResourceBundle());
+        closeIfExit(answer);
+        tableModule.addProducts(answer.getProductHashMap());
         repaint();
+        collection = answer.getProductHashMap();
+        return answer.getProductHashMap();
     }
 
     private void repaintFilter() {
@@ -272,34 +257,23 @@ public class HomeFrame extends AbstractFrame implements Runnable {
     }
 
     public void treatmentResponseWithCommandName(String name, IFunction show) {
-        lock.lock();
-        response = new Response(name);
-        treatmentResponseWithoutFrame(show);
-        lock.unlock();
+        treatmentResponseWithoutFrame(show, new Response(name));
 
     }
-    public void treatmentAnimation(IFunctionResponse newResponse, JDialog jFrame) throws VariableException {
-        lock.lock();
-        response = newResponse.createResponse();
-        treatmentResponseWithoutFrame(this::show);
-        lock.unlock();
+
+    public void treatmentAnimation(IFunctionResponse newResponse) throws VariableException {
+        treatmentResponseWithoutFrame(this::show, newResponse.createResponse());
     }
 
-    void treatmentResponseWithoutFrame(IFunction showResponse) {
-        lock.lock();
-        condition.signal();
-        try {
-            condition.await();
-            if (response instanceof ResponseWithError) {
-                exception(response.getCommand());
-            } else {
-                showResponse.function(response.getCommand());
-                repaintAll();
-            }
-        } catch (InterruptedException ex) {
-            exception(ex.getMessage());
+    void treatmentResponseWithoutFrame(IFunction showResponse, Response response) {
+        Response answer = clientApp.workCycle(response, getResourceBundle());
+        closeIfExit(answer);
+        if (answer instanceof ResponseWithError) {
+            exception(answer.getCommand());
+        } else {
+            showResponse.function(answer.getCommand());
+            repaintAll();
         }
-        lock.unlock();
     }
 
     private JButton createPictureButton(String name, java.awt.Color colorBackground, String picturePath, ActionListener actionListener) {
@@ -342,51 +316,30 @@ public class HomeFrame extends AbstractFrame implements Runnable {
     }
 
     private void createButtonCommandAction(String name, Constants command) {
-        lock.lock();
-        response = new Response(name);
-        condition.signal();
-
-        try {
-            condition.await();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        if (response instanceof ResponseWithError) {
-            exception(response.getCommand());
+        Response response = new Response(name);
+        Response answer = clientApp.workCycle(response, getResourceBundle());
+        closeIfExit(response);
+        if (answer instanceof ResponseWithError) {
+            exception(answer.getCommand());
         } else {
-            show(localisation(command) + '\n' + response.getCommand());
+            show(localisation(command) + '\n' + answer.getCommand());
         }
-        lock.unlock();
     }
 
     private void showNothing(String message) {
     }
 
-    public Response getResponse() {
-        return response;
-    }
-
-    public void setResponse(Response response) {
-        lock.lock();
-        this.response = response;
-        lock.unlock();
-    }
-
-
     public TableModule getTableModule() {
         return tableModule;
     }
 
-    public void prepareAnswer(Response newResponse) {
-        this.response = newResponse;
-    }
-
-    public void setGraphicCollection(HashMap<Long, Product> graphicCollection) {
-        this.graphicCollection = graphicCollection;
-    }
-
     public HashMap<Long, Product> getGraphicMap() {
-        return graphicCollection;
+        Response response = new Response(Command.SHOW.getString());
+        response.setAddToHistory(false);
+        Response answer = clientApp.workCycle(response, getResourceBundle());
+        closeIfExit(answer);
+        collection = answer.getProductHashMap();
+        return collection;
     }
 
     private void showHelp(String s) {
@@ -397,15 +350,17 @@ public class HomeFrame extends AbstractFrame implements Runnable {
         return mainPanel;
     }
 
-    public Lock getLock() {
-        return lock;
-    }
-
     @Override
     public void close() {
         //show(local(Constants.THANK_YOU));
         getFrame().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         getFrame().dispatchEvent(new WindowEvent(getFrame(), WindowEvent.WINDOW_CLOSING));
+    }
+
+    public void closeIfExit(Response newResponse) {
+        if (newResponse.getCommand().equals(Command.CLOSE.getString())) {
+            close();
+        }
     }
 
     private class CommandWithoutAction implements ActionListener {
@@ -421,41 +376,37 @@ public class HomeFrame extends AbstractFrame implements Runnable {
         private Plus(ResourceBundle resourceBundle) {
             super(resourceBundle, HomeFrame.this);
         }
+
         @Override
         protected void addOkListener() {
             getOk().addActionListener(new OkListener() {
+
                 @Override
-                protected void createResponse(Product product, Long key) {
-                    response = new Response(Command.INSERT_NULL.getString());
+                protected Response createResponse(Product product, Long key) {
+                    Response response = new Response(Command.INSERT_NULL.getString());
                     response.setProduct(product);
                     response.setKeyOrID(key);
+                    return response;
                 }
-
                 @Override
                 protected void sentProduct(Long key, Product product) {
-                    lock.lock();
                     getDialog().dispatchEvent(new WindowEvent(getDialog(), WindowEvent.WINDOW_CLOSING));
-                    condition.signal();
-
-                    try {
-                        condition.await();
-                        if (response instanceof ResponseWithError) {
-                            exception(response.getCommand());
-                        } else {
-                            show(response.getCommand());
-                            tableModule.addProduct(key, product);
-                            repaintAll();
-                        }
-                    } catch (InterruptedException ex) {
-                        exception(ex.getMessage());
+                    Response answer = clientApp.workCycle(createResponse(product, key), getResourceBundle());
+                    closeIfExit(answer);
+                    if (answer instanceof ResponseWithError) {
+                        exception(answer.getCommand());
+                    } else {
+                        show(answer.getCommand());
+                        tableModule.addProduct(key, product);
+                        repaintAll();
                     }
 
-                    lock.unlock();
                 }
             });
         }
 
     }
+
     private class Script implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -463,11 +414,9 @@ public class HomeFrame extends AbstractFrame implements Runnable {
             fileChooser.setDialogTitle(localisation(Constants.CHOOSE_DIRECTORY));
             int result = fileChooser.showOpenDialog(null);
             if (result == JFileChooser.APPROVE_OPTION) {
-                lock.lock();
-                response = new Response(Command.EXECUTE_SCRIPT.getString());
+                Response response = new Response(Command.EXECUTE_SCRIPT.getString());
                 response.setMessage(fileChooser.getSelectedFile().getAbsolutePath());
-                treatmentResponseWithoutFrame(HomeFrame.this::showScript);
-                lock.unlock();
+                treatmentResponseWithoutFrame(HomeFrame.this::showScript, response);
             }
         }
     }

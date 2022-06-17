@@ -60,7 +60,9 @@ public enum Constants {
     HOST_EXCEPTION("hostException"),
     INTERRAPTED_EXCEPTION("InterException"),
     IO_EXCEPTION("ioException"),
-    THANK_YOU("thankYou");
+    THANK_YOU("thankYou"),
+    SERVER_CLOSED("serverClosed"),
+    CYCLE_IN_THE_SCRIPT("cycleInTheScript");
 
     private final String string;
 
