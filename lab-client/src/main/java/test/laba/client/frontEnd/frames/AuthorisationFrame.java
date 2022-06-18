@@ -226,8 +226,8 @@ public class AuthorisationFrame extends AbstractFrame implements Runnable {
             }
         }
         private void goToHomeFrame() {
-            new Thread(new HomeFrame(textLogin.getText(), getResourceBundle(), clientApp)).start();
             close();
+            new HomeFrame(textLogin.getText(), getResourceBundle(), clientApp).run();
         }
     }
 

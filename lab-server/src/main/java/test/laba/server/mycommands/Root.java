@@ -124,9 +124,9 @@ public class Root {
      * @return string with information about collection
      */
     public synchronized String infoAboutCollection() {
-        return "Class of collection: " + getProducts().getClass()
-                + "\nDate of initialization: " + getDateOfCreation()
-                + "\nNumber of elements: " + getProducts().size();
+        return "Класс: " + getProducts().getClass()
+                + "\nДата инициализации: " + getDateOfCreation()
+                + "\nКоличество элементов: " + getProducts().size();
     }
 
     /**
