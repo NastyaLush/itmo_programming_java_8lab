@@ -263,9 +263,7 @@ public abstract class ChangeProductDialog extends ProductDialog implements Actio
         public void actionPerformed(ActionEvent e) {
             try {
                 Long key = VariableParsing.toRightNumberLong(localisation(Constants.KEY), textKey.getText(), getResourceBundle());
-                System.out.println(key);
                 Product product = addProduct();
-                System.out.println(product);
                 createResponse(product, key);
                 sentProduct(key, product);
                 close();
@@ -314,7 +312,6 @@ public abstract class ChangeProductDialog extends ProductDialog implements Actio
 
         public Person parsingDate() throws VariableException {
             Person person = new Person();
-            System.out.println("person");
             person.setName(VariableParsing.toRightName(localisation(Constants.PERSON_NAME), textPersonName.getText(), getResourceBundle()));
             person.setBirthday(VariableParsing.toRightBirthday(localisation(Constants.BIRTHDAY), textPersonBirthday.getText(), getResourceBundle()));
             person.setHeight(VariableParsing.toRightNumberInt(localisation(Constants.HEIGHT), textPersonHeight.getText(), getResourceBundle()));

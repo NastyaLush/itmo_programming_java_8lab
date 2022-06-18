@@ -75,7 +75,6 @@ public abstract class ChangeProductTableDialog extends ChangeProductDialog {
 
 
         JMenu menu = createUMMenu(getDescription(name));
-        System.out.println(tableModule.delocalizationUnitOfMeasure(getDescription(name)));
         menu.setName(tableModule.delocalizationUnitOfMeasure(getDescription(name)));
         JMenuBar menuBar = unitOfMeasureButton(menu);
 
