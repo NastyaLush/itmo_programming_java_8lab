@@ -102,7 +102,7 @@ public class ClientApp implements Localized {
             logger.warning(e.getMessage());
             newResponse =  new ResponseWithError(localisation(Constants.CYCLE_IN_THE_SCRIPT));
         } catch (IOException e) {
-            try( Socket socket = new Socket(host, port)) {
+            try (Socket socket = new Socket(host, port)) {
                 wrapper = new Wrapper(socket);
                 newResponse =  workCycle(response, resourceBundle);
             } catch (IOException ex) {

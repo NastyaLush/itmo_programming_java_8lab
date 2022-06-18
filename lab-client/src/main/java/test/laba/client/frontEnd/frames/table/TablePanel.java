@@ -23,10 +23,6 @@ public abstract class TablePanel extends JPanel
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-        table.setAutoCreateRowSorter(true);
-
-        table.setPreferredScrollableViewportSize(TABLE_SIZE);
-        table.setFillsViewportHeight(true);
         table.getSelectionModel().addListSelectionListener(new RowListener());
         add(new JScrollPane(table));
 

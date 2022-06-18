@@ -1,12 +1,15 @@
 package test.laba.client.frontEnd.frames.table;
 
-import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.ResourceBundle;
-import javax.swing.text.NumberFormatter;
+import java.util.stream.Collectors;
+import javax.swing.JTable;
 import test.laba.client.frontEnd.frames.local.Localized;
 import test.laba.common.dataClasses.Product;
 import test.laba.common.dataClasses.UnitOfMeasure;
@@ -33,23 +36,27 @@ public class TableModule extends AbstractTableModel implements Localized {
     private static final int LOCATION_NAME_COLUMN = 14;
     private static final HashMap<UnitOfMeasure, Constants> UNIT_OF_MEASURE_CONSTANTS_HASH_MAP;
     private final int columnCount = 15;
-    private final ArrayList<ArrayList<?>> values = new ArrayList<>();
+    private ArrayList<ArrayList<?>> values = new ArrayList<>();
     private final HashMap<Integer, String> head = new HashMap<>();
     private final HashMap<Integer, Class<?>> classField = new HashMap<>();
     private ArrayList<ArrayList<?>> constValues = new ArrayList<>();
     private final ResourceBundle resourceBundle;
     private final DateFormat dateFormat;
+    private int lastModification = -1;
+
     static {
         UNIT_OF_MEASURE_CONSTANTS_HASH_MAP = new HashMap<>();
-            UNIT_OF_MEASURE_CONSTANTS_HASH_MAP.put(UnitOfMeasure.PCS, Constants.PCS);
-            UNIT_OF_MEASURE_CONSTANTS_HASH_MAP.put(UnitOfMeasure.MILLILITERS, Constants.MILLILITERS);
-            UNIT_OF_MEASURE_CONSTANTS_HASH_MAP.put(UnitOfMeasure.GRAMS, Constants.GRAMS);
+        UNIT_OF_MEASURE_CONSTANTS_HASH_MAP.put(UnitOfMeasure.PCS, Constants.PCS);
+        UNIT_OF_MEASURE_CONSTANTS_HASH_MAP.put(UnitOfMeasure.MILLILITERS, Constants.MILLILITERS);
+        UNIT_OF_MEASURE_CONSTANTS_HASH_MAP.put(UnitOfMeasure.GRAMS, Constants.GRAMS);
     }
+
     public TableModule(ResourceBundle resourceBundle) {
         this.resourceBundle = resourceBundle;
         this.dateFormat = DateFormat.getDateTimeInstance(DateFormat.DEFAULT, DateFormat.DEFAULT, resourceBundle.getLocale());
         initialization();
     }
+
     @Override
     public int getRowCount() {
         if (constValues == null) {
@@ -57,17 +64,20 @@ public class TableModule extends AbstractTableModel implements Localized {
         }
         return values.size();
     }
+
     @Override
     public int getColumnCount() {
         return columnCount;
     }
+
     @Override
     public Class<Comparable<?>> getColumnClass(int columnIndex) {
         return (Class<Comparable<?>>) classField.get(columnIndex);
     }
+
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        if(values.size()>0) {
+        if (values.size() > 0) {
             return values.get(rowIndex).get(columnIndex);
         } else {
             return null;
@@ -109,7 +119,7 @@ public class TableModule extends AbstractTableModel implements Localized {
     }
 
     public void addProduct(Long key, Product product) {
-       NumberFormat numberFormatter = NumberFormat.getNumberInstance(resourceBundle.getLocale());
+        NumberFormat numberFormatter = NumberFormat.getNumberInstance(resourceBundle.getLocale());
         ArrayList<Object> newProduct = new ArrayList<>(columnCount);
         newProduct.add(numberFormatter.format(key));
         newProduct.add(numberFormatter.format(product.getId()));
@@ -128,12 +138,12 @@ public class TableModule extends AbstractTableModel implements Localized {
             newProduct.add(numberFormatter.format(product.getOwner().getLocation().getY()));
             newProduct.add(product.getOwner().getLocation().getName());
         } else {
-            newProduct.add(null);
-            newProduct.add(null);
-            newProduct.add(null);
-            newProduct.add(null);
-            newProduct.add(null);
-            newProduct.add(null);
+            newProduct.add("");
+            newProduct.add("");
+            newProduct.add("");
+            newProduct.add("");
+            newProduct.add("");
+            newProduct.add("");
         }
         values.add(newProduct);
         constValues.add(newProduct);
@@ -189,10 +199,47 @@ public class TableModule extends AbstractTableModel implements Localized {
     public void clearFilter() {
         this.values.clear();
     }
+
     public String[] unitOfMeasureContains() {
         return UNIT_OF_MEASURE_CONSTANTS_HASH_MAP.values().stream().map(e -> localisation(e)).toArray(String[]::new);
     }
 
+    public void sort(int column, JTable table) {
+        NumberFormat numberFormatter = NumberFormat.getInstance(resourceBundle.getLocale());
+        if (String.class.equals(classField.get(column))) {
+            values = (ArrayList<ArrayList<?>>) values.stream().sorted(Comparator.comparing(e -> ((String) e.get(column)))).collect(Collectors.toList());
+        } else if (Integer.class.equals(classField.get(column))) {
+            values = (ArrayList<ArrayList<?>>) values.stream().sorted(Comparator.comparingInt(e -> {
+                try {
+                    return (Integer.parseInt(String.valueOf(numberFormatter.parse(String.valueOf(e.get(column))))));
+                } catch (ParseException ex) {
+                    return 0;
+                }
+            })).collect(Collectors.toList());
+        } else if (Long.class.equals(classField.get(column))) {
+            values = (ArrayList<ArrayList<?>>) values.stream().sorted(Comparator.comparingLong(e -> {
+                try {
+                    return (Long.parseLong(String.valueOf(numberFormatter.parse(String.valueOf(e.get(column))))));
+                } catch (ParseException ex) {
+                    return 0;
+                }
+            })).collect(Collectors.toList());
+        } else if (Float.class.equals(classField.get(column))) {
+            values = (ArrayList<ArrayList<?>>) values.stream().sorted(Comparator.comparingDouble(e -> {
+                try {
+                    return (Double.parseDouble(String.valueOf(numberFormatter.parse(String.valueOf(e.get(column))))));
+                } catch (ParseException ex) {
+                    return 0;
+                }
+            })).collect(Collectors.toList());
+        }
+        if (column == lastModification) {
+            Collections.reverse(values);
+            lastModification = -1;
+        } else {
+            lastModification = column;
+        }
+    }
 
     @Override
     public ResourceBundle getResourceBundle() {

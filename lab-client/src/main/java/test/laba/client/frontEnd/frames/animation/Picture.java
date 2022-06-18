@@ -7,7 +7,6 @@ import java.awt.Toolkit;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 import test.laba.client.frontEnd.frames.HomeFrame;
 
 
@@ -39,7 +38,7 @@ public class Picture extends JFrame implements ActionListener {
     }
 
     public void createFrame() {
-        if(graphics != null) {
+        if (graphics != null) {
             pictureFrame.getContentPane().remove(graphics);
             pictureFrame.revalidate();
         }

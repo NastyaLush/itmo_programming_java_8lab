@@ -6,8 +6,9 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
-import java.security.Key;
 import java.util.HashMap;
 import java.util.ResourceBundle;
 import javax.swing.Box;
@@ -142,13 +143,6 @@ public class HomeFrame extends AbstractFrame implements Runnable {
 
     @Override
     public void repaintForLanguage() {
-        upPanel.removeAll();
-        upPanel.revalidate();
-        paintTextLabels();
-        getFrame().remove(mainPanel);
-        createTable();
-        upPanel.repaint();
-        getFrame().repaint();
         repaintAll();
     }
 
@@ -180,8 +174,13 @@ public class HomeFrame extends AbstractFrame implements Runnable {
         JTable table = new JTable(tableModule);
         table.setFont(new Font("Safari", Font.BOLD, STANDARD_SIZE_TEXT_LABELS_ON_TABLE));
         JTableHeader tableHeader = table.getTableHeader();
-        table.setAutoCreateRowSorter(true);
-        table.setUpdateSelectionOnSort(true);
+        tableHeader.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                tableModule.sort(tableHeader.columnAtPoint(e.getPoint()), table);
+                repaint();
+            }
+        });
         tableHeader.setBackground(blue);
         tableHeader.setFont(new Font("Safari", Font.PLAIN, STANDARD_SIZE_TEXT_LABELS_ON_TABLE));
         tableHeader.setFocusable(false);
@@ -242,11 +241,20 @@ public class HomeFrame extends AbstractFrame implements Runnable {
     }
 
     private HashMap<Long, Product> repaintAll() {
+        upPanel.removeAll();
+        upPanel.revalidate();
+        paintTextLabels();
+        getFrame().remove(mainPanel);
+        createTable();
+        upPanel.repaint();
+        getFrame().repaint();
         Response response = new Response(Command.SHOW.getString());
         response.setAddToHistory(false);
         Response answer = clientApp.workCycle(response, getResourceBundle());
         closeIfExit(answer);
-        tableModule.addProducts(answer.getProductHashMap());
+        if (answer.getProductHashMap() != null) {
+            tableModule.addProducts(answer.getProductHashMap());
+        }
         repaint();
         collection = answer.getProductHashMap();
         return answer.getProductHashMap();
@@ -392,6 +400,7 @@ public class HomeFrame extends AbstractFrame implements Runnable {
                 protected void sentProduct(Long key, Product product) {
                     getDialog().dispatchEvent(new WindowEvent(getDialog(), WindowEvent.WINDOW_CLOSING));
                     Response answer = clientApp.workCycle(createResponse(product, key), getResourceBundle());
+                    System.out.println(answer);
                     closeIfExit(answer);
                     if (answer instanceof ResponseWithError) {
                         exception(answer.getCommand());

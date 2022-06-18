@@ -4,12 +4,9 @@ package test.laba.client.util;
 import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.time.format.FormatStyle;
 import java.util.Date;
 import java.util.ResourceBundle;
-import javax.swing.text.NumberFormatter;
 import test.laba.common.exception.VariableException;
 import test.laba.common.dataClasses.UnitOfMeasure;
 
@@ -202,19 +199,24 @@ public final class VariableParsing {
             try {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
                 LocalDate parsed = LocalDate.parse(birthday, formatter);
-                System.out.println("jj");
                 birth = ZonedDateTime.of(parsed, LocalTime.MIDNIGHT, ZoneId.of("Europe/Berlin"));
             } catch (DateTimeException dateTimeException) {
-                try {
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
-                    LocalDateTime parsed = LocalDateTime.parse(birthday, formatter);
-                    System.out.println(birthday);
-                    birth = ZonedDateTime.of(parsed, ZoneId.of(ZoneId.systemDefault().toString()));
-                } catch (DateTimeException exception) {
-                    throw new VariableException(name, localisation(resourceBundle, Constants.WRONG_DATE));
-                }
+               birth = parsDate(birthday, name, resourceBundle);
             }
+            System.out.println(birth);
             return birth;
+        }
+        return birth;
+    }
+    private static ZonedDateTime parsDate(String birthday, String name, ResourceBundle resourceBundle) throws VariableException {
+        ZonedDateTime birth = null;
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+            LocalDateTime parsed = LocalDateTime.parse(birthday, formatter);
+            birth = ZonedDateTime.of(parsed, ZoneId.of(ZoneId.systemDefault().toString()));
+        } catch (DateTimeException exception) {
+            System.out.println(exception.getMessage());
+            throw new VariableException(name, localisation(resourceBundle, Constants.WRONG_DATE));
         }
         return birth;
     }

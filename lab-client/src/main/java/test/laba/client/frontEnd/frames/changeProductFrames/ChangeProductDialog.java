@@ -8,14 +8,11 @@ import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.event.WindowEvent;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
-import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -23,7 +20,6 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.text.MaskFormatter;
 import test.laba.client.frontEnd.frames.HomeFrame;
 import test.laba.client.util.Constants;
 import test.laba.client.util.VariableParsing;
@@ -153,34 +149,9 @@ public abstract class ChangeProductDialog extends ProductDialog implements Actio
         mainPlusPanel.add(enter);
         return textField;
     }
-    protected JFormattedTextField createBirthady(String name, String description, boolean saveToDelete){
-        JLabel label = new JLabel(name + "(" + description + ")");
-        label.setForeground(Color.gray);
-        label.setFont(labelFont);
-        label.setPreferredSize(STANDARD_DIMENSION);
-        JFormattedTextField textField = new JFormattedTextField(new SimpleDateFormat("dd-MM-yyyy HH:mm:ss"));
-        textField.setPreferredSize(new Dimension(WIDTH_BUTTON, HEIGHT_BUTTON));
-        Component enter = Box.createRigidArea(new Dimension(0, HEIGHT_BOX_AREA));
-
-        try {
-            MaskFormatter d = new MaskFormatter("##-##-#### ##:##:##");
-            d.install(textField);
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
-
-        if (saveToDelete) {
-            ownersLabels.add(label);
-            ownersLabels.add(textField);
-            ownersLabels.add(enter);
-        }
-
-        mainPlusPanel.add(label);
-        mainPlusPanel.add(textField);
-        mainPlusPanel.add(enter);
-        return textField;
+    protected JTextField createBirthady(String name, String description, boolean saveToDelete) {
+      return  createButtonGroup(name, description, saveToDelete);
     }
-
     @Override
     public JMenu createUMMenu(String name) {
         JMenu menu = new JMenu(name);
@@ -277,7 +248,7 @@ public abstract class ChangeProductDialog extends ProductDialog implements Actio
     public HomeFrame getHomeFrame() {
         return homeFrame;
     }
-    protected void close(){
+    protected void close() {
         getDialog().setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         getDialog().dispatchEvent(new WindowEvent(getDialog(), WindowEvent.WINDOW_CLOSING));
 
@@ -292,7 +263,9 @@ public abstract class ChangeProductDialog extends ProductDialog implements Actio
         public void actionPerformed(ActionEvent e) {
             try {
                 Long key = VariableParsing.toRightNumberLong(localisation(Constants.KEY), textKey.getText(), getResourceBundle());
+                System.out.println(key);
                 Product product = addProduct();
+                System.out.println(product);
                 createResponse(product, key);
                 sentProduct(key, product);
                 close();
@@ -306,7 +279,7 @@ public abstract class ChangeProductDialog extends ProductDialog implements Actio
     private class NeedOwner implements ActionListener {
         private static final double HOW_SMALLER_THIS_FRAME_SIZE = 0.65;
         private JTextField textPersonName;
-        private JFormattedTextField textPersonBirthday;
+        private JTextField textPersonBirthday;
         private JTextField textPersonHeight;
         private JTextField textLocationX;
         private JTextField textLocationY;
@@ -341,6 +314,7 @@ public abstract class ChangeProductDialog extends ProductDialog implements Actio
 
         public Person parsingDate() throws VariableException {
             Person person = new Person();
+            System.out.println("person");
             person.setName(VariableParsing.toRightName(localisation(Constants.PERSON_NAME), textPersonName.getText(), getResourceBundle()));
             person.setBirthday(VariableParsing.toRightBirthday(localisation(Constants.BIRTHDAY), textPersonBirthday.getText(), getResourceBundle()));
             person.setHeight(VariableParsing.toRightNumberInt(localisation(Constants.HEIGHT), textPersonHeight.getText(), getResourceBundle()));

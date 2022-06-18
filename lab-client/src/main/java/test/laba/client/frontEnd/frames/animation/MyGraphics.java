@@ -36,6 +36,7 @@ public class MyGraphics extends JComponent implements ActionListener, MouseListe
     private static final int MIN_SIZE_Y = 0;
     private static final int UPDATE_TIME = 5;
     private static final int OFFSET_X = 233;
+    private static final int TIME_SLEEP = 300;
     private int maxX = this.getSize().width;
     private int maxY = this.getSize().height;
     private final HomeFrame homeFrame;
@@ -50,11 +51,11 @@ public class MyGraphics extends JComponent implements ActionListener, MouseListe
         addMouseListener(this);
         updateCollection();
     }
-    private void updateCollection(){
-        new Thread(() ->{
-            while (true){
+    private void updateCollection() {
+        Thread thread = new Thread(() -> {
+            while (true) {
                 try {
-                    Thread.sleep(3000);
+                    Thread.sleep(TIME_SLEEP);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
@@ -65,7 +66,9 @@ public class MyGraphics extends JComponent implements ActionListener, MouseListe
                 }
                 isUpdate = false;
             }
-        }).start();
+        });
+        thread.setDaemon(true);
+        thread.start();
     }
 
     @Override
@@ -99,9 +102,9 @@ public class MyGraphics extends JComponent implements ActionListener, MouseListe
     }
 
     private void update() {
-        if(!isUpdate){
+        if (!isUpdate) {
             newCollectionInsert.forEach((key, value) -> {
-                if (! collection.containsKey(key)) {
+                if (!collection.containsKey(key)) {
                     value.setCondition(Condition.INSERT);
                     collection.put(key, value);
                 } else {
