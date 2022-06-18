@@ -219,7 +219,7 @@ public class AuthorisationFrame extends AbstractFrame implements Runnable {
                 if (!(answer instanceof ResponseWithError)) {
                     goToHomeFrame();
                 } else {
-                    exception(answer.getCommand());
+                    exception(localisation(Constants.ERROR) + " " + answer.getCommand());
                 }
             } catch (VariableException ex) {
                 exception(ex.getMessage());

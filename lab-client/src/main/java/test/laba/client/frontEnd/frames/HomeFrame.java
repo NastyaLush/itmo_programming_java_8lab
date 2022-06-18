@@ -403,9 +403,9 @@ public class HomeFrame extends AbstractFrame implements Runnable {
                     System.out.println(answer);
                     closeIfExit(answer);
                     if (answer instanceof ResponseWithError) {
-                        exception(answer.getCommand());
+                        exception(localisation(Constants.THIS_KEY_IS_ALREADY_EXIST));
                     } else {
-                        show(answer.getCommand());
+                        show(localisation(Constants.SUCCESS));
                         tableModule.addProduct(key, product);
                         repaintAll();
                     }

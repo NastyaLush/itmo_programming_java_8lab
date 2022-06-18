@@ -62,7 +62,9 @@ public enum Constants {
     IO_EXCEPTION("ioException"),
     THANK_YOU("thankYou"),
     SERVER_CLOSED("serverClosed"),
-    CYCLE_IN_THE_SCRIPT("cycleInTheScript");
+    CYCLE_IN_THE_SCRIPT("cycleInTheScript"),
+    THIS_KEY_IS_ALREADY_EXIST("keyIsExist"),
+    SUCCESS("success");
 
     private final String string;
 
