@@ -1,4 +1,3 @@
-# laba8
 This project was carried out in four stages, in accordance with the work requirements.
 
 All four stages are contained in this repository. The requirements of the earlier stages may not be fulfilled if later stages required changes.
@@ -88,7 +87,7 @@ Commands and their arguments must be objects of classes. Exchanging “plain” 
 
 Implement logging of different server workflow stages (startup, new connection received, new request received, response sent, etc.) using **Java Util Logging**.
 
-# [Stage 3](https://github.com/NastyaLush/itmo_programming_java_7lab)
+## [Stage 3](https://github.com/NastyaLush/itmo_programming_java_7lab)
 
 Modify the program from **Lab Work No. 6** as follows:
 
@@ -119,8 +118,8 @@ Modify the program from **Lab Work No. 6** as follows:
 
 - Use **PostgreSQL** as the database.
 - To connect to the database on the department server, use host **`pg`**, database name **`studs`**, and username/password the same as those used for connecting to the server.
-
-# Stage 4 (current)
+---
+## Stage 4 (current)
 
 The interface must be implemented using the **Swing** library.
 
